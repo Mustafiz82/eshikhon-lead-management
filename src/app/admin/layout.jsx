@@ -1,0 +1,40 @@
+import { RiDashboardFill } from "react-icons/ri";
+import { FaFileCsv, FaUserTie } from "react-icons/fa";
+import { MdSupportAgent } from "react-icons/md";
+import { FaUserGroup } from "react-icons/fa6";
+
+export default function Layout({ children }) {
+    return (
+        <div className="drawer drawer-open bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
+            <input id="my-drawer" type="checkbox" className="drawer-toggle" />
+            <div className="drawer-content">
+                {/* Page content here */}
+                {children}
+                {/* <label htmlFor="my-drawer" className="btn btn-primary drawer-button">
+                    Open drawer
+                </label> */}
+            </div>
+            <div className="drawer-side p-0 ">
+                <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
+                <ul className="menu bg-base-200 p-0 pt-8  dark:bg-gray-800 gap-3  text-base-content dark:text-gray-100 min-h-full w-80  transition-colors">
+                    {/* Sidebar content here */}
+                    <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
+                        <RiDashboardFill className="text-xl p-0" /> Dashboard
+                    </li>
+                    <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
+                        <FaUserTie className="text-xl p-0" /> All Leads
+                    </li>
+                    <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
+                        <FaFileCsv className="text-xl p-0" /> Upload CSV
+                    </li>
+                    <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
+                        <MdSupportAgent className="text-xl p-0" /> Agent Overview
+                    </li>
+                    <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
+                        <FaUserGroup className="text-xl p-0" /> Manage User
+                    </li>
+                </ul>
+            </div>
+        </div>
+    );
+}

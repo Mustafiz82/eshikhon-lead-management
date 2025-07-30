@@ -1,26 +1,33 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+
+.wrapper {
+  mask-image: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0),
+      /* Top fade start */
+      black 8%,
+      /* Fully visible area */
+      black 70%,
+      /* Fully visible area */
+      rgba(0, 0, 0, 0));
+  /* Bottom fade end */
+
+  -webkit-mask-image: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0),
+      black 8%,
+      black 80%,
+      rgba(0, 0, 0, 0));
+
+  mask-mode: match-source;
+  -webkit-mask-mode: match-source;
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.wrapper::-webkit-scrollbar {
+  display: none;
 }
