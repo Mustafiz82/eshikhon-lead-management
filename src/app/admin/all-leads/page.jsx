@@ -1,5 +1,5 @@
 "use client";
-import { agents } from "@/app/data/agents";
+import { agents } from "@/data/agents";
 import AssignModal from "@/components/allLeads/AssignModal";
 import LeadFilters from "@/components/allLeads/LeadFilters";
 import LeadFooterControls from "@/components/allLeads/LeadFooterControls";

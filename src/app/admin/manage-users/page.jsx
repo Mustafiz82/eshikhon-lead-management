@@ -102,8 +102,8 @@ const page = () => {
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th className="">Role</th>
-                                <th className=""></th>
+                                <th >Role</th>
+                                <th ></th>
 
                                 <th>Actions</th>
                             </tr>
@@ -117,7 +117,7 @@ const page = () => {
                                     <td></td>
 
                                     <td>
-                                        <button className="btn btn-sm btn-info mr-2 bg-blue-600 btn-primary" onClick={() => openDrawer(user)}><FaEdit /> Edit</button>
+                                        <button className="btn btn-sm mr-2 bg-blue-600 btn-primary" onClick={() => openDrawer(user)}><FaEdit /> Edit</button>
                                         <button className="btn btn-sm bg-red-500/80" onClick={() => handleDelete(user.id)}><MdDeleteForever className="text-lg" />Delete</button>
                                     </td>
                                 </tr>

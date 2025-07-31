@@ -5,7 +5,7 @@ import { IoLogOut } from "react-icons/io5";
 
 export default function SidebarFooter() {
     return (
-        <div className="mt-auto pb-10  border-t border-base-300 flex flex-col gap-2">
+        <div className="mt-auto  border-t border-base-300 flex flex-col gap-2">
             {/* Logout */}
 
             {/* Theme Toggle */}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { leads } from "@/app/data/leads";
+import { leads } from "@/data/leads";
 
 export default function useLeadFilters() {
   const [statusFilter, setStatusFilter] = useState("All");
