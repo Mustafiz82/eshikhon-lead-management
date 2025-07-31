@@ -2,6 +2,8 @@ import { RiDashboardFill } from "react-icons/ri";
 import { FaFileCsv, FaUserTie } from "react-icons/fa";
 import { MdSupportAgent } from "react-icons/md";
 import { FaUserGroup } from "react-icons/fa6";
+import Link from "next/link";
+import SidebarFooter from "@/shared/SidebarFooter";
 
 export default function Layout({ children }) {
     return (
@@ -18,21 +20,36 @@ export default function Layout({ children }) {
                 <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
                 <ul className="menu bg-base-200 p-0 pt-8  dark:bg-gray-800 gap-3  text-base-content dark:text-gray-100 min-h-full w-80  transition-colors">
                     {/* Sidebar content here */}
-                    <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
-                        <RiDashboardFill className="text-xl p-0" /> Dashboard
-                    </li>
-                    <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
-                        <FaUserTie className="text-xl p-0" /> All Leads
-                    </li>
-                    <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
-                        <FaFileCsv className="text-xl p-0" /> Upload CSV
-                    </li>
-                    <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
-                        <MdSupportAgent className="text-xl p-0" /> Agent Overview
-                    </li>
-                    <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
-                        <FaUserGroup className="text-xl p-0" /> Manage User
-                    </li>
+                    <Link href={"/admin"}>
+                        <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
+                            <RiDashboardFill className="text-xl p-0" /> Dashboard
+                        </li>
+                    </Link>
+                    <Link href={"/admin/all-leads"}>
+                        <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
+                            <FaUserTie className="text-xl p-0" /> All Leads
+                        </li>
+                    </Link>
+                    <Link href={"/admin/upload"}>
+                        <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
+                            <FaFileCsv className="text-xl p-0" /> Upload CSV
+                        </li>
+                    </Link>
+                    <Link href={"/admin/agents"}>
+                        <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
+                            <MdSupportAgent className="text-xl p-0" /> Agent Overview
+                        </li>
+                    </Link>
+                    <Link href={"/admin/manage-users"}>
+
+                        <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
+                            <FaUserGroup className="text-xl p-0" /> Manage User
+                        </li>
+                    </Link>
+
+
+
+                <SidebarFooter />
                 </ul>
             </div>
         </div>
