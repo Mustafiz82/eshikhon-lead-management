@@ -1,4 +1,5 @@
 export const leads = [
+
   {
     _id: "1",
     name: "Galib Mahmud",
@@ -7,7 +8,34 @@ export const leads = [
     address: "Madertek, Dhaka",
     seminarTopic: "Graphic Design",
     status: "Assigned",
-    date: "2025-07-30T10:00:00.000Z"
+    date: "2025-07-30T10:00:00.000Z",
+    notes: [
+      {
+        text: "Called at 10 AM, no response.",
+        by: "Admin",
+        date: "2025-07-30T10:10:00.000Z"
+      },
+      {
+        text: "Follow-up scheduled for next day.",
+        by: "Rafi",
+        date: "2025-07-30T11:45:00.000Z"
+      } ,
+      {
+        text: "Follow-up scheduled for next day.",
+        by: "Rafi",
+        date: "2025-07-30T11:45:00.000Z"
+      } ,
+      {
+        text: "Follow-up scheduled for next day.",
+        by: "Rafi",
+        date: "2025-07-30T11:45:00.000Z"
+      } ,
+      {
+        text: "Follow-up scheduled for next day.",
+        by: "Rafi",
+        date: "2025-07-30T11:45:00.000Z"
+      } ,
+    ]
   },
   {
     _id: "2",
@@ -17,8 +45,21 @@ export const leads = [
     address: "Savar, Dhaka",
     seminarTopic: "Web Development",
     status: "Not Assigned",
-    date: "2025-07-30T10:02:00.000Z"
-  },
+    date: "2025-07-30T10:02:00.000Z",
+    notes: [
+      {
+        text: "Sent WhatsApp message.",
+        by: "Tohed",
+        date: "2025-07-30T10:30:00.000Z"
+      },
+      {
+        text: "Interested, requested callback at 7 PM.",
+        by: "Tohed",
+        date: "2025-07-30T12:00:00.000Z"
+      }
+    ]
+  }
+,
   {
     _id: "3",
     name: "Shawon Ring",
