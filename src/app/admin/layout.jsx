@@ -1,5 +1,5 @@
 import { RiDashboardFill } from "react-icons/ri";
-import { FaFileCsv, FaUserTie } from "react-icons/fa";
+import { FaChalkboardTeacher, FaFileCsv, FaUserTie } from "react-icons/fa";
 import { MdSupportAgent } from "react-icons/md";
 import { FaUserGroup } from "react-icons/fa6";
 import Link from "next/link";
@@ -44,6 +44,12 @@ export default function Layout({ children }) {
 
                         <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
                             <FaUserGroup className="text-xl p-0" /> Manage User
+                        </li>
+                    </Link>
+                    <Link href={"/admin/manage-cources"}>
+
+                        <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
+                            <FaChalkboardTeacher className="text-xl p-0" /> Manage Cources
                         </li>
                     </Link>
 

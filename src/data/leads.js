@@ -35,6 +35,16 @@ export const leads = [
         by: "Rafi",
         date: "2025-07-30T11:45:00.000Z"
       } ,
+      {
+        text: "Follow-up scheduled for next day.",
+        by: "Rafi",
+        date: "2025-07-30T11:45:00.000Z"
+      } ,
+      {
+        text: "Follow-up scheduled for next day.",
+        by: "Rafi",
+        date: "2025-07-30T11:45:00.000Z"
+      } ,
     ]
   },
   {

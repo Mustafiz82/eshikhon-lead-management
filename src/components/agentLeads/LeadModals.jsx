@@ -1,3 +1,4 @@
+import CourseInput from "@/utils/CourseInput";
 import { formateDate } from "@/utils/date";
 import Image from "next/image";
 import { useState } from "react";
@@ -6,6 +7,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions}) => {
 
     const [modelStatus, setModelStatus] = useState("Pending")
     const [followUpDate, setFollowUpDate] = useState("")
+     const [search, setSearch] = useState("");
 
 
     return (
@@ -21,7 +23,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions}) => {
                         ✕ Close
                     </button>
                 </div>
-                {/* ✅ Column 1: Lead Details */}
+                {/*  Column 1: Lead Details */}
                 <div className="bg-base-200 border border-base-300 rounded p-4 pt-0 w-full max-w-sm shadow-md space-y-2 text-sm">
                     <h3 className="text-lg font-bold mb-3 border-b border-base-300 pb-2">Lead Info</h3>
 
@@ -32,6 +34,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions}) => {
                         <p><span className="font-semibold text-white/80">Address:</span> {selectedLead.address}</p>
                         <p><span className="font-semibold text-white/80">Seminar Topic:</span> {selectedLead.seminarTopic}</p>
                         <p><span className="font-semibold text-white/80">Assigned Date:</span> {formateDate(selectedLead.date)}</p>
+                        
                         <p><span className="font-semibold text-white/80">Follow-Up Date:</span> {selectedLead.followUpDate ? formateDate(selectedLead.followUpDate) : "N/A"}</p>
                         <p><span className="font-semibold text-white/80">Last Contacted:</span> {selectedLead.lastContacted ? formateDate(selectedLead.lastContacted) : "N/A"}</p>
                     </div>
@@ -48,10 +51,10 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions}) => {
                     )}
                 </div>
 
-                {/* ✅ Column 2: Notes */}
+                {/*  Column 2: Notes */}
                 <div className="space-y-2 flex flex-col text-sm">
                     <h3 className="text-lg font-semibold mb-2">Previous Notes</h3>
-                    <div className="space-y-2  max-h-44 overflow-y-auto">
+                    <div style={{maxHeight : (modelStatus === "Admitted") ? "340px" : "180px"}} className="space-y-2   overflow-y-auto">
                         {selectedLead.notes?.map((note, i) => (
                             <div key={i} className="border border-base-300 mt-2 p-2 bg-base-200  rounded">
                                 <p className="text-xs opacity-70">
@@ -75,7 +78,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions}) => {
                     <button className="btn bg-blue-600 btn-primary ">Add Note</button>
                 </div>
 
-                {/* ✅ Column 3: Actions */}
+                {/*  Column 3: Actions */}
                 <div className="space-y-4">
                     <h3 className="text-lg font-semibold">Actions</h3>
                     <div className="flex flex-col gap-2">
@@ -124,6 +127,10 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions}) => {
                             </ul>
                         </div>
                     </div>
+
+                    {
+                        modelStatus == "Admitted" && <CourseInput search={search} setSearch={setSearch}/>
+                    }
 
                     <div className="flex flex-col mt-8 gap-3">
                         <label className="text-sm ">Next Follow-Up Date</label>

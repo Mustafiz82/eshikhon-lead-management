@@ -2,10 +2,13 @@
 import React, { useRef, useState, useEffect } from "react";
 import { RiUpload2Fill } from "react-icons/ri";
 import { Bounce, toast } from "react-toastify";
+import Papa from "papaparse";
+
 
 const Page = () => {
     const [isUploading, setIsUploading] = useState(false);
     const [dragActive, setDragActive] = useState(false);
+
     const fileInputRef = useRef(null);
 
     const handleFile = (file) => {
@@ -23,6 +26,79 @@ const Page = () => {
             });
         }
         setIsUploading(true);
+
+        Papa.parse(file, {
+            header: true,
+            skipEmptyLines: true,
+            dynamicTyping: true,
+            transformHeader: (header) => {
+                if (!header) return "";
+
+                const normalized = header.trim().toLowerCase();
+
+                // Map known variations to internal field names
+                if (["full name", "name"].includes(normalized)) return "fullName";
+                if (["email", "e-mail", "email address"].includes(normalized)) return "email";
+                if (["phone", "phone number", "mobile"].includes(normalized)) return "phone";
+                if (["address", "location"].includes(normalized)) return "address";
+                if (["seminar topic", "topic", "course"].includes(normalized)) return "seminar topic";
+
+            },
+     
+            complete: function (results) {
+                const data = results.data;
+                const headers = Object.keys(data[0] || {});
+                const requiredFields = ["name", "email", "phone", "address", "seminar topic"];
+                const missingFields = requiredFields.filter(field => !headers.includes(field));
+
+                if (missingFields.length > 0) {
+                    toast.error(` Missing required fields: ${missingFields.join(", ")}`);
+                    return;
+                }
+
+                const validSeminarTopics = [
+                    "graphic design",
+                    "spoken english for freelancing",
+                    "digital marketing",
+                    "video editing",
+                    "ethical hacking",
+                    "ai for image, video & music creation",
+                    "data entry",
+                    "mern stack web development",
+                    "not provided"
+                ];
+
+                const cleanedData = data.map((row) => {
+                    return {
+                        ...row,
+                        "seminar topic": row["seminar topic"]?.toString().trim() || "Not provided"
+                    };
+                });
+
+                const invalidTopics = cleanedData.filter(row =>
+                    !validSeminarTopics.includes(row["seminar topic"].toLowerCase())
+                );
+
+                if (invalidTopics.length > 0) {
+                    toast.error(` Some rows have invalid seminar topics. Allowed: ${validSeminarTopics.join(", ")}`);
+                    console.warn(" Invalid rows:", invalidTopics);
+                    return;
+                }
+
+                console.log(" Cleaned and validated data:", cleanedData);
+            }
+            ,
+
+            error: function (err) {
+                toast.error(" Error parsing CSV");
+                console.error(err);
+            }
+        });
+
+
+
+
+
 
         // Fake upload animation
         setTimeout(() => {

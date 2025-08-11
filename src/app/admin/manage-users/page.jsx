@@ -1,277 +1,243 @@
 "use client";
-import React, { useState } from "react";
-import { BsEyeFill } from "react-icons/bs";
-import { BsEyeSlashFill } from "react-icons/bs";
+import axiosPublic from "@/api/axios";
+import React, { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
-import { FaDeleteLeft } from "react-icons/fa6";
-import { MdDeleteForever } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
+import Swal from "sweetalert2";
 
+const allowedDesignations = ["Junior Executive", "Executive", "Senior Executive"];
 
-const dummyUsers = [
-    {
-        id: 1,
-        name: "Ibrahim Akbar",
-        email: "ibrahim@example.com",
-        role: "Admin",
-        password: "admin123",
-    },
-    {
-        id: 2,
-        name: "Agent 1",
-        email: "agent1@example.com",
-        role: "User",
-        password: "agent123",
-    },
-    {
-        id: 3,
-        name: "Agent 2",
-        email: "agent2@example.com",
-        role: "User",
-        password: "agent123",
-    },
-    {
-        id: 4,
-        name: "Agent 3",
-        email: "agent3@example.com",
-        role: "User",
-        password: "agent123",
-    },
-    {
-        id: 5,
-        name: "Agent 4",
-        email: "agent4@example.com",
-        role: "User",
-        password: "agent123",
-    },
-];
-
-
-const page = () => {
-    const [users, setUsers] = useState(dummyUsers);
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+export default function Page() {
+    const [users, setUsers] = useState([]);
     const [editUser, setEditUser] = useState(null);
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [formError, setFormError] = useState("");
 
+    const fetchUsers = async () => {
+        setLoading(true);
+        try {
+            const res = await axiosPublic.get("/user");
+            setUsers(res.data || []);
+        } catch (err) {
+            Swal.fire("Error", err?.response?.data?.error || err.message, "error");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    const [formData, setFormData] = useState({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        role: "User",
-        status: "Active",
-    });
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
-    const openDrawer = (user = null) => {
-        if (user) {
-            setEditUser(user);
-            setFormData(user);
-        } else {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const form = e.target;
+
+        const payload = {
+            name: form.user_name.value.trim(),
+            email: form.user_email.value.trim().toLowerCase(),
+            password: form.user_password.value,
+            role: form.role.value,
+            designation: form.role.value === "admin" ? null : form.designation?.value || null,
+            target: form.target.value ? Number(form.target.value) : null,
+        };
+        setIsSubmitting(true);
+        setFormError(""); // clear old error
+
+        try {
+            if (editUser) {
+                const id = editUser._id || editUser.id;
+                await axiosPublic.put(`/user/${id}`, payload);
+            } else {
+                await axiosPublic.post("/user", payload);
+            }
+
+            await fetchUsers();
+            form.reset();
             setEditUser(null);
-            setFormData({ name: "", email: "", role: "User", status: "Active" });
+        } catch (err) {
+            console.log(err)
+            if (err?.response?.data?.error.startsWith("E11000")) {
+                setFormError("Email Already Exist")
+            }
+            else {
+                setFormError(err?.response?.data?.error || err.message);
+            }
+        } finally {
+            setIsSubmitting(false);
         }
-        setIsDrawerOpen(true);
     };
 
-    const handleSubmit = () => {
-        if (editUser) {
-            setUsers(users.map(u => (u.id === editUser.id ? formData : u)));
-        } else {
-            const newUser = { ...formData, id: Date.now() };
-            setUsers([...users, newUser]);
+    const handleDelete = async (id) => {
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "This action will permanently delete the user.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await axiosPublic.delete(`/user/${id}`);
+                Swal.fire("Deleted!", "User has been deleted.", "success");
+                fetchUsers();
+            } catch (error) {
+                Swal.fire("Error", error?.response?.data?.error || error.message, "error");
+            }
         }
-        setIsDrawerOpen(false);
     };
 
-    const handleDelete = (id) => {
-        const confirmDelete = confirm("Are you sure you want to delete this user?");
-        if (confirmDelete) {
-            setUsers(users.filter(u => u.id !== id));
-        }
-    };
+
+    // console.log(editUser.role.toLowerCase().trim())
 
     return (
         <div className="flex h-screen overflow-hidden">
-            {/* Main Content */}
-            <div className="flex-1 p-6">
+            {loading ? (
+                <p className="h-[300px] flex justify-center items-center w-full">Loading...</p>
+            ) : (
+                <>
+                    {/* Table */}
+                    <div className="flex-1 p-6">
+                        <div className="overflow-x-auto">
+                            <table className="table table-md table-zebra w-full">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th><th>Email</th><th>Role</th><th>Designation</th><th>Target (%)</th><th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {users.length > 0 ? (
+                                        users.map((user) => (
+                                            <tr key={user._id || user.id}>
+                                                <td>{user.name}</td>
+                                                <td>{user.email}</td>
+                                                <td>{user.role}</td>
+                                                <td>{user.designation ?? "-"}</td>
+                                                <td>{user.target ?? "-"}</td>
+                                                <td className="flex gap-2">
+                                                    <button
+                                                        className="btn btn-sm bg-blue-600 btn-primary"
+                                                        onClick={() => setEditUser(user)}
+                                                    >
+                                                        <FaEdit /> Edit
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-sm bg-red-500"
+                                                        onClick={() => handleDelete(user._id)}
+                                                    >
+                                                        <MdDelete /> Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="6" className="text-center text-gray-400">No users found.</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-                <div className="overflow-x-auto">
-                    <table className="table table-md table-zebra w-full">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th >Role</th>
-                                <th ></th>
+                    {/* Drawer */}
+                    <div className="h-full w-[400px] bg-base-200 dark:bg-gray-800 shadow-lg p-6">
+                        <form autoComplete="off" onSubmit={handleSubmit} className="flex flex-col h-full">
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-lg font-semibold">{editUser ? "Edit User" : "Add New User"}</h2>
+                                <button type="button" className="btn btn-xs btn-outline" onClick={() => setEditUser(null)}>Close</button>
+                            </div>
 
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {users.map(user => (
-                                <tr key={user.id}>
-                                    <td>{user.name}</td>
-                                    <td>{user.email}</td>
-                                    <td>{user.role}</td>
-                                    <td></td>
+                            <div className="flex flex-col gap-4">
+                                <input
+                                    name="user_name"
+                                    required
+                                    placeholder="Name"
+                                    defaultValue={editUser?.name || ""}
+                                    className="input dark:bg-gray-900 input-bordered w-full"
+                                    disabled={isSubmitting}
+                                />
 
-                                    <td>
-                                        <button className="btn btn-sm mr-2 bg-blue-600 btn-primary" onClick={() => openDrawer(user)}><FaEdit /> Edit</button>
-                                        <button className="btn btn-sm bg-red-500/80" onClick={() => handleDelete(user.id)}><MdDeleteForever className="text-lg" />Delete</button>
-                                    </td>
-                                </tr>
-                            ))}
-                            {users.length === 0 && (
-                                <tr><td colSpan="5" className="text-center text-gray-400">No users found.</td></tr>
+                                <input
+                                    type="email"
+                                    name="user_email"
+                                    required
+                                    placeholder="Email"
+                                    defaultValue={editUser?.email || ""}
+                                    className="input dark:bg-gray-900 input-bordered w-full"
+                                    disabled={isSubmitting}
+                                />
+
+                                <input
+                                    type="password"
+                                    name="user_password"
+                                    placeholder="Password"
+                                    minLength={6}
+                                    required={!editUser}
+                                    className="input dark:bg-gray-900 input-bordered w-full"
+                                    autoComplete="new-password"
+                                    disabled={isSubmitting}
+                                />
+
+                                <select
+                                    name="role"
+                                    className="select dark:bg-gray-900 select-bordered w-full"
+                                    disabled={isSubmitting}
+                                >
+                                    <option selected={editUser?.role?.toLowerCase()?.trim() == "user"} value="user">User</option>
+                                    <option selected={editUser?.role?.toLowerCase()?.trim() == "admin"} value="admin">Admin</option>    
+                                </select>
+
+
+                                {(!editUser || editUser.role === "user") && (
+                                    <select
+                                        name="designation"
+                                        defaultValue={editUser?.designation || "Junior Executive"}
+                                        className="select dark:bg-gray-900 select-bordered w-full"
+                                        disabled={isSubmitting}
+                                    >
+                                        {allowedDesignations.map((d) => (
+                                            <option key={d} value={d}>{d}</option>
+                                        ))}
+                                    </select>
+                                )}
+
+                                <input
+                                    type="number"
+                                    name="target"
+                                    placeholder="Target (%)"
+                                    defaultValue={editUser?.target ?? ""}
+                                    className="input dark:bg-gray-900 input-bordered w-full"
+                                    disabled={isSubmitting}
+                                />
+                            </div>
+
+                            {/* Inline Error */}
+                            {formError && (
+                                <div className="mt-3 text-red-500 text-sm">{formError}</div>
                             )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
-            {/* Right Drawer */}
-            <div className={`h-full w-[400px] bg-base-200   dark:bg-gray-800 shadow-lg transition-transform duration-300 z-50`}>
-                <form
-                    autoComplete="off"
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        if (formData.password.length < 6) {
-                            alert("Password must be at least 6 characters long.");
-                            return;
-                        }
-                        if (formData.password !== formData.confirmPassword) {
-                            alert("Passwords do not match.");
-                            return;
-                        }
-                        handleSubmit();
-                    }}
-                    className="p-6 flex flex-col h-full"
-                >
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-lg font-semibold">
-                            {editUser ? "Edit User" : "Add New User"}
-                        </h2>
-
-                        <div className="flex gap-2">
-                            {/* Cancel Drawer Button */}
-
-
-                            {/* Switch to Add New User */}
-                            {editUser && (
+                            <div className="mt-auto pt-4 flex gap-2">
+                                <button type="submit" className="btn bg-blue-600 btn-primary w-full" disabled={isSubmitting}>
+                                    {isSubmitting ? (editUser ? "Updating..." : "Creating...") : editUser ? "Update User" : "Create User"}
+                                </button>
                                 <button
                                     type="button"
-                                    className="btn btn-xs btn-outline"
-                                    onClick={() => {
-                                        setEditUser(null);
-                                        setFormData({
-                                            name: "",
-                                            email: "",
-                                            password: "",
-                                            confirmPassword: "",
-                                            role: "User",
-                                            status: "Active",
-                                        });
-                                    }}
+                                    className="btn btn-ghost w-full"
+                                    onClick={() => setEditUser(null)}
+                                    disabled={isSubmitting}
                                 >
                                     Cancel
                                 </button>
-                            )}
-                        </div>
+                            </div>
+                        </form>
                     </div>
-
-                    {/* Input Fields */}
-                    <div className="flex flex-col gap-4">
-                        <input
-                            type="text"
-                            name="name"
-                            required
-                            placeholder="Name"
-                            autoComplete="off"
-                            className="input input-bordered dark:bg-gray-900   focus:outline-0 focus:border-blue-600 w-full"
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        />
-
-                        <input
-                            type="email"
-                            name="email"
-                            required
-                            placeholder="Email"
-                            autoComplete="off"
-                            className="input input-bordered dark:bg-gray-900 focus:outline-0 focus:border-blue-600 w-full"
-                            value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        />
-
-                        <div className="relative w-full">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                name="password"
-                                required
-                                minLength={6}
-                                placeholder="Password (min 6 chars)"
-                                autoComplete="new-password"
-                                className="input input-bordered dark:bg-gray-900 focus:outline-0 focus:border-blue-600 w-full pr-12"
-                                value={formData.password}
-                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            />
-                            <button
-                                type="button"
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 z-10"
-                                onClick={() => setShowPassword(!showPassword)}
-                                tabIndex={-1} // optional: so tab doesn’t focus this button
-                            >
-                                {showPassword ? <BsEyeFill /> : <BsEyeSlashFill />}
-                            </button>
-                        </div>
-                        <div className="relative w-full">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                name="password"
-                                required
-                                minLength={6}
-                                placeholder="Confirm Password"
-                                autoComplete="new-password"
-                                className="input input-bordered dark:bg-gray-900 focus:outline-0 focus:border-blue-600 w-full pr-12"
-                                value={formData.confirmPassword}
-                                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                            />
-                            <button
-                                type="button"
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 z-10"
-                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                tabIndex={-1} // optional: so tab doesn’t focus this button
-                            >
-                                {showConfirmPassword ? <BsEyeFill /> : <BsEyeSlashFill />}
-                            </button>
-                        </div>
-
-
-
-
-                        <select
-                            className="select dark:bg-gray-900 focus:outline-0 focus:border-blue-600 select-bordered w-full"
-                            value={formData.role}
-                            onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                        >
-                            <option>User</option>
-                            <option>Admin</option>
-                        </select>
-                    </div>
-
-                    {/* Submit Button pinned to bottom */}
-                    <div className="mt-auto pt-4">
-                        <button type="submit" className="btn bg-blue-600 btn-primary w-full">
-                            {editUser ? "Update User" : "Create User"}
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-
+                </>
+            )}
         </div>
     );
-};
-
-export default page;
+}

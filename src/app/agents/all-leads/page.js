@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { leads } from "@/data/leads";
 import Pagination from "@/shared/Pagination";
@@ -22,6 +22,7 @@ const Page = () => {
     const [selectedFollowedDate, setSelectedFollowedpDate] = useState("All")
     const [selectedSortMethod, setSelectedSortMethod] = useState("None")
     const [selectedStage, setSelectedStage] = useState("All")
+    
 
     const [searchText, setSearchText] = useState("");
     const [isSearchModalOpen, setSearchModalOpen] = useState(false);

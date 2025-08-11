@@ -1,31 +1,46 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
+import axiosPublic from "@/api/axios";
+import { AuthContext } from "@/context/AuthContext";
 
-const users = [
-  { email: "admin@example.com", password: "admin123", role: "admin" },
-  { email: "agent1@example.com", password: "agent123", role: "agent" },
-  { email: "agent2@example.com", password: "agent123", role: "agent" },
-];
 
 export default function HomePage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const { setUser } = useContext(AuthContext)
 
-  const handleLogin = (e) => {
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const user = users.find((u) => u.email === email && u.password === password);
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
-      if (user.role === "admin") router.push("/admin");
-      else if (user.role === "agent") router.push("/agent/leads");
-    } else {
-      alert("Invalid credentials");
+    setLoading(true)
+    try {
+      const res = await axiosPublic.post("/user/login", { email, password })
+      const {user} = res?.data
+      if(user.role === "admin"){
+        router.push("/admin")
+      }
+      else{
+        router.push("/agents")
+      }
+
+      setError("")
+      setUser(res.data)
+    } catch (error) {
+      console.log(error , "errro")
+      // setError(error?.data?.response?.error)
+      setError(error?.response?.data?.error)
     }
+    finally {
+      setLoading(false)
+    }
+
   };
 
   return (
@@ -77,6 +92,8 @@ export default function HomePage() {
             </button>
           </div>
         </div>
+
+        <p className="text-red-500">{error}</p>
 
         {/* Submit */}
         <button type="submit" className="btn mt-5 bg-blue-600 btn-primary w-full">

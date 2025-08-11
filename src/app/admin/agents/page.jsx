@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { FaChalkboardTeacher } from "react-icons/fa";
 
 
 const dummyUsers = [
@@ -87,6 +88,7 @@ const page = () => {
                                 <th>Email</th>
                                 <th >Total Assigned</th>
                                 <th>Pending</th>
+                                <th>Target completion</th>
                                 <th>Follow up</th>
                                 <th>Admitted</th>
                                 <th>Joined </th>
@@ -100,6 +102,8 @@ const page = () => {
                                     <td>{user.email}</td>
                                     <td className="pl-10">{user.totalAssigned ?? 0}</td>
                                     <td className="pl-10">{user.pending ?? 0}</td>
+                                    <td className="pl-10">{58}%</td>
+                                
                                     <td className="pl-10">{user.followUp ?? 0}</td>
                                     <td className="pl-10">{user.admitted ?? 0}</td>
                                     <td className="pl-10">{user.joined ?? 0}</td>

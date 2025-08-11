@@ -1,5 +1,5 @@
 import { RiDashboardFill } from "react-icons/ri";
-import { FaFileCsv, FaUserTie } from "react-icons/fa";
+import { FaChalkboardTeacher, FaFileCsv, FaUserTie } from "react-icons/fa";
 import { MdSupportAgent } from "react-icons/md";
 import { FaUserGroup } from "react-icons/fa6";
 import Link from "next/link";
@@ -16,7 +16,27 @@ export default function Layout({ children }) {
                     Open drawer
                 </label> */}
             </div>
-       
+            <div className=" p-0 ">
+                <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
+                <ul className="menu flex-nowrap shrink-0 bg-base-200 p-0 pt-8  dark:bg-gray-800 gap-3  text-base-content dark:text-gray-100 min-h-full overflow-hidden w-12 hover:w-80 duration-300  transition-[width]">
+                    {/* Sidebar content here */}
+                    <Link href={"/agents"}>
+                        <li className="flex flex-nowrap text-nowrap shrink-0 cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
+                            <RiDashboardFill className="text-xl shrink-0 p-0" /> Dashboard
+                        </li>
+                    </Link>
+                    <Link href={"/agents/all-leads"}>
+                        <li className="flex flex-nowrap text-nowrap shrink-0 cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
+                            <FaUserTie className="text-xl  shrink-0 p-0" /> All Leads
+                        </li>
+                    </Link>
+                    
+
+
+
+                    <SidebarFooter />
+                </ul>
+            </div>
         </div>
     );
 }
