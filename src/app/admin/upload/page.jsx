@@ -37,7 +37,7 @@ const Page = () => {
                 const normalized = header.trim().toLowerCase();
 
                 // Map known variations to internal field names
-                if (["full name", "name"].includes(normalized)) return "fullName";
+                if (["full name", "name"].includes(normalized)) return "name";
                 if (["email", "e-mail", "email address"].includes(normalized)) return "email";
                 if (["phone", "phone number", "mobile"].includes(normalized)) return "phone";
                 if (["address", "location"].includes(normalized)) return "address";

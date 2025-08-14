@@ -13,6 +13,7 @@ export default function Page() {
     const [loading, setLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formError, setFormError] = useState("");
+    const [role, setRole] = useState("user")
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -187,13 +188,14 @@ export default function Page() {
                                     name="role"
                                     className="select dark:bg-gray-900 select-bordered w-full"
                                     disabled={isSubmitting}
+                                    onChange={(e) => setRole(e.target.value)}
                                 >
                                     <option selected={editUser?.role?.toLowerCase()?.trim() == "user"} value="user">User</option>
-                                    <option selected={editUser?.role?.toLowerCase()?.trim() == "admin"} value="admin">Admin</option>    
+                                    <option selected={editUser?.role?.toLowerCase()?.trim() == "admin"} value="admin">Admin</option>
                                 </select>
 
 
-                                {(!editUser || editUser.role === "user") && (
+                                {(role === "user") && (
                                     <select
                                         name="designation"
                                         defaultValue={editUser?.designation || "Junior Executive"}
@@ -206,14 +208,14 @@ export default function Page() {
                                     </select>
                                 )}
 
-                                <input
+                                {(role == "user" && <input
                                     type="number"
                                     name="target"
                                     placeholder="Target (%)"
                                     defaultValue={editUser?.target ?? ""}
                                     className="input dark:bg-gray-900 input-bordered w-full"
                                     disabled={isSubmitting}
-                                />
+                                />)}
                             </div>
 
                             {/* Inline Error */}
