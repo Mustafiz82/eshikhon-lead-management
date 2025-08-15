@@ -1,36 +1,17 @@
 "use client";
 
-import axiosPublic from "@/api/axios";
-import React, { useEffect, useState } from "react";
-import { FaEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
-import Swal from "sweetalert2";
+import useDelete from "@/hooks/useDelete";
+import useFetch from "@/hooks/useFetch";
+import useSaveData from "@/hooks/useSaveData";
+import Table from "@/shared/Table";
+import React from "react";
 
 export default function ManageCoursePage() {
-  const [courses, setCourses] = useState([]);
-  const [editCourse, setEditCourse] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formError, setFormError] = useState("");
 
-  const fetchCourses = async () => {
-    setLoading(true);
-    try {
-      // Supports both shapes: [{...}] or { items: [...] }
-      const res = await axiosPublic.get("/course");
-      console.log(res.data)
-      const items = Array.isArray(res.data.items) ? res.data.items : res.data;
-      setCourses(items || []);
-    } catch (err) {
-      Swal.fire("Error", err?.response?.data?.error || err.message, "error");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: courses, loading, error, refetch } = useFetch()
+  const { setEditCourse, editCourse, handleSave, loading: isSubmitting, error: submitError } = useSaveData(refetch)
+  const { handleDelete } = useDelete(refetch, "course")
 
-  useEffect(() => {
-    fetchCourses();
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,108 +22,44 @@ export default function ManageCoursePage() {
       type: form.type.value,
       price: form.price.value ? Number(form.price.value) : null,
     };
+    console.log(payload)
+    await handleSave(payload, form)
 
-    setIsSubmitting(true);
-    setFormError(""); // clear old error
-
-    try {
-      if (editCourse) {
-        const id = editCourse._id || editCourse.id;
-        await axiosPublic.put(`/course/${id}`, payload);
-      } else {
-        await axiosPublic.post("/course", payload);
-      }
-
-      await fetchCourses();
-      form.reset();
-      setEditCourse(null);
-    } catch (err) {
-      const msg = err?.response?.data?.error || err.message;
-      // Optional: simplify duplicate key message if you have unique name/email, etc.
-      if (typeof msg === "string" && msg.startsWith("E11000")) {
-        setFormError("Duplicate value not allowed.");
-      } else {
-        setFormError(msg);
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
-  const handleDelete = async (id) => {
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "This action will permanently delete the course.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
-    });
+  const actionsCell = (row) => (
+    <div className="flex gap-2">
+      <button
+        className="btn btn-sm bg-blue-600 btn-primary"
+        onClick={() => setEditCourse(row)}           // <- selected row here
+      >
+        Edit
+      </button>
+      <button
+        className="btn btn-sm bg-red-500"
+        onClick={() => handleDelete(`/course/${row._id ?? row.id}`)} // <- selected row id
+      >
+        Delete
+      </button>
+    </div>
+  )
 
-    if (result.isConfirmed) {
-      try {
-        await axiosPublic.delete(`/course/${id}`);
-        Swal.fire("Deleted!", "Course has been deleted.", "success");
-        fetchCourses();
-      } catch (error) {
-        Swal.fire("Error", error?.response?.data?.error || error.message, "error");
-      }
-    }
-  };
+  const courseConfig = {
+    header: ["Name", "Type", "Price", "Action"],
+    body: ["name", "type", "price", actionsCell]
+  }
 
+
+  
   return (
     <div className="flex h-screen overflow-hidden">
       {loading ? (
         <p className="h-[300px] flex justify-center items-center w-full">Loading...</p>
-      ) : (
+      ) : error ? <p className="h-[300px] text-red-500 flex justify-center items-center w-full">Error Fetching Data</p> : (
         <>
-          {/* Table */}
-          <div className="flex-1 p-6">
-            <div className="overflow-x-auto">
-              <table className="table table-md table-zebra w-full">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Type</th>
-                    <th>Price (৳)</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {courses.length > 0 ? (
-                    courses.map((course) => (
-                      <tr key={course._id || course.id}>
-                        <td>{course.name}</td>
-                        <td>{course.type}</td>
-                        <td>{course.price}</td>
-                        <td className="flex gap-2">
-                          <button
-                            className="btn btn-sm bg-blue-600 btn-primary"
-                            onClick={() => setEditCourse(course)}
-                          >
-                            <FaEdit /> Edit
-                          </button>
-                          <button
-                            className="btn btn-sm bg-red-500"
-                            onClick={() => handleDelete(course._id || course.id)}
-                          >
-                            <MdDelete /> Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="4" className="text-center text-gray-400">
-                        No courses found.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+
+
+          <Table courses={courses} courseConfig={courseConfig} />
 
           {/* Drawer / Form */}
           <div className="h-full w-[400px] bg-base-200 dark:bg-gray-800 shadow-lg p-6">
@@ -151,11 +68,9 @@ export default function ManageCoursePage() {
                 <h2 className="text-lg font-semibold">
                   {editCourse ? "Edit Course" : "Add New Course"}
                 </h2>
-               {
-                editCourse &&  <button type="button" className="btn btn-xs btn-outline" onClick={() => setEditCourse(null)}>
-                  Add New + 
+                <button type="button" className="btn btn-xs btn-outline" onClick={() => setEditCourse(null)}>
+                  Close
                 </button>
-               }
               </div>
 
               <div className="flex flex-col gap-4">
@@ -164,19 +79,19 @@ export default function ManageCoursePage() {
                   required
                   placeholder="Course Name"
                   defaultValue={editCourse?.name || ""}
-                  className="input dark:bg-gray-900 focus:outline-0 focus:border-blue-600 input-bordered w-full"
+                  className="input dark:bg-gray-900 input-bordered w-full"
                   disabled={isSubmitting}
                 />
 
                 <select
                   name="type"
                   defaultValue={editCourse?.type || "Online"}
-                  className="select dark:bg-gray-900 focus:outline-0 focus:border-blue-600  text-white select-bordered w-full"
+                  className="select dark:bg-gray-900 select-bordered w-full"
                   disabled={isSubmitting}
                 >
-                  <option value="Online" className="text-white">Online</option>
-                  <option value="Offline" className="text-white">Offline</option>
-                  <option value="Video" className="text-white">Video</option>
+                  <option value="Online" className="text-black">Online</option>
+                  <option value="Offline" className="text-black">Offline</option>
+                  <option value="Video" className="text-black">Video</option>
                 </select>
 
                 <input
@@ -184,7 +99,7 @@ export default function ManageCoursePage() {
                   name="price"
                   placeholder="Price (৳)"
                   defaultValue={editCourse?.price ?? ""}
-                  className="input dark:bg-gray-900 focus:outline-0 focus:border-blue-600 input-bordered w-full"
+                  className="input dark:bg-gray-900 input-bordered w-full"
                   disabled={isSubmitting}
                   min={0}
                   step="1"
@@ -193,7 +108,7 @@ export default function ManageCoursePage() {
               </div>
 
               {/* Inline Error */}
-              {formError && <div className="mt-3 text-red-500 text-sm">{formError}</div>}
+              {submitError && <div className="mt-3 text-red-500 text-sm">{submitError}</div>}
 
               <div className="mt-auto pt-4 flex gap-2">
                 <button type="submit" className="btn bg-blue-600 btn-primary w-full" disabled={isSubmitting}>
