@@ -8,7 +8,7 @@ import React from "react";
 
 export default function ManageCoursePage() {
 
-  const { data: courses, loading, error, refetch } = useFetch()
+  const { data: courses, loading, error, refetch } = useFetch("/course")
   const { setEditCourse, editCourse, handleSave, loading: isSubmitting, error: submitError } = useSaveData(refetch)
   const { handleDelete } = useDelete(refetch, "course")
 
@@ -46,7 +46,7 @@ export default function ManageCoursePage() {
 
   const courseConfig = {
     header: ["Name", "Type", "Price", "Action"],
-    body: ["name", "type", "price", actionsCell]
+    body: ["name", "authority", "price", actionsCell]
   }
 
 
@@ -59,7 +59,7 @@ export default function ManageCoursePage() {
         <>
 
 
-          <Table courses={courses} courseConfig={courseConfig} />
+          <Table courses={courses} config={courseConfig} />
 
           {/* Drawer / Form */}
           <div className="h-full w-[400px] bg-base-200 dark:bg-gray-800 shadow-lg p-6">
