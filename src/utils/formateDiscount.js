@@ -14,23 +14,23 @@ export const formateDiscount = (row) => {
   };
 
   // Format BDT with styled currency sign
+  // Format BDT with styled currency sign
   const fmtBDT = (v) => {
     if (v == null || isNaN(v)) return "—";
     const n = Number(v);
     return (
-      <p className="flex items-center  ">
-        <span ><TbCurrencyTaka className="text-xl -mr-1" /></span>
+      <span className="inline-flex items-center whitespace-nowrap">
+        <TbCurrencyTaka className="text-xl -mr-1" />
         {Number.isInteger(n) ? n : n.toFixed(2)}
-      </p>
+      </span>
     );
   };
 
   const capSuffix =
     row.mode === "percent" && row.capAmount != null && !isNaN(row.capAmount) ? (
-      <>
-        {" "}
+      <span className="whitespace-nowrap flex items-center">
         (cap {fmtBDT(row.capAmount)})
-      </>
+      </span>
     ) : (
       ""
     );
@@ -39,10 +39,10 @@ export const formateDiscount = (row) => {
     if (isCommitted) {
       // committed + percent -> "60%" (+cap)
       return row.value != null ? (
-        <>
+        <span className="flex items-center">
           {fmtPct(row.value)}
           {capSuffix}
-        </>
+        </span>
       ) : (
         "—"
       );
@@ -53,8 +53,9 @@ export const formateDiscount = (row) => {
     if (min === "—" && max === "—") return "—";
     return (
       <>
-        {min}-{max}
-        {capSuffix}
+        <p> {min}-{max}</p>
+        <p className="text-nowrap">{capSuffix}</p>
+
       </>
     );
   }

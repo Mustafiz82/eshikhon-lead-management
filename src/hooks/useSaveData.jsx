@@ -7,7 +7,7 @@ const useSaveData = (refetch) => {
     const [error, setError] = useState(null)
     const [editCourse, setEditCourse] = useState(null)
 
-    const handleSave = async (payload , form) => {
+    const handleSave = async (payload , form , path) => {
         console.log("called" , payload)
 
         setLoading(true);
@@ -16,9 +16,9 @@ const useSaveData = (refetch) => {
         try {
             if (editCourse) {
                 const id = editCourse._id || editCourse.id;
-                await axiosPublic.put(`/course/${id}`, payload);
+                await axiosPublic.put(`${path}/${id}`, payload);
             } else {
-                await axiosPublic.post("/course", payload);
+                await axiosPublic.post(`${path}`, payload);
             }
 
             await refetch()

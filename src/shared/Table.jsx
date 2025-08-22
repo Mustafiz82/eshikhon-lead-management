@@ -1,8 +1,8 @@
-const Table = ({ courses, config }) => {
+const Table = ({ data, config }) => {
     return (
         <div className="flex-1 p-6">
             <div className="overflow-x-auto">
-                {courses.length > 0 ? (
+                {data.length > 0 ? (
                     <table className="table table-md table-zebra w-full">
                         <thead>
                             <tr>
@@ -12,7 +12,7 @@ const Table = ({ courses, config }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {courses.map((course, courseIndex) => (
+                            {data.map((course, courseIndex) => (
                                 <tr key={courseIndex}>
                                     {config.body.map((item, cellIndex) =>
                                         typeof item === "string" ? (

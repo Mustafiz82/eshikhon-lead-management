@@ -23,7 +23,7 @@ export default function ManageCoursePage() {
       price: form.price.value ? Number(form.price.value) : null,
     };
     console.log(payload)
-    await handleSave(payload, form)
+    await handleSave(payload, form , "/course")
 
   };
 
@@ -46,7 +46,7 @@ export default function ManageCoursePage() {
 
   const courseConfig = {
     header: ["Name", "Type", "Price", "Action"],
-    body: ["name", "authority", "price", actionsCell]
+    body: ["name", "type", "price", actionsCell]
   }
 
 
@@ -59,7 +59,7 @@ export default function ManageCoursePage() {
         <>
 
 
-          <Table courses={courses} config={courseConfig} />
+          <Table data={courses} config={courseConfig} />
 
           {/* Drawer / Form */}
           <div className="h-full w-[400px] bg-base-200 dark:bg-gray-800 shadow-lg p-6">

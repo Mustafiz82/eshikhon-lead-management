@@ -31,4 +31,189 @@
 .wrapper::-webkit-scrollbar {
   display: none;
 }
-    
+
+
+
+/* === COLOR PALETTE (after the Lara theme) =============================== */
+:root {
+  /* brand */
+  --p-primary-color: #2563eb;
+  /* blue-600 */
+  --p-primary-contrast-color: #ffffff;
+
+  /* surfaces / text */
+  --p-content-background: #0f172a;
+  /* slate-900 */
+  --p-overlay-background: #0b1324;
+  /* dropdown panel bg */
+  --p-content-border-color: #334155;
+  /* slate-700 */
+  --p-text-color: #e5e7eb;
+  /* gray-200 */
+
+  /* inputs */
+  --p-input-background: #111827;
+  /* gray-900 */
+  --p-input-border-color: #374151;
+  /* gray-700 */
+
+  /* optional radius + focus ring tint (theme honors these) */
+  --p-border-radius: 12px;
+  --p-focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.35);
+  /* blue-600 */
+}
+
+
+.p-inputtext:enabled:focus {
+
+  box-shadow: none !important;
+  border: #2563eb !important;
+}
+
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item:not(.p-highlight):not(.p-disabled).p-focus{
+  background-color: #1f2937 !important;
+}
+
+/* === CONTROL (closed state) ============================================ */
+.p-multiselect {
+  background: var(--p-input-background) !important;
+  color: var(--p-text-color) !important;
+  border-color: var(--p-input-border-color) !important;
+
+  /* size */
+  min-height: 44px;
+  /* input height */
+  border-radius: var(--p-border-radius) !important;
+  font-size: 14px;
+  /* text size */
+}
+
+/* label text inside control */
+.p-multiselect .p-multiselect-label {
+  padding: 10px 12px !important;
+  /* inner padding */
+  color: var(--p-text-color) !important;
+}
+
+/* dropdown trigger area (chevron) */
+.p-multiselect .p-multiselect-trigger {
+  width: 40px !important;
+  color: #94a3b8 !important;
+  /* slate-400 */
+}
+
+/* focus ring */
+.p-multiselect:has(input:focus),
+.p-multiselect.p-focus {
+  box-shadow: var(--p-focus-ring) !important;
+  border-color: var(--p-primary-color) !important;
+}
+
+/* tokens/chips style when display="chip" */
+.p-multiselect-token {
+  background: rgba(37, 99, 235, 0.18) !important;
+  color: #93c5fd !important;
+  /* blue-300 */
+  border: 1px solid rgba(37, 99, 235, 0.35) !important;
+  border-radius: 8px !important;
+  padding: 2px 6px !important;
+  margin: 2px 4px 2px 0 !important;
+}
+
+/* === PANEL (open state) ================================================ */
+.p-multiselect-panel {
+  background: var(--p-overlay-background) !important;
+  border-color: var(--p-content-border-color) !important;
+  border-radius: 14px !important;
+  overflow: hidden;
+  /* rounded header */
+  /* size */
+  width: 420px !important;
+  /* fixed width (optional) */
+  max-width: 92vw;
+  /* responsive cap */
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* header (select-all + search) */
+.p-multiselect-header {
+  background: transparent !important;
+  border-bottom: 1px solid var(--p-content-border-color) !important;
+  padding: 10px 12px !important;
+  gap: 10px;
+}
+
+/* search input in header */
+.p-multiselect-header .p-inputtext {
+  background: var(--p-input-background) !important;
+  color: var(--p-text-color) !important;
+  border: 1px solid var(--p-input-border-color) !important;
+  height: 36px !important;
+  /* search height */
+  font-size: 14px !important;
+  border-radius: 10px !important;
+}
+
+.p-multiselect-filter-icon {
+  color: #9ca3af !important;
+  /* gray-400 */
+}
+
+/* list area */
+.p-multiselect-items {
+  max-height: 320px !important;
+  /* panel list height */
+}
+
+/* list item */
+.p-multiselect-item {
+  padding: 10px 12px !important;
+  /* row height */
+  font-size: 14px !important;
+  color: var(--p-text-color) !important;
+}
+
+.p-multiselect-item:hover {
+  background: #1f2937 !important;
+  /* gray-800 hover */
+}
+
+/* highlighted (selected) item */
+.p-multiselect-item.p-highlight {
+  background: color-mix(in srgb, var(--p-primary-color) 22%, transparent) !important;
+  color: var(--p-text-color) !important;
+}
+
+/* checkbox sizing + selected color */
+.p-checkbox .p-checkbox-box {
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 6px !important;
+  border-color: var(--p-input-border-color) !important;
+  background: var(--p-input-background) !important;
+}
+
+.p-checkbox .p-checkbox-box.p-highlight {
+  background: var(--p-primary-color) !important;
+  border-color: var(--p-primary-color) !important;
+}
+
+.p-checkbox .p-checkbox-icon {
+  font-size: 11px !important;
+  color: #fff !important;
+}
+
+/* close (X) button in header */
+.p-multiselect-close {
+  color: #94a3b8 !important;
+}
+
+.p-multiselect-close:hover {
+  color: #cbd5e1 !important;
+}
+
+
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1); /* makes it white */
+}
