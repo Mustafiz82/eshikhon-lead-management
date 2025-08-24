@@ -1,31 +1,110 @@
 "use client";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { RiUpload2Fill } from "react-icons/ri";
 import { Bounce, toast } from "react-toastify";
 import Papa from "papaparse";
+import axiosPublic from "@/api/axios";
+import useFetch from "@/hooks/useFetch";
+import { formateDate } from "@/utils/date";
 
+const STATUS = {
+    PENDING: "pending",
+    PARSING: "parsing",
+    SAVING: "saving",
+    COMPLETED: "completed",
+    DUPLICATE: "duplicate",
+    ERROR: "error",
+};
+
+const statusBadge = (state) => {
+    const base = "px-2 py-0.5 text-xs rounded font-medium inline-block";
+    switch (state) {
+        case STATUS.PENDING:
+            return <span className={`${base} bg-yellow-500/20 text-yellow-300`}>Pending</span>;
+        case STATUS.PARSING:
+            return <span className={`${base} bg-blue-500/20 text-blue-300`}>Parsing</span>;
+        case STATUS.SAVING:
+            return <span className={`${base} bg-indigo-500/20 text-indigo-300`}>Saving</span>;
+        case STATUS.COMPLETED:
+            return <span className={`${base} bg-green-500/20 text-green-300`}>Completed</span>;
+        case STATUS.DUPLICATE:
+            return <span className={`${base} bg-amber-500/20 text-amber-300`}>Duplicate</span>;
+        case STATUS.ERROR:
+            return <span className={`${base} bg-red-500/20 text-red-300`}>Error</span>;
+        default:
+            return <span className={`${base} bg-gray-500/20 text-gray-300`}>—</span>;
+    }
+};
 
 const Page = () => {
-    const [isUploading, setIsUploading] = useState(false);
     const [dragActive, setDragActive] = useState(false);
-
+    // Per-file status map: { [fileName]: { state, updatedAt } }
+    const [uploadStatus, setUploadStatus] = useState({});
+    const { data = [], loading, refetch } = useFetch("/file"); // server history
     const fileInputRef = useRef(null);
 
-    const handleFile = (file) => {
-        if (!file || file.type !== "text/csv") {
-            return toast.error('Only CSV files allowed', {
+    // Any active upload? (for the big box indicator only)
+    const hasActiveUploads = useMemo(
+        () =>
+            Object.values(uploadStatus).some(
+                (s) =>
+                    s.state === STATUS.PENDING ||
+                    s.state === STATUS.PARSING ||
+                    s.state === STATUS.SAVING
+            ),
+        [uploadStatus]
+    );
+
+    // Helper to set status for a file
+    const setStatus = (fileName, state) => {
+        setUploadStatus((prev) => ({
+            ...prev,
+            [fileName]: { state, updatedAt: Date.now() },
+        }));
+    };
+
+    const handleFile = async (file) => {
+        if (!file) return;
+        if (file.type !== "text/csv") {
+            toast.error("Only CSV files are allowed", {
                 position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
+                autoClose: 4000,
                 theme: "dark",
                 transition: Bounce,
             });
+            return;
         }
-        setIsUploading(true);
+
+        const fileName = file.name;
+        setStatus(fileName, STATUS.PENDING);
+
+        // 1) Register file name (server “history”)
+        try {
+            await axiosPublic.post("/file", { fileName });
+            // keep pending until parsing starts
+        } catch (err) {
+            if (err.response?.status === 400) {
+                setStatus(fileName, STATUS.DUPLICATE);
+                toast.error("Duplicate file. Please change the file name", {
+                    position: "top-right",
+                    autoClose: 4000,
+                    theme: "dark",
+                    transition: Bounce,
+                });
+            } else {
+                setStatus(fileName, STATUS.ERROR);
+                toast.error("Something went wrong while registering the file", {
+                    position: "top-right",
+                    autoClose: 4000,
+                    theme: "dark",
+                    transition: Bounce,
+                });
+            }
+            return; // stop flow for this file
+        }
+
+        // 2) Parse CSV
+        setStatus(fileName, STATUS.PARSING);
 
         Papa.parse(file, {
             header: true,
@@ -33,78 +112,88 @@ const Page = () => {
             dynamicTyping: true,
             transformHeader: (header) => {
                 if (!header) return "";
-
                 const normalized = header.trim().toLowerCase();
-
-                // Map known variations to internal field names
                 if (["full name", "name"].includes(normalized)) return "name";
                 if (["email", "e-mail", "email address"].includes(normalized)) return "email";
                 if (["phone", "phone number", "mobile"].includes(normalized)) return "phone";
                 if (["address", "location"].includes(normalized)) return "address";
-                if (["seminar topic", "topic", "course"].includes(normalized)) return "seminar topic";
-
+                if (["seminar topic", "topic", "course"].includes(normalized)) return "seminarTopic";
+                return header;
             },
-     
-            complete: function (results) {
-                const data = results.data;
-                const headers = Object.keys(data[0] || {});
-                const requiredFields = ["name", "email", "phone", "address", "seminar topic"];
-                const missingFields = requiredFields.filter(field => !headers.includes(field));
 
-                if (missingFields.length > 0) {
-                    toast.error(` Missing required fields: ${missingFields.join(", ")}`);
+            complete: async function (results) {
+                const rows = results.data;
+                const headers = Object.keys(rows[0] || {});
+                const required = ["name", "email", "phone", "address", "seminarTopic"];
+                const missing = required.filter((f) => !headers.includes(f));
+                if (missing.length > 0) {
+                    setStatus(fileName, STATUS.ERROR);
+                    toast.error(`Missing required fields: ${missing.join(", ")}`, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        theme: "dark",
+                        transition: Bounce,
+                    });
                     return;
                 }
 
-                const validSeminarTopics = [
-                    "graphic design",
-                    "spoken english for freelancing",
-                    "digital marketing",
-                    "video editing",
-                    "ethical hacking",
-                    "ai for image, video & music creation",
-                    "data entry",
-                    "mern stack web development",
-                    "not provided"
-                ];
+                const filtered = rows.filter(
+                    (item) => item.name && item.email && item.phone && item.address && item.seminarTopic
+                );
 
-                const cleanedData = data.map((row) => {
+                const questionWiseData = filtered.map((item) => {
+                    const { name, email, address, phone, seminarTopic, ...questions } = item;
                     return {
-                        ...row,
-                        "seminar topic": row["seminar topic"]?.toString().trim() || "Not provided"
+                        name,
+                        email,
+                        address,
+                        phone,
+                        seminarTopic,
+                        questions,
+                        sourceFileName: fileName,
                     };
                 });
 
-                const invalidTopics = cleanedData.filter(row =>
-                    !validSeminarTopics.includes(row["seminar topic"].toLowerCase())
-                );
-
-                if (invalidTopics.length > 0) {
-                    toast.error(` Some rows have invalid seminar topics. Allowed: ${validSeminarTopics.join(", ")}`);
-                    console.warn(" Invalid rows:", invalidTopics);
-                    return;
+                if (rows?.length > filtered?.length) {
+                    toast.warning(
+                        `${rows.length - filtered.length} of ${rows.length} rows skipped due to missing required fields`,
+                        {
+                            position: "top-right",
+                            autoClose: 5000,
+                            theme: "dark",
+                            transition: Bounce,
+                        }
+                    );
                 }
 
-                console.log(" Cleaned and validated data:", cleanedData);
-            }
-            ,
+                // 3) Save leads
+                setStatus(fileName, STATUS.SAVING);
+                try {
+                    await axiosPublic.post("/leads", questionWiseData);
+                    setStatus(fileName, STATUS.COMPLETED);
+                    refetch(); // refresh server-side history list
+                } catch (error) {
+                    setStatus(fileName, STATUS.ERROR);
+                    toast.error(error.message || "Failed to save leads", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        theme: "dark",
+                        transition: Bounce,
+                    });
+                }
+            },
 
             error: function (err) {
-                toast.error(" Error parsing CSV");
+                setStatus(fileName, STATUS.ERROR);
+                toast.error("Error parsing CSV", {
+                    position: "top-right",
+                    autoClose: 4000,
+                    theme: "dark",
+                    transition: Bounce,
+                });
                 console.error(err);
-            }
+            },
         });
-
-
-
-
-
-
-        // Fake upload animation
-        setTimeout(() => {
-            console.log("📦 Uploaded file:", file);
-            setIsUploading(false);
-        }, 2000);
     };
 
     const handleDrop = (e) => {
@@ -117,9 +206,7 @@ const Page = () => {
 
     const handlePaste = (e) => {
         const file = e.clipboardData.files[0];
-        if (file && file.type === "text/csv") {
-            handleFile(file);
-        }
+        if (file && file.type === "text/csv") handleFile(file);
     };
 
     useEffect(() => {
@@ -127,7 +214,15 @@ const Page = () => {
         return () => window.removeEventListener("paste", handlePaste);
     }, []);
 
-    const dummyUploads = [];
+    // Merge server history with local status overlay.
+    // If a filename is currently uploading, show its live status; otherwise show Completed.
+    const rows = (data || []).map((upload) => {
+        const s = uploadStatus[upload.fileName]?.state;
+        return {
+            ...upload,
+            _status: s || STATUS.COMPLETED, // default to completed when server has it and no live status
+        };
+    });
 
     return (
         <div
@@ -140,18 +235,16 @@ const Page = () => {
             onDrop={handleDrop}
         >
             <div className="bg-gray-800 rounded-2xl shadow-lg p-6 w-full max-w-6xl transition-colors">
-                <h2 className="text-2xl font-semibold text-white mb-6">
-                    📤 Upload CSV & History
-                </h2>
+                <h2 className="text-2xl font-semibold text-white mb-6">📤 Upload CSV & History</h2>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Upload Box */}
                     <div
                         className={`border-2 h-[350px] flex flex-col justify-center items-center border-dashed transition-all rounded-xl p-6 text-center cursor-pointer ${dragActive ? "border-blue-500 bg-blue-950/30" : "border-gray-600 hover:border-blue-400"
                             }`}
-                        onClick={() => fileInputRef.current.click()}
+                        onClick={() => fileInputRef.current?.click()}
                     >
-                        {isUploading ? (
+                        {hasActiveUploads ? (
                             <div className="animate-pulse text-blue-400 text-xl">Uploading...</div>
                         ) : (
                             <>
@@ -182,22 +275,29 @@ const Page = () => {
                         </div>
 
                         <div className="overflow-y-auto max-h-[280px] wrapper mt-2 pb-10 pr-1">
-                            {dummyUploads.length > 0 ? (
-                                dummyUploads.map((upload, index) => (
+                            {Object.entries(uploadStatus)
+                                .filter(([fileName]) => !rows.some((r) => r.fileName === fileName))
+                                .map(([fileName, s]) => (
                                     <div
-                                        key={index}
+                                        key={`live-${fileName}`}
                                         className="grid grid-cols-3 items-center text-sm py-2 border-b border-gray-700"
                                     >
-                                        <div className="text-gray-200">{upload.filename}</div>
-                                        <div className="text-gray-400">{upload.date}</div>
-                                        <div
-                                            className={`font-medium ${upload.status === "Success"
-                                                ? "text-green-400"
-                                                : "text-red-400"
-                                                }`}
-                                        >
-                                            {upload.status}
+                                        <div className="text-gray-200 truncate">{fileName}</div>
+                                        <div className="text-gray-400">—</div>
+                                        <div>{statusBadge(s.state)}</div>
+                                    </div>
+                                ))}
+                            {rows.length > 0 ? (
+                                rows.map((upload, index) => (
+                                    <div
+                                        key={`${upload.fileName}-${index}`}
+                                        className="grid grid-cols-3 items-center text-sm py-2 border-b border-gray-700"
+                                    >
+                                        <div className="text-gray-200   ">{upload.fileName}</div>
+                                        <div className="text-gray-400">
+                                            {upload.date ? formateDate(upload.date) : "—"}
                                         </div>
+                                        <div>{statusBadge(upload._status)}</div>
                                     </div>
                                 ))
                             ) : (
@@ -206,6 +306,9 @@ const Page = () => {
                                 </div>
                             )}
                         </div>
+
+                        {/* Live-only rows for files not yet in server history (optional) */}
+
                     </div>
                 </div>
             </div>

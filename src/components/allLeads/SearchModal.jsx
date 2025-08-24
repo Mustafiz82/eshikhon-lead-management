@@ -7,28 +7,15 @@ const SearchModal = ({
   onClose,
   searchText,
   setSearchText,
-  onSearch,
   results,
   setCurrentPage,
 }) => {
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSearch(searchText);
-    setCurrentPage(1);
-    setSearchText("");
-    onClose();
-  };
 
-  const filtered = results.filter(
-    (lead) =>
-      lead.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      lead.email.toLowerCase().includes(searchText.toLowerCase()) ||
-      lead.number.includes(searchText)
-  );
 
+  
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Search Leads">
-      <form onSubmit={handleSubmit}>
+      <form >
         <input
           type="text"
           placeholder="Search by name, email, number..."
@@ -40,11 +27,10 @@ const SearchModal = ({
       </form>
 
       <div className="h-[300px]  overflow-y-auto space-y-2">
-        {filtered.slice(0, 10).map((lead) => (
+        {results.slice(0, 10).map((lead) => (
           <div
             key={lead._id}
             onClick={() => {
-              onSearch(lead.name);
               setCurrentPage(1);
               setSearchText("");
               onClose();
@@ -56,7 +42,7 @@ const SearchModal = ({
           </div>
         ))}
 
-        {searchText && filtered.length === 0 && (
+        {searchText && results.length === 0 && (
           <p className="text-center mt-16 text-sm text-base-content/60">
             No results found.
           </p>
