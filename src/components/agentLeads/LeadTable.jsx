@@ -1,6 +1,10 @@
 import { formateDate } from "@/utils/date";
+import { useState } from "react";
 
 const LeadTable = ({leads , setSelectedLead , currentPage}) => {
+
+    const[ selectedIds , setSelectedIds] = useState(new Set())
+    const[ activeRowIndex , setActiveRowIndex] = useState(0)
 
     let leadsPerPage = 10
     return <div>

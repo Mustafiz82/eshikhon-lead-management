@@ -1,5 +1,6 @@
 
 import { formateDate } from "@/utils/date";
+import Link from "next/link";
 
 const LeadTable = ({
   selectedIds,
@@ -7,7 +8,6 @@ const LeadTable = ({
   leads,
   currentPage,
   leadsPerPage,
-  activeRowIndex,
   handleCheckboxChange
 }) => {
 
@@ -17,7 +17,12 @@ const LeadTable = ({
 
   return (
     <div className="rounded-sm  h-[calc(100vh-160px)] overflow-scroll  border border-base-content/10 bg-base-200/10 shadow overflow-x-auto">
-      <table className="table table-pin-rows table-pin-cols table-zebra w-full">
+
+      {
+        leads?.length == 0 ? <div className=" flex gap-2 text-center my-20 justify-center text-sm text-white/70">
+          <p>No Leads Found.</p>
+          <Link href={"/admin/upload"} className="text-blue-500">Clck here to upload leads</Link>
+        </div> : <table className="table table-pin-rows table-pin-cols table-zebra w-full">
 
         <thead className="text-base-content/70  text-sm uppercase tracking-wide bg-base-300">
           <tr>
@@ -57,7 +62,7 @@ const LeadTable = ({
             const actualIndex =
               (currentPage - 1) * leadsPerPage + index;
             return (
-              <tr key={actualIndex} className={`${activeRowIndex === index ? "bg-blue-100 dark:!bg-blue-900/50" : ""}`}>
+              <tr key={actualIndex} className={`${selectedIds.has(lead._id)  ? "bg-blue-100 dark:!bg-blue-900/50" : ""}`}>
                 <td className="flex items-center gap-2">
                   <input
                     type="checkbox"
@@ -84,12 +89,12 @@ const LeadTable = ({
                 </td>
                 <td>
                   <span
-                    className={`badge badge-sm ${lead.status
+                    className={`badge badge-sm ${lead.assignStatus
                       ? "badge-success"
                       : "badge-warning text-white text-nowrap"
                       }`}
                   >
-                    {lead?.assingStatus == true ? "Assigned" : "Not Assigned"}
+                    {lead.assignStatus ? "Assigned" : "Not Assigned"}
                   </span>
                 </td>
               </tr>
@@ -98,6 +103,8 @@ const LeadTable = ({
         </tbody>
 
       </table>
+      }
+      
     </div>
   );
 };

@@ -27,7 +27,6 @@ const Page = () => {
 
     // 🔹 Selection
     const [selectedIds, setSelectedIds] = useState(new Set());     // selected lead IDs
-    const [activeRowIndex, setActiveRowIndex] = useState(null);    // current row index (keyboard nav)
     const [lastSelectedIndex, setLastSelectedIndex] = useState(null); // last row index for shift+select
     const [customSelectCount, setCustomSelectCount] = useState(""); // quick select custom number
 
@@ -40,7 +39,7 @@ const Page = () => {
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false); // assign modal open/close
 
     const params = new URLSearchParams({
-        status: statusFilter,
+        status: (statusFilter == "All") ? "All" :  (statusFilter == "Assigned") ? true : false ,
         course: categoryFilter,
         search: searchQuery.trim(),
         sort: sortMethod,
@@ -48,17 +47,16 @@ const Page = () => {
         currentPage: currentPage,
     }).toString()
 
-
+    
 
     const { data: leads, loading, error, refetch } = useFetch(`/leads?${params}`)
     const { data: course } = useFetch("/course")
     const { data: leadsCount, refetch: paginateRefetch } = useFetch(`/leads/count?${params}`)
 
 
-
-
-
+    
     const handleQuickSelect = (count) => {
+        
         const newSet = new Set();
         for (let i = 0; i < Math.min(count, leads.length); i++) {
             newSet.add(leads[i]._id);
@@ -89,8 +87,6 @@ const Page = () => {
     };
 
     
-
-
     const totalPages = Math.round((leadsCount?.count / leadsPerPage)) || 1
 
     console.log(totalPages)
@@ -145,7 +141,7 @@ const Page = () => {
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [isSearchModalOpen, activeRowIndex, selectedIds, lastSelectedIndex]);
+    }, [isSearchModalOpen,  selectedIds, lastSelectedIndex]);
 
 
     useEffect(() => {
@@ -170,7 +166,6 @@ const Page = () => {
 
     return (
         <div className="p-6 h-screen overflow-hidden ">
-
 
 
             {/* Filters */}
@@ -255,9 +250,6 @@ const Page = () => {
                     leadsPerPage={leadsPerPage}
                     selectedIds={selectedIds}
                     setSelectedIds={setSelectedIds}
-                    activeRowIndex={activeRowIndex}
-
-
 
                 />
 
@@ -362,15 +354,10 @@ const Page = () => {
                 isOpen={isAssignModalOpen}
                 onClose={() => setIsAssignModalOpen(false)}
                 agents={agents}
-                selectedCount={selectedIds.size}
-                onAssign={(agent) => {
-                    console.log(`Assigning ${selectedIds.size} leads to ${agent.name}`);
-                    setIsAssignModalOpen(false);
-                }}
+                selectedIds={selectedIds}
+                setSelectedIds={setSelectedIds}
+                setIsAssignModalOpen={setIsAssignModalOpen}
             />
-
-
-
 
         </div>
     );
