@@ -9,13 +9,20 @@ const SearchModal = ({
   setSearchText,
   results,
   setCurrentPage,
+  setSearchQuery,
 }) => {
 
 
-  
+
+
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Search Leads">
-      <form >
+      <form onSubmit={(e) => {
+        e.preventDefault()
+        setSearchQuery(searchText)
+        onClose()
+      }}>
         <input
           type="text"
           placeholder="Search by name, email, number..."
@@ -32,7 +39,7 @@ const SearchModal = ({
             key={lead._id}
             onClick={() => {
               setCurrentPage(1);
-              setSearchText("");
+              setSearchQuery(lead?.phone)
               onClose();
             }}
             className="p-2 border border-base-300 rounded hover:bg-base-200 cursor-pointer transition-colors"

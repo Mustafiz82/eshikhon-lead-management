@@ -4,54 +4,90 @@ const LeadTable = ({leads , setSelectedLead , currentPage}) => {
 
     let leadsPerPage = 10
     return <div>
-        <div className="rounded-sm h-[calc(100vh-160px)] overflow-scroll border border-base-content/10 bg-base-200/10 shadow overflow-x-auto">
-            <table className="table table-zebra w-full">
-                <thead>
-                    <tr className="bg-base-200">
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Address</th>
-                        <th>Seminar Topic</th>
-                        <th>Status</th>
-                        <th>Assigned At</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {leads.map((lead, index) => (
-                        <tr
-                            key={lead._id}
-                            onClick={() => {
-                                setSelectedLead(lead);
+            <div className="rounded-sm  h-[calc(100vh-160px)] overflow-scroll  border border-base-content/10 bg-base-200/10 shadow overflow-x-auto">
+                <table className="table table-pin-rows table-pin-cols table-zebra w-full">
 
-                            }}
-                            className="cursor-pointer hover:bg-base-300/40 transition"
-                        >
-                            <td>{(currentPage - 1) * leadsPerPage + index + 1}</td>
-                            <td>{lead.name}</td>
-                            <td>{lead.email}</td>
-                            <td>{lead.number}</td>
-                            <td>{lead.address}</td>
-                            <td>{lead.seminarTopic}</td>
-                            <td>
-                                <span
-                                    className={`badge ${lead.status === "Interested"
-                                        ? "badge-success"
-                                        : lead.status === "Contacted"
-                                            ? "badge-info"
-                                            : "badge-warning"
-                                        }`}
-                                >
-                                    {lead.status}
-                                </span>
-                            </td>
-                            <td>{formateDate(lead.date)}</td>
+
+
+                    <thead className="text-base-content/70  text-sm uppercase tracking-wide bg-base-300">
+                        <tr>
+                            <th className="sticky pl-4 top-0 bg-base-300 z-10 px-2">
+                                <div className="flex  items-start gap-1">
+                                    <input
+                                        type="checkbox"
+                                        className="checkbox checkbox-sm rounded-sm checkbox-primary border-blue-600 checked:bg-blue-600"
+                                        onChange={(e) => {
+                                            const checked = e.target.checked;
+                                            const newSet = new Set(selectedIds);
+                                            leads.forEach((lead) => {
+                                                checked ? newSet.add(lead._id) : newSet.delete(lead._id);
+                                            });
+                                            setSelectedIds(newSet);
+                                        }}
+                                        checked={leads.every((lead) => selectedIds.has(lead._id))}
+                                    />
+
+                                </div>
+                            </th>
+
+                            <th className="sticky top-0 bg-base-300 z-10">Date</th>
+                            <th className="sticky top-0 bg-base-300 z-10">Name</th>
+                            <th className="sticky top-0 bg-base-300 z-10">Email</th>
+                            <th className="sticky top-0 bg-base-300 z-10">Number</th>
+                            <th className="sticky top-0 bg-base-300 z-10">Address</th>
+                            <th className="sticky top-0 bg-base-300 z-10">Seminar Topic</th>
+                            <th className="sticky top-0 bg-base-300 z-10">Status</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+
+
+
+
+
+                    <tbody className="text-base-content/80 ">
+
+                        {leads.map((lead, index) => {
+                            const actualIndex =
+                                (currentPage - 1) * leadsPerPage + index;
+                            return (
+                                <tr key={actualIndex} className={`${activeRowIndex === index ? "bg-blue-100 dark:!bg-blue-900/50" : ""}`}>
+                                    <td className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            className="checkbox checkbox-sm rounded-sm checkbox-primary border-blue-600 checked:bg-blue-600 "
+                                            onChange={(e) => handleCheckboxChange(lead._id, e.target.checked)}
+                                            checked={selectedIds.has(lead._id)}
+                                        />
+                                        <span className="text-xs opacity-60">
+                                            {actualIndex + 1}
+                                        </span>
+                                    </td>
+                                    <td>{formateDate(lead?.createdAt)}</td>
+                                    <td>{lead.name}</td>
+                                    <td>{lead.email}</td>
+                                    <td>{lead.phone}</td>
+                                    <td className="max-w-[280px] whitespace-nowrap overflow-hidden text-ellipsis" title={lead.address} >{lead.address}</td>
+                                    <td>
+                                        <span className="badge badge-neutral badge-sm">
+                                            {lead.seminarTopic}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            className={`badge badge-sm ${lead.status
+                                                ? "badge-success"
+                                                : "badge-warning text-white text-nowrap"
+                                                }`}
+                                        >
+                                            {lead?.assingStatus == true ? "Assigned" : "Not Assigned"}
+                                        </span>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
     </div>
 };
 

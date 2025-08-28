@@ -1,67 +1,49 @@
+"use client" 
 import { RiDashboardFill } from "react-icons/ri";
 import { FaChalkboardTeacher, FaFileCsv, FaUserTie } from "react-icons/fa";
 import { MdDiscount, MdSupportAgent } from "react-icons/md";
 import { FaUserGroup } from "react-icons/fa6";
 import Link from "next/link";
 import SidebarFooter from "@/shared/SidebarFooter";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Layout({ children }) {
+    const pathname = usePathname()
+
+    const menuItems = [
+        { href: "/admin", icon: <RiDashboardFill className="text-xl" />, label: "Dashboard" },
+        { href: "/admin/all-leads", icon: <FaUserTie className="text-xl" />, label: "All Leads" },
+        { href: "/admin/upload", icon: <FaFileCsv className="text-xl" />, label: "Upload CSV" },
+        { href: "/admin/agents", icon: <MdSupportAgent className="text-xl" />, label: "Agent Overview" },
+        { href: "/admin/manage-users", icon: <FaUserGroup className="text-xl" />, label: "Manage User" },
+        { href: "/admin/manage-cources", icon: <FaChalkboardTeacher className="text-xl" />, label: "Manage Cources" },
+        { href: "/admin/manage-discounts", icon: <MdDiscount className="text-xl" />, label: "Manage Discount" },
+    ];
+
+
+
     return (
         <div className="drawer drawer-open bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
             <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-            <div className="drawer-content">
-                {/* Page content here */}
-                {children}
-                {/* <label htmlFor="my-drawer" className="btn btn-primary drawer-button">
-                    Open drawer
-                </label> */}
-            </div>
-            <div className="drawer-side p-0 ">
-                <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
-                <ul className="menu bg-base-200 p-0 pt-8  dark:bg-gray-800 gap-3  text-base-content dark:text-gray-100 min-h-full w-80  transition-colors">
-                    {/* Sidebar content here */}
-                    <Link href={"/admin"}>
-                        <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
-                            <RiDashboardFill className="text-xl p-0" /> Dashboard
-                        </li>
-                    </Link>
-                    <Link href={"/admin/all-leads"}>
-                        <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
-                            <FaUserTie className="text-xl p-0" /> All Leads
-                        </li>
-                    </Link>
-                    <Link href={"/admin/upload"}>
-                        <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
-                            <FaFileCsv className="text-xl p-0" /> Upload CSV
-                        </li>
-                    </Link>
-                    <Link href={"/admin/agents"}>
-                        <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
-                            <MdSupportAgent className="text-xl p-0" /> Agent Overview
-                        </li>
-                    </Link>
-                    <Link href={"/admin/manage-users"}>
-
-                        <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
-                            <FaUserGroup className="text-xl p-0" /> Manage User
-                        </li>
-                    </Link>
-                    <Link href={"/admin/manage-cources"}>
-
-                        <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
-                            <FaChalkboardTeacher className="text-xl p-0" /> Manage Cources
-                        </li>
-                    </Link>
-                    <Link href={"/admin/manage-discounts"}>
-
-                        <li className="flex cursor-pointer px-5 flex-row items-center gap-2 text-md   py-3 rounded-none hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white transition">
-                            <MdDiscount className="text-xl p-0" /> Manage Dicount
-                        </li>
-                    </Link>
-
-
-
-                <SidebarFooter />
+            <div className="drawer-content">{children}</div>
+            <div className="drawer-side p-0">
+                <label htmlFor="my-drawer" className="drawer-overlay" />
+                <ul className="menu bg-base-200 p-0 pt-8 dark:bg-gray-800 gap-3 text-base-content dark:text-gray-100 min-h-full w-80 transition-colors">
+                    {menuItems.map((item) => (
+                        <Link key={item.href} href={item.href}>
+                            <li
+                                className={`flex cursor-pointer px-5 flex-row items-center gap-2 text-md py-3 rounded-none transition
+                                    ${
+                                        pathname === item.href
+                                            ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-white"
+                                            : "hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-900 dark:hover:text-white"
+                                    }`}
+                            >
+                                {item.icon} {item.label}
+                            </li>
+                        </Link>
+                    ))}
+                    <SidebarFooter />
                 </ul>
             </div>
         </div>

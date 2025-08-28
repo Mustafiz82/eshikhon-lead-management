@@ -1,14 +1,17 @@
 "use client";
+import useFetch from "@/hooks/useFetch";
 import Modal from "@/shared/Modal";
 import React from "react";
 
 const AssignModal = ({
   isOpen,
   onClose,
-  agents,
   selectedCount,
   onAssign,
 }) => {
+
+  const {data , loading } = useFetch("/user")
+  const agents = data.filter(item => item?.name !== "Admin")
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Assign to Agent" size="max-w-4xl">
       <div className="overflow-x-auto">

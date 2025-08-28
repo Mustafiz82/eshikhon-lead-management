@@ -2,72 +2,101 @@
 import { formateDate } from "@/utils/date";
 
 const LeadTable = ({
-  paginatedLeads,
   selectedIds,
   setSelectedIds,
-  handleCheckboxChange,
-  activeRowIndex
+  leads,
+  currentPage,
+  leadsPerPage,
+  activeRowIndex,
+  handleCheckboxChange
 }) => {
+
+
+
+
+
   return (
-    <div className="rounded-sm h-[calc(100vh-160px)] overflow-scroll border border-base-content/10 bg-base-200/10 shadow overflow-x-auto">
+    <div className="rounded-sm  h-[calc(100vh-160px)] overflow-scroll  border border-base-content/10 bg-base-200/10 shadow overflow-x-auto">
       <table className="table table-pin-rows table-pin-cols table-zebra w-full">
-        <thead className="text-base-content/70 text-sm uppercase tracking-wide bg-base-300">
+
+        <thead className="text-base-content/70  text-sm uppercase tracking-wide bg-base-300">
           <tr>
-            <th className="sticky pl-4 top-0  z-10 px-2">
-              <input
-                type="checkbox"
-                className="checkbox checkbox-sm rounded-sm checkbox-primary checked:bg-blue-600 border-blue-600"
-                onChange={(e) => {
-                  const checked = e.target.checked;
-                  const newSet = new Set(selectedIds);
-                  paginatedLeads.forEach((lead) =>
-                    checked ? newSet.add(lead._id) : newSet.delete(lead._id)
-                  );
-                  setSelectedIds(newSet);
-                }}
-                checked={paginatedLeads.every((lead) => selectedIds.has(lead._id))}
-              />
+            <th className="sticky pl-4 top-0 bg-base-300 z-10 px-2">
+              <div className="flex  items-start gap-1">
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-sm rounded-sm checkbox-primary border-blue-600 checked:bg-blue-600"
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    const newSet = new Set(selectedIds);
+                    leads.forEach((lead) => {
+                      checked ? newSet.add(lead._id) : newSet.delete(lead._id);
+                    });
+                    setSelectedIds(newSet);
+                  }}
+                  checked={leads.every((lead) => selectedIds.has(lead._id))}
+                />
+
+              </div>
             </th>
-            <th>Date</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Number</th>
-            <th>Address</th>
-            <th>Seminar Topic</th>
-            <th>Status</th>
+
+            <th className="sticky top-0 bg-base-300 z-10">Date</th>
+            <th className="sticky top-0 bg-base-300 z-10">Name</th>
+            <th className="sticky top-0 bg-base-300 z-10">Email</th>
+            <th className="sticky top-0 bg-base-300 z-10">Number</th>
+            <th className="sticky top-0 bg-base-300 z-10">Address</th>
+            <th className="sticky top-0 bg-base-300 z-10">Seminar Topic</th>
+            <th className="sticky top-0 bg-base-300 z-10">Status</th>
           </tr>
         </thead>
-        <tbody className="text-base-content/80">
-          {paginatedLeads.map((lead, index) => {
-            const actualIndex = index;
+
+
+        <tbody className="text-base-content/80 ">
+
+          {leads.map((lead, index) => {
+            const actualIndex =
+              (currentPage - 1) * leadsPerPage + index;
             return (
-              <tr key={lead._id} className={activeRowIndex === index ? "bg-blue-100 dark:!bg-blue-900/50" : ""}>
+              <tr key={actualIndex} className={`${activeRowIndex === index ? "bg-blue-100 dark:!bg-blue-900/50" : ""}`}>
                 <td className="flex items-center gap-2">
                   <input
                     type="checkbox"
-                    className="checkbox checkbox-sm rounded-sm checkbox-primary checked:bg-blue-600 border-blue-600"
-                    onChange={(e) => handleCheckboxChange(lead._id, e.target.checked)}
+                    className="checkbox checkbox-sm rounded-sm checkbox-primary border-blue-600 checked:bg-blue-600"
                     checked={selectedIds.has(lead._id)}
+                    onChange={(e) =>
+                      handleCheckboxChange(index, lead._id, e.target.checked, e.nativeEvent.shiftKey)
+                    }
                   />
-                  <span className="text-xs opacity-60">{actualIndex + 1}</span>
+
+                  <span className="text-xs opacity-60">
+                    {actualIndex + 1}
+                  </span>
                 </td>
-                <td>{formateDate(lead.date)}</td>
+                <td>{formateDate(lead?.createdAt)}</td>
                 <td>{lead.name}</td>
                 <td>{lead.email}</td>
-                <td>{lead.number}</td>
-                <td>{lead.address}</td>
+                <td>{lead.phone}</td>
+                <td className="max-w-[280px] whitespace-nowrap overflow-hidden text-ellipsis" title={lead.address} >{lead.address}</td>
                 <td>
-                  <span className="badge badge-neutral badge-sm">{lead.seminarTopic}</span>
+                  <span className="badge badge-neutral badge-sm">
+                    {lead.seminarTopic}
+                  </span>
                 </td>
                 <td>
-                  <span className={`badge badge-sm ${lead.status === "Assigned" ? "badge-success" : "badge-warning text-white"}`}>
-                    {lead.status}
+                  <span
+                    className={`badge badge-sm ${lead.status
+                      ? "badge-success"
+                      : "badge-warning text-white text-nowrap"
+                      }`}
+                  >
+                    {lead?.assingStatus == true ? "Assigned" : "Not Assigned"}
                   </span>
                 </td>
               </tr>
             );
           })}
         </tbody>
+
       </table>
     </div>
   );
