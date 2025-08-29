@@ -1,7 +1,7 @@
 "use client";
 
 import { useContext, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import axiosPublic from "@/api/axios";
 import { AuthContext } from "@/context/AuthContext";
@@ -15,6 +15,8 @@ export default function HomePage() {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const { setUser } = useContext(AuthContext)
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next");
 
 
   const handleLogin = async (e) => {
@@ -22,18 +24,13 @@ export default function HomePage() {
     setLoading(true)
     try {
       const res = await axiosPublic.post("/user/login", { email, password })
-      const {user} = res?.data
-      if(user.role === "admin"){
-        router.push("/admin")
-      }
-      else{
-        router.push("/agents")
-      }
-
+      const { user } = res?.data
       setError("")
-      setUser(res.data)
+      setUser(res?.data?.user)
+      const fallback = user.role === "admin" ? "/admin" : "/agents";
+      router.replace(next || fallback);
     } catch (error) {
-      console.log(error , "errro")
+      console.log(error, "errro")
       // setError(error?.data?.response?.error)
       setError(error?.response?.data?.error)
     }

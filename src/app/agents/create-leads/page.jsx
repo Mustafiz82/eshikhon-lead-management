@@ -1,18 +1,22 @@
 "use client";
 
+import { AuthContext } from "@/context/AuthContext";
 import useDelete from "@/hooks/useDelete";
 import useFetch from "@/hooks/useFetch";
 import useSaveData from "@/hooks/useSaveData";
 import Table from "@/shared/Table";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FiPlus, FiX } from "react-icons/fi"
 
 export default function ManageCoursePage() {
 
     const { data: courses} = useFetch("/course")
     const { data: leads, loading, error, refetch } = useFetch("/leads?limit=10")
+    const {user} = useContext(AuthContext)
     const { setEditCourse, editCourse, handleSave, loading: isSubmitting, error: submitError } = useSaveData(refetch)
     const { handleDelete } = useDelete(refetch, "course")
+
+    console.log(user , "user")
 
 
     const [questions, setQuestions] = useState([]);

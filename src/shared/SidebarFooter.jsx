@@ -1,9 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { AuthContext } from "@/context/AuthContext";
+import { useContext, useState } from "react";
 import { IoLogOut } from "react-icons/io5";
 
 export default function SidebarFooter() {
+
+
+    const {logout} = useContext(AuthContext)
+
+  
+
+
     return (
         <div className="mt-auto  border-t border-base-300 flex flex-col gap-2">
             {/* Logout */}
@@ -26,9 +34,7 @@ export default function SidebarFooter() {
             {/* </label> */}
             <button
                 className="btn px-5 hover:bg-blue-900 py-4 btn-sm btn-ghost justify-start"
-                onClick={() => {
-                    alert("Logging out...");
-                }}
+                onClick={() => logout()}
             >
                 <span className="text-2xl mr-2"> <IoLogOut /></span> Logout
             </button>
