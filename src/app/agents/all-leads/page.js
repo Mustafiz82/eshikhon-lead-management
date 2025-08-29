@@ -20,9 +20,9 @@ const Page = () => {
     const [selectedAssingedDate, setSelectedAssignedDate] = useState("All")
     const [followUpActive, setFollowUpActive] = useState(false);
     const [selectedFollowedDate, setSelectedFollowedpDate] = useState("All")
-    const [selectedSortMethod, setSelectedSortMethod] = useState("None")
+    const [selectedSortMethod, setSelectedSortMethod] = useState("Default")
     const [selectedStage, setSelectedStage] = useState("All")
-    
+
 
     const [searchText, setSearchText] = useState("");
     const [isSearchModalOpen, setSearchModalOpen] = useState(false);
@@ -31,7 +31,6 @@ const Page = () => {
     const statusOptions = ["All", "NOB", "CNR", "NoF", "Join Letter", "Will Join", "Joined", "Admitted"];
     const assignedDateOptions = ["All", "Today", "This Week", "This Month", "This Year"]
     const followedOptions = ["All", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
-    const sortOptions = ["None", "Name (A–Z)", "Name (Z–A)", "Assigned Date (Newest)", "Assigned Date (Oldest)"]
     const stageOptions = ["All", "Pending", "Contacted"];
 
 
@@ -84,14 +83,13 @@ const Page = () => {
 
                     {/* Sort By Dropdown */}
                     <Dropdown
-                        dropdownPosition=""
+                        dropdownPosition="dropdown-end"
                         selectedState={selectedSortMethod}
                         setSelectedState={setSelectedSortMethod}
                         label="Sort By"
-                        options={sortOptions}
-                        setCurrentPage
-                        defaultOptions="None"
-
+                        options={["Default", "Ascending", "Descending"]}
+                        setCurrentPage={setCurrentPage}
+                        defaultOptions={"Default"}
                     />
                 </div>
 
@@ -202,7 +200,7 @@ const Page = () => {
                     onPageChange={(page) => setCurrentPage(page)}
                 />
 
-                <SidebarFooter />
+
 
             </div>
 

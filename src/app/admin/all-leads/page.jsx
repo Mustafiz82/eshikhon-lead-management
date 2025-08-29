@@ -48,7 +48,6 @@ const Page = () => {
     }).toString()
 
     
-
     const { data: leads, loading, error, refetch } = useFetch(`/leads?${params}`)
     const { data: course } = useFetch("/course")
     const { data: leadsCount, refetch: paginateRefetch } = useFetch(`/leads/count?${params}`)
