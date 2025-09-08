@@ -17,6 +17,8 @@ const AssignModal = ({
   const { data, loading } = useFetch("/user")
   const agents = data.filter(item => item?.name !== "Admin")
 
+  console.log(agents)
+
 
   const handleAssign = async (email) => {
     const ids = [...selectedIds];
@@ -72,8 +74,8 @@ const AssignModal = ({
           <thead>
             <tr className="bg-base-200 text-sm text-base-content/70">
               <th>Agent Name</th>
-              <th>Pending Leads</th>
               <th>Assigned Leads</th>
+              <th>Pending Leads</th>
               <th>Action</th>
             </tr>
           </thead>

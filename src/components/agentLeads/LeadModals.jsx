@@ -36,11 +36,15 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) =
             totalDue } = courseInput
 
         if (modelStatus == "Enrolled") {
-            if (!enrolledTo && !selectedLead?.enrolledTo) return setError("Please input Course Name")
+            if (!enrolledTo && !selectedLead?.enrolledTo) {
+                setSaving(false)
+                return setError("Please input Course Name")
+            }
             let filteredCourse = course.filter(item => (item.name == enrolledTo) || (item.name == selectedLead?.enrolledTo))
 
             if (filteredCourse?.length == 0) {
-                return setError("Pleas Input a Valid Course Name")
+                setSaving(false)
+                return setError("Pleas Input a Valid Course Name") ;
             }
 
         }
