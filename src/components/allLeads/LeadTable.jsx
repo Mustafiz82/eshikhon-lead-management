@@ -80,7 +80,7 @@ const LeadTable = ({
                 <td>{formateDate(lead?.createdAt)}</td>
                 <td>{lead.name}</td>
                 <td>{lead.email}</td>
-                <td>{lead.phone}</td>
+                <td > <span className="text-nowrap">{lead.phone}</span></td>
                 <td className="max-w-[280px] whitespace-nowrap overflow-hidden text-ellipsis" title={lead.address} >{lead.address}</td>
                 <td>
                   <span className="badge badge-neutral badge-sm">

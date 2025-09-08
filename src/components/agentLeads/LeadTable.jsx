@@ -1,8 +1,21 @@
 import { formateDate } from "@/utils/date";
 
-const LeadTable = ({leads , setSelectedLead , currentPage}) => {
+const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , followUpActive , missedFUActive}) => {
 
-    let leadsPerPage = 10
+    
+    const statusColors = {
+        "Enrolled": "badge-success",          // ✅ Green → positive, confirmed
+        "Will Join on Seminar": "badge-primary", // 🔵 Strong intent, upcoming
+        "Not Interested": "badge-error",      // 🔴 Rejected, negative
+        "Enrolled in Other Institute": "badge-secondary", // 🌸 Pink → sidelined/alternative
+        "Cut the Call": "badge-error",        // 🔴 Abrupt stop
+        "Call Not Received": "badge-warning", // 🟨 Needs caution/attention
+        "Number Off or Busy": "badge-neutral", // ⚫ Inactive/unavailable
+        "Wrong Number": "badge-error",        // 🔴 Mistake
+        "Pending": "badge-info",              // 🟦 Neutral wait / requires follow-up
+    };
+
+
     return <div>
         <div className="rounded-sm h-[calc(100vh-160px)] overflow-scroll border border-base-content/10 bg-base-200/10 shadow overflow-x-auto">
             <table className="table table-zebra w-full">
@@ -15,7 +28,7 @@ const LeadTable = ({leads , setSelectedLead , currentPage}) => {
                         <th>Address</th>
                         <th>Seminar Topic</th>
                         <th>Status</th>
-                        <th>Assigned At</th>
+                        <th>{followUpActive ||  missedFUActive  ? "Follow Up Date" : "Assigned At" }</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -31,22 +44,20 @@ const LeadTable = ({leads , setSelectedLead , currentPage}) => {
                             <td>{(currentPage - 1) * leadsPerPage + index + 1}</td>
                             <td>{lead.name}</td>
                             <td>{lead.email}</td>
-                            <td>{lead.number}</td>
+                            <td>{lead.phone}</td>
                             <td>{lead.address}</td>
                             <td>{lead.seminarTopic}</td>
                             <td>
                                 <span
-                                    className={`badge ${lead.status === "Interested"
-                                        ? "badge-success"
-                                        : lead.status === "Contacted"
-                                            ? "badge-info"
-                                            : "badge-warning"
+                                    className={`badge badge-sm text-white text-nowrap ${statusColors[lead.leadStatus] || "badge-neutral"
                                         }`}
                                 >
-                                    {lead.status}
+                                    {lead.leadStatus}
                                 </span>
                             </td>
-                            <td>{formateDate(lead.date)}</td>
+
+
+                            <td>{formateDate(followUpActive ||  missedFUActive  ? lead?.followUpDate : lead?.assignDate)}</td>
                         </tr>
                     ))}
                 </tbody>

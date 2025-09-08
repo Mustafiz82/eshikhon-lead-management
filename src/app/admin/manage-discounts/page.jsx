@@ -312,6 +312,9 @@ export default function ManageDiscountPage() {
                                     display="chip"
                                     className="w-full"
                                     disabled={isSubmitting}
+                                    pt={{
+                                        root: { className: "bg-gray-700 text-white" }, // 👈 background applied
+                                    }}
                                 />
 
                                 <textarea

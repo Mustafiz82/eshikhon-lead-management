@@ -45,7 +45,7 @@ const SearchModal = ({
             className="p-2 border border-base-300 rounded hover:bg-base-200 cursor-pointer transition-colors"
           >
             <div className="font-semibold">{lead.name}</div>
-            <div className="text-sm opacity-70">{lead.email} • {lead.number}</div>
+            <div className="text-sm opacity-70">{lead.email} • {lead.phone}</div>
           </div>
         ))}
 

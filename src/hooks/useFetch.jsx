@@ -7,7 +7,7 @@ const useFetch = (path) => {
     const [error , setError] = useState(null)
     const [refetchState , setRefetchState] = useState(false)
 
-    console.log(path)
+    // console.log(path)
 
     const fetchCourses = async () => {
         setLoading(true);

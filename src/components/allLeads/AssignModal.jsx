@@ -37,6 +37,7 @@ const AssignModal = ({
         update: {
           assignTo: email,
           assignStatus: true,
+          assignDate : Date.now()
         },
       });
 

@@ -96,7 +96,6 @@ const Page = () => {
     };
 
 
-
     useEffect(() => {
         const handleKeyDown = (e) => {
             // Ctrl + K → Search Modal
@@ -161,8 +160,7 @@ const Page = () => {
         }
     }, [statusFilter, searchQuery, categoryFilter, sortMethod, currentPage, leadsPerPage])
 
-    console.log(searchQuery)
-
+    
     return (
         <div className="p-6 h-screen overflow-hidden ">
 
@@ -239,8 +237,6 @@ const Page = () => {
 
             {/* Table */}
             {!loading && <>
-
-
 
                 <LeadTable
                     currentPage={currentPage}

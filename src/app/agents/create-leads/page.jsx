@@ -5,21 +5,48 @@ import useDelete from "@/hooks/useDelete";
 import useFetch from "@/hooks/useFetch";
 import useSaveData from "@/hooks/useSaveData";
 import Table from "@/shared/Table";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FiPlus, FiX } from "react-icons/fi"
+import { toast } from "react-toastify";
 
 export default function ManageCoursePage() {
 
-    const { data: courses} = useFetch("/course")
-    const { data: leads, loading, error, refetch } = useFetch("/leads?limit=10")
-    const {user} = useContext(AuthContext)
+
+    const [selectedCourse, setSelectedCourse] = useState("");
+    const [questions, setQuestions] = useState([]); // [{title, value}]
+
+    // when editing a lead, prefill select and questions
+
+    const { user } = useContext(AuthContext)
+    const { data: courses } = useFetch("/course")
+    const { data: leads, loading, error, refetch } = useFetch(`/leads?createdBy=${user?.email}`)
     const { setEditCourse, editCourse, handleSave, loading: isSubmitting, error: submitError } = useSaveData(refetch)
     const { handleDelete } = useDelete(refetch, "course")
 
-    console.log(user , "user")
 
 
-    const [questions, setQuestions] = useState([]);
+    useEffect(() => {
+        setSelectedCourse(editCourse?.seminarTopic || "");
+
+        // questions can be object or array — normalize to [{title,value}]
+        if (editCourse?.questions) {
+            if (Array.isArray(editCourse.questions)) {
+                setQuestions(editCourse.questions);
+            } else if (typeof editCourse.questions === "object") {
+                setQuestions(
+                    Object.entries(editCourse.questions).map(([title, value]) => ({
+                        title,
+                        value: value ?? "",
+                    }))
+                );
+            } else {
+                setQuestions([]);
+            }
+        } else {
+            setQuestions([]);
+        }
+    }, [editCourse]);
+
 
     const addQuestion = () => {
         setQuestions([...questions, { title: "", value: "" }]);
@@ -39,15 +66,31 @@ export default function ManageCoursePage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!user?.email) return toast.error("User Not found")
         const form = e.target;
 
+        // Convert [{title, value}] into {title: value}
+        const formattedQuestions = questions.reduce((acc, q) => {
+            if (q.title.trim()) acc[q.title.trim()] = q.value.trim();
+            return acc;
+        }, {});
+
         const payload = {
-            name: form.course_name.value.trim(),
-            type: form.type.value,
-            price: form.price.value ? Number(form.price.value) : null,
+            name: form.lead_name.value.trim(),
+            email: form.lead_email.value.trim(),
+            phone: form.lead_phone.value.trim(),
+            address: form.lead_Address.value.trim(),
+            questions: formattedQuestions,
+            seminarTopic: selectedCourse,
+            leadSource: "incoming",
+            createdBy: user.email,
+            assignTo: user.email,
+            assignDate : Date.now()
         };
         console.log(payload)
-        await handleSave(payload, form, "/course")
+        await handleSave(payload, form, "/leads/single-lead")
+        setSelectedCourse("Select Course")
+        setQuestions([])
 
     };
 
@@ -69,25 +112,22 @@ export default function ManageCoursePage() {
     )
 
     const courseConfig = {
-        header: ["Name", "Email", "Phone", "Address" , "Intersted Course" , "Created At"],
-        body: ["name", "email", "phone", "address" , "seminarTopic" ,actionsCell]
+        header: ["Name", "Email", "Phone", "Address", "Intersted Course", "Created At"],
+        body: ["name", "email", "phone", "address", "seminarTopic", actionsCell]
     }
 
 
-    // Lead Source (Incoming)
-    // created by email of agent
-
-
-
+    
     return (
-        <div className="flex h-screen overflow-hidden">
+        <div className="flex  h-screen">
             {loading ? (
                 <p className="h-[300px] flex justify-center items-center w-full">Loading...</p>
             ) : error ? <p className="h-[300px] text-red-500 flex justify-center items-center w-full">Error Fetching Data</p> : (
                 <>
 
 
-                    <Table data={leads} config={courseConfig} />
+                    <Table dataType={"Leads"} data={leads} config={courseConfig} />
+
 
                     {/* Drawer / Form */}
                     <div className="h-full w-[400px] bg-base-200 dark:bg-gray-800 shadow-lg p-6">
@@ -115,7 +155,7 @@ export default function ManageCoursePage() {
                                     type="email"
                                     required
                                     placeholder="Email"
-                                    defaultValue={editCourse?.name || ""}
+                                    defaultValue={editCourse?.email || ""}
                                     className="input focus:outline-0 focus:border-blue-600 dark:bg-gray-900 input-bordered w-full"
                                     disabled={isSubmitting}
                                 />
@@ -124,7 +164,7 @@ export default function ManageCoursePage() {
                                     name="lead_phone"
                                     required
                                     placeholder="Phone"
-                                    defaultValue={editCourse?.name || ""}
+                                    defaultValue={editCourse?.phone || ""}
                                     className="input focus:outline-0 focus:border-blue-600 dark:bg-gray-900 input-bordered w-full"
                                     disabled={isSubmitting}
                                 />
@@ -133,24 +173,22 @@ export default function ManageCoursePage() {
                                     name="lead_Address"
                                     required
                                     placeholder="Address"
-                                    defaultValue={editCourse?.name || ""}
+                                    defaultValue={editCourse?.address || ""}
                                     className="input focus:outline-0 focus:border-blue-600 dark:bg-gray-900 input-bordered w-full"
                                     disabled={isSubmitting}
                                 />
 
                                 <select
-                                    name="type"
-                                    defaultValue={editCourse?.type || ""}
-                                    className="select  focus:border-blue-600 dark:bg-gray-900 focus:outline-0 focus:text-border-600 select-bordered w-full"
+                                    name="seminarTopic"
+                                    className="select focus:border-blue-600 dark:bg-gray-900 focus:outline-0 select-bordered w-full"
+                                    value={selectedCourse}
+                                    onChange={(e) => setSelectedCourse(e.target.value)}
                                     disabled={isSubmitting}
+                                    required
                                 >
-                                    {/* Default placeholder */}
-                                    <option value="" disabled>
-                                        Select Course
-                                    </option>
-
-                                    {courses.map((item, index) => (
-                                        <option key={index} value={item.name} className="text-white">
+                                    <option value="" disabled>Select Course</option>
+                                    {courses.map((item) => (
+                                        <option key={item._id ?? item.id ?? item.name} value={item.name}>
                                             {item.name}
                                         </option>
                                     ))}
@@ -160,7 +198,7 @@ export default function ManageCoursePage() {
 
 
                                     <div className="flex  flex-col gap-3">
-                                        {questions.map((q, index) => (
+                                        {questions?.map((q, index) => (
                                             <div className="flex items-stretch gap-2 ">
                                                 <div key={index} className="space-y-3">
                                                     <input
@@ -211,14 +249,7 @@ export default function ManageCoursePage() {
                                 <button type="submit" className="btn bg-blue-600 btn-primary w-full" disabled={isSubmitting}>
                                     {isSubmitting ? (editCourse ? "Updating..." : "Creating...") : editCourse ? "Update Lead" : "Create Lead"}
                                 </button>
-                                <button
-                                    type="button"
-                                    className="btn btn-ghost w-full"
-                                    onClick={() => setEditCourse(null)}
-                                    disabled={isSubmitting}
-                                >
-                                    Cancel
-                                </button>
+
                             </div>
                         </form>
                     </div>

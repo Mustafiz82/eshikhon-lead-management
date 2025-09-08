@@ -13,7 +13,7 @@ export default function SidebarFooter() {
 
 
     return (
-        <div className="mt-auto  border-t border-base-300 flex flex-col gap-2">
+        <div className="  border-t border-base-300 flex flex-col gap-2">
             {/* Logout */}
 
             {/* Theme Toggle */}

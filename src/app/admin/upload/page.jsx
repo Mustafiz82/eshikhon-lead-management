@@ -1,11 +1,13 @@
 "use client";
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { useRef, useState, useEffect, useMemo, useContext } from "react";
 import { RiUpload2Fill } from "react-icons/ri";
 import { Bounce, toast } from "react-toastify";
 import Papa from "papaparse";
 import axiosPublic from "@/api/axios";
 import useFetch from "@/hooks/useFetch";
 import { formateDate } from "@/utils/date";
+import { AuthContext } from "@/context/AuthContext";
+import { formatFilename } from "@/utils/formateFileName";
 
 const STATUS = {
     PENDING: "pending",
@@ -42,6 +44,7 @@ const Page = () => {
     const [uploadStatus, setUploadStatus] = useState({});
     const { data = [], loading, refetch } = useFetch("/file"); // server history
     const fileInputRef = useRef(null);
+    const {user} = useContext(AuthContext)
 
     // Any active upload? (for the big box indicator only)
     const hasActiveUploads = useMemo(
@@ -64,7 +67,8 @@ const Page = () => {
     };
 
     const handleFile = async (file) => {
-        if (!file) return;
+        if (!file ) return;
+        if(!user.email) return toast.error("user not found")
         if (file.type !== "text/csv") {
             toast.error("Only CSV files are allowed", {
                 position: "top-right",
@@ -75,7 +79,7 @@ const Page = () => {
             return;
         }
 
-        const fileName = file.name;
+        const fileName = formatFilename(file.name);
         setStatus(fileName, STATUS.PENDING);
 
         // 1) Register file name (server “history”)
@@ -118,6 +122,7 @@ const Page = () => {
                 if (["phone", "phone number", "mobile"].includes(normalized)) return "phone";
                 if (["address", "location"].includes(normalized)) return "address";
                 if (["seminar topic", "topic", "course"].includes(normalized)) return "seminarTopic";
+                if (["Lead Source", "lead source", "source"].includes(normalized)) return "leadSource";
                 return header;
             },
 
@@ -142,7 +147,7 @@ const Page = () => {
                 );
 
                 const questionWiseData = filtered.map((item) => {
-                    const { name, email, address, phone, seminarTopic, ...questions } = item;
+                    const { name, email, address, phone, seminarTopic , leadSource, ...questions } = item;
                     return {
                         name,
                         email,
@@ -151,6 +156,7 @@ const Page = () => {
                         seminarTopic,
                         questions,
                         sourceFileName: fileName,
+                        createdBy : user?.email
                     };
                 });
 
