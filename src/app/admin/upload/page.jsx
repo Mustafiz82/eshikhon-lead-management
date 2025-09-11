@@ -254,7 +254,7 @@ const Page = () => {
                             <div className="animate-pulse text-blue-400 text-xl">Uploading...</div>
                         ) : (
                             <>
-                                <RiUpload2Fill className="text-blue-600 hover:text-blue-700 dark:hover:text-blue-500 transition mb-5 text-4xl" />
+                                <RiUpload2Fill className="text-blue-600  dark:hover:text-blue-500 transition mb-5 text-4xl" />
                                 <p className="text-gray-300">
                                     Drop or click to upload <span className="font-medium">CSV file</span>
                                 </p>

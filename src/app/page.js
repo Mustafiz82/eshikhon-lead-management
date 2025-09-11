@@ -56,7 +56,7 @@ export default function HomePage() {
           <input
             type="email"
             placeholder="Enter email"
-            className="input input-bordered dark:bg-gray-900 focus:border-blue-600 focus:outline-0  w-full"
+            className="input input-bordered bg-gray-900 focus:border-blue-600 focus:outline-0  w-full"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -73,7 +73,7 @@ export default function HomePage() {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Enter password"
-              className="input input-bordered dark:bg-gray-900 focus:border-blue-600 focus:outline-0 w-full pr-12"
+              className="input input-bordered bg-gray-900 focus:border-blue-600 focus:outline-0 w-full pr-12"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

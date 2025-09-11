@@ -130,7 +130,7 @@ export default function ManageCoursePage() {
 
 
                     {/* Drawer / Form */}
-                    <div className="h-full w-[400px] bg-base-200 dark:bg-gray-800 shadow-lg p-6">
+                    <div className="h-full w-[400px] bg-gray-800 shadow-lg p-6">
                         <form autoComplete="off" onSubmit={handleSubmit} className="flex flex-col h-full">
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-lg font-semibold">
@@ -147,7 +147,7 @@ export default function ManageCoursePage() {
                                     required
                                     placeholder="Lead Name"
                                     defaultValue={editCourse?.name || ""}
-                                    className="input focus:outline-0 focus:border-blue-600 dark:bg-gray-900 input-bordered w-full"
+                                    className="input focus:outline-0 focus:border-blue-600 bg-gray-900 input-bordered w-full"
                                     disabled={isSubmitting}
                                 />
                                 <input
@@ -156,7 +156,7 @@ export default function ManageCoursePage() {
                                     required
                                     placeholder="Email"
                                     defaultValue={editCourse?.email || ""}
-                                    className="input focus:outline-0 focus:border-blue-600 dark:bg-gray-900 input-bordered w-full"
+                                    className="input focus:outline-0 focus:border-blue-600 bg-gray-900 input-bordered w-full"
                                     disabled={isSubmitting}
                                 />
 
@@ -165,7 +165,7 @@ export default function ManageCoursePage() {
                                     required
                                     placeholder="Phone"
                                     defaultValue={editCourse?.phone || ""}
-                                    className="input focus:outline-0 focus:border-blue-600 dark:bg-gray-900 input-bordered w-full"
+                                    className="input focus:outline-0 focus:border-blue-600 bg-gray-900 input-bordered w-full"
                                     disabled={isSubmitting}
                                 />
 
@@ -174,13 +174,13 @@ export default function ManageCoursePage() {
                                     required
                                     placeholder="Address"
                                     defaultValue={editCourse?.address || ""}
-                                    className="input focus:outline-0 focus:border-blue-600 dark:bg-gray-900 input-bordered w-full"
+                                    className="input focus:outline-0 focus:border-blue-600 bg-gray-900 input-bordered w-full"
                                     disabled={isSubmitting}
                                 />
 
                                 <select
                                     name="seminarTopic"
-                                    className="select focus:border-blue-600 dark:bg-gray-900 focus:outline-0 select-bordered w-full"
+                                    className="select focus:border-blue-600 bg-gray-900 focus:outline-0 select-bordered w-full"
                                     value={selectedCourse}
                                     onChange={(e) => setSelectedCourse(e.target.value)}
                                     disabled={isSubmitting}
@@ -206,14 +206,14 @@ export default function ManageCoursePage() {
                                                         placeholder="Question Title"
                                                         value={q.title}
                                                         onChange={(e) => updateQuestion(index, "title", e.target.value)}
-                                                        className="input focus:outline-0 focus:border-blue-600 dark:bg-gray-900 input-bordered w-full"
+                                                        className="input focus:outline-0 focus:border-blue-600 bg-gray-900 input-bordered w-full"
                                                     />
                                                     <input
                                                         type="text"
                                                         placeholder="Answer"
                                                         value={q.value}
                                                         onChange={(e) => updateQuestion(index, "value", e.target.value)}
-                                                        className="input focus:outline-0 focus:border-blue-600 dark:bg-gray-900 input-bordered w-full"
+                                                        className="input focus:outline-0 focus:border-blue-600 bg-gray-900 input-bordered w-full"
                                                     />
                                                 </div>
                                                 <button

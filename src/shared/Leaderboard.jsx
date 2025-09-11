@@ -16,7 +16,7 @@ const Leaderboard = ({ dataByFilter , title ,  metricLabel = "Students Admitted"
   }, [filter, dataByFilter]);
 
   return (
-    <div className="bg-base-200 dark:bg-gray-800 p-6 rounded-xl shadow-md w-full  mx-auto">
+    <div className="bg-gray-800 p-6 rounded-xl shadow-md w-full  mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">{title}</h2>
         <div className="join">
@@ -35,7 +35,7 @@ const Leaderboard = ({ dataByFilter , title ,  metricLabel = "Students Admitted"
       <div className="overflow-x-auto">
         <table className="table table-zebra w-full">
           <thead>
-            <tr className="text-sm text-gray-600 dark:text-gray-300">
+            <tr className="text-sm text-gray-300">
               <th>Rank</th>
               <th>Agent Name</th>
               <th className="text-right">{metricLabel}</th>

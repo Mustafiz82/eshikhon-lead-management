@@ -146,7 +146,7 @@ export default function Page() {
                     </div>
 
                     {/* Drawer */}
-                    <div className="h-full w-[400px] bg-base-200 dark:bg-gray-800 shadow-lg p-6">
+                    <div className="h-full w-[400px] bg-gray-800 shadow-lg p-6">
                         <form autoComplete="off" onSubmit={handleSubmit} className="flex flex-col h-full">
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-lg font-semibold">{editUser ? "Edit User" : "Add New User"}</h2>

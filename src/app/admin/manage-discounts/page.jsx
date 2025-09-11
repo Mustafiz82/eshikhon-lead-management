@@ -156,7 +156,7 @@ export default function ManageDiscountPage() {
                 <>
                     <Table data={discounts} config={courseConfig} />
 
-                    <div className="h-full w-[420px] bg-base-200 dark:bg-gray-800 shadow-lg p-6">
+                    <div className="h-full w-[420px] bg-gray-800 shadow-lg p-6">
                         <form
                             autoComplete="off"
                             onSubmit={handleSubmit}
@@ -182,7 +182,7 @@ export default function ManageDiscountPage() {
                                     required
                                     placeholder="Discount Name"
                                     defaultValue={editDiscount?.name || ""}
-                                    className="input dark:bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
+                                    className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                     disabled={isSubmitting}
                                 />
 
@@ -224,7 +224,7 @@ export default function ManageDiscountPage() {
                                         name="value"
                                         placeholder={mode === "percent" ? "Value (0–100)" : "Value (> 0)"}
                                         defaultValue={editDiscount?.value ?? ""}
-                                        className="input dark:bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
+                                        className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                         disabled={isSubmitting}
                                         min={0}
                                         step="1"
@@ -239,7 +239,7 @@ export default function ManageDiscountPage() {
                                             name="minValue"
                                             placeholder="Min Value"
                                             defaultValue={editDiscount?.minValue ?? ""}
-                                            className="input dark:bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
+                                            className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                             disabled={isSubmitting}
                                             min={0}
                                             step="1"
@@ -250,7 +250,7 @@ export default function ManageDiscountPage() {
                                             name="maxValue"
                                             placeholder="Max Value"
                                             defaultValue={editDiscount?.maxValue ?? ""}
-                                            className="input dark:bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
+                                            className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                             disabled={isSubmitting}
                                             min={0}
                                             step="1"
@@ -265,7 +265,7 @@ export default function ManageDiscountPage() {
                                         name="capAmount"
                                         placeholder="Cap Amount (optional)"
                                         defaultValue={editDiscount?.capAmount ?? ""}
-                                        className="input dark:bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
+                                        className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                         disabled={isSubmitting}
                                         min={0}
                                         step="1"
@@ -280,7 +280,7 @@ export default function ManageDiscountPage() {
                                         type="date"
                                         name="startAt"
                                         defaultValue={editDiscount?.startAt?.slice(0, 10) || ""}
-                                        className="input dark:bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
+                                        className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                         disabled={isSubmitting}
                                         required
                                     />
@@ -294,7 +294,7 @@ export default function ManageDiscountPage() {
                                         type="date"
                                         name="expireAt"
                                         defaultValue={editDiscount?.expireAt?.slice(0, 10) || ""}
-                                        className="input dark:bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
+                                        className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                         disabled={isSubmitting}
                                         required
                                     />
@@ -321,7 +321,7 @@ export default function ManageDiscountPage() {
                                     name="notes"
                                     placeholder="Notes (optional)"
                                     defaultValue={editDiscount?.notes || ""}
-                                    className="textarea dark:bg-gray-900 textarea-bordered w-full focus:outline-0 focus:border-blue-500 resize-none"
+                                    className="textarea bg-gray-900 textarea-bordered w-full focus:outline-0 focus:border-blue-500 resize-none"
                                     disabled={isSubmitting}
                                 />
                             </div>

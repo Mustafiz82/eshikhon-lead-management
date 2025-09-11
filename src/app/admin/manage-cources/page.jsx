@@ -62,7 +62,7 @@ export default function ManageCoursePage() {
           <Table data={courses} config={courseConfig} />
 
           {/* Drawer / Form */}
-          <div className="h-full w-[400px] bg-base-200 dark:bg-gray-800 shadow-lg p-6">
+          <div className="h-full w-[400px] bg-gray-800 shadow-lg p-6">
             <form autoComplete="off" onSubmit={handleSubmit} className="flex flex-col h-full">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">
@@ -79,14 +79,14 @@ export default function ManageCoursePage() {
                   required
                   placeholder="Course Name"
                   defaultValue={editCourse?.name || ""}
-                  className="input dark:bg-gray-900 input-bordered w-full"
+                  className="input bg-gray-900 input-bordered w-full"
                   disabled={isSubmitting}
                 />
 
                 <select
                   name="type"
                   defaultValue={editCourse?.type || "Online"}
-                  className="select dark:bg-gray-900 select-bordered w-full"
+                  className="select bg-gray-900 select-bordered w-full"
                   disabled={isSubmitting}
                 >
                   <option value="Online" className="text-black">Online</option>
@@ -99,7 +99,7 @@ export default function ManageCoursePage() {
                   name="price"
                   placeholder="Price (৳)"
                   defaultValue={editCourse?.price ?? ""}
-                  className="input dark:bg-gray-900 input-bordered w-full"
+                  className="input bg-gray-900 input-bordered w-full"
                   disabled={isSubmitting}
                   min={0}
                   step="1"

@@ -2,7 +2,6 @@
 import useFetch from "@/hooks/useFetch";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { FaChalkboardTeacher } from "react-icons/fa";
 
 
 
@@ -18,7 +17,7 @@ const page = () => {
         <div className="p-4 h-screen overflow-hidden">
             {/* Main Content */}
                 <div className="overflow-x-auto">
-                    <table className="table table-md table-zebra w-full">
+                    <table className="table  table-md table-zebra w-full">
                         <thead>
                             <tr>
                                 <th>Name</th>
