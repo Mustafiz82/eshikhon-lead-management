@@ -133,7 +133,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) =
                         {selectedLead?.questions && Object.keys(selectedLead.questions).length > 0 && (
                             <div className="space-y-2">
                                 <h4 className="font-semibold mb-1 mt-4 border-b pb-2">Questions</h4>
-                                <ul className=" text-sm mt-2 text-xs space-y-3">
+                                <ul className=" mt-2 text-xs space-y-3">
                                     {Object.entries(selectedLead.questions).map(([q, a], i) => (
                                         <li key={i}>
                                             <span className="font-semibold text-white/80">{q}</span><br className="mt-2" /><span className="text-white "> {a}</span>

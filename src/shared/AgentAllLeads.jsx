@@ -1,46 +1,104 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
-import { leads } from "@/data/leads";
+// import { leads } from "@/data/leads";
 import Pagination from "@/shared/Pagination";
 import SearchModal from "@/components/allLeads/SearchModal";
-import SidebarFooter from "@/shared/SidebarFooter";
 import Dropdown from "@/components/agentLeads/Dropdown";
 import LeadModals from "@/components/agentLeads/LeadModals";
 import LeadTable from "@/components/agentLeads/LeadTable";
+import useFetch from "@/hooks/useFetch";
+import { AuthContext } from "@/context/AuthContext";
 import { useParams } from "next/navigation";
 
 
-const Page = () => {
+const AgentAllLeads = () => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [selectedLead, setSelectedLead] = useState(null);
-    const {id} = useParams()
+    const [leadsPerPage, setLeadsPerPage] = useState(50)
 
-    const [searchQuery, setSearchQuery] = useState("");
+    console.log(leadsPerPage)
+
+    const [searchText, setSearchText] = useState(""); // for onchange
+    const [searchQuery, setSearchQuery] = useState("");  // when press inter buton to show on table
+
     const [selectedSeminar, setSelectedSeminar] = useState("All");
     const [selectedStatus, setSelectedStatus] = useState("All");
     const [selectedAssingedDate, setSelectedAssignedDate] = useState("All")
-    const [followUpActive, setFollowUpActive] = useState(false);
-    const [selectedFollowedDate, setSelectedFollowedpDate] = useState("All")
-    const [selectedSortMethod, setSelectedSortMethod] = useState("None")
+    const [selectedSortMethod, setSelectedSortMethod] = useState("Default")
     const [selectedStage, setSelectedStage] = useState("All")
 
-    const [searchText, setSearchText] = useState("");
-    const [isSearchModalOpen, setSearchModalOpen] = useState(false);
+    const [followUpActive, setFollowUpActive] = useState(false);
+    const [selectedFollowedDate, setSelectedFollowedpDate] = useState("All")
 
-    const seminarOptions = ["All", "Digital Marketing", "Graphic Design", "Career Guideline", "Ethical Hacking", "Web Development"];
-    const statusOptions = ["All", "NOB", "CNR", "NoF", "Join Letter", "Will Join", "Joined", "Admitted"];
+    const [missedFUActive, setMissedFUActive] = useState(false);
+
+    const { user } = useContext(AuthContext)
+    const { email } = useParams();
+    const decodedEmail = email ? decodeURIComponent(email) : user?.email;
+
+    console.log(decodedEmail, "decoded email");
+
+
+
+
+
+    const [isSearchModalOpen, setSearchModalOpen] = useState(false);
+    const [selectedLead, setSelectedLead] = useState(null);
+    console.log(user.email, "user email");
+    const params = new URLSearchParams({
+        currentPage: currentPage,
+        limit: leadsPerPage,
+        search: searchQuery.trim(),
+        course: selectedSeminar,
+        leadStatus: selectedStatus,
+        stage: selectedStage,
+        assignDate: selectedAssingedDate,
+        assignTo: decodedEmail ? decodedEmail : user.email,
+        sort: selectedSortMethod,
+        showOnlyFollowups: followUpActive,
+        followUpDate: selectedFollowedDate,
+        showOnlyMissedFollowUps: missedFUActive,
+
+    })
+
+
+    const { data: leadsCount, refetch: paginateRefetch } = useFetch(`/leads/count?${params}`)
+    const { data: leads, refetch } = useFetch(`/leads?${params}`)
+    const { data: course } = useFetch("/course")
+
+
+
+    const statusOptions = [
+        "All",
+        "Pending",
+        "Enrolled",
+        "Will Join on Seminar",
+        "Not Interested",
+        "Enrolled in Other Institute",
+        "Cut the Call",
+        "Call Not Received",
+        "Number Off or Busy",
+        "Wrong Number"
+    ]
     const assignedDateOptions = ["All", "Today", "This Week", "This Month", "This Year"]
     const followedOptions = ["All", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
-    const sortOptions = ["None", "Name (A–Z)", "Name (Z–A)", "Assigned Date (Newest)", "Assigned Date (Oldest)"]
     const stageOptions = ["All", "Pending", "Contacted"];
+    const totalPages = Math.round((leadsCount?.count / leadsPerPage)) || 1
 
+
+
+    const leadCountStart = (currentPage - 1) * leadsPerPage
+    const expactedEnd = leadCountStart + leadsPerPage - 1
+    const leadCountEnd = leadsCount?.count > expactedEnd ? expactedEnd : leadsCount?.count
 
     const handleSearch = (term) => {
         setSearchQuery(term);
         setCurrentPage(1);
     };
 
+    const goToPage = (page) => {
+        if (page >= 1 && page <= totalPages) setCurrentPage(page);
+    };
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -64,6 +122,37 @@ const Page = () => {
     }, [isSearchModalOpen, setSearchText]);
 
 
+
+    useEffect(() => {
+        const timeOut = setTimeout(() => {
+            setSearchQuery(searchText)
+        }, 400);
+
+        return () => clearTimeout(timeOut)
+    }, [searchText])
+
+
+
+    useEffect(() => {
+        refetch()
+        paginateRefetch()
+    }, [
+        currentPage,
+        leadsPerPage,
+        searchQuery,
+        selectedSeminar,
+        selectedSortMethod,
+        selectedStatus,
+        selectedStage,
+        selectedAssingedDate,
+        selectedFollowedDate,
+        followUpActive,
+        missedFUActive,
+        user
+    ])
+
+
+
     return (
         <div className="p-6 mx-auto">
             {/* Filters */}
@@ -85,19 +174,15 @@ const Page = () => {
 
                     {/* Sort By Dropdown */}
                     <Dropdown
-                        dropdownPosition=""
+                        dropdownPosition="dropdown-end"
                         selectedState={selectedSortMethod}
                         setSelectedState={setSelectedSortMethod}
                         label="Sort By"
-                        options={sortOptions}
-                        setCurrentPage
-                        defaultOptions="None"
-
+                        options={["Default", "Ascending", "Descending"]}
+                        setCurrentPage={setCurrentPage}
+                        defaultOptions={"Default"}
                     />
                 </div>
-
-
-                <h2> Leads Assigned to Agent {id} </h2> 
 
                 {/* Search */}
                 <div className="flex items-center gap-2">
@@ -130,8 +215,8 @@ const Page = () => {
                         selectedState={selectedSeminar}
                         setSelectedState={setSelectedSeminar}
                         label="Seminar Topic"
-                        options={seminarOptions}
-                        setCurrentPage
+                        options={["All", ...course.map(item => item.name)]}
+                        setCurrentPage={setCurrentPage}
 
                     />
 
@@ -142,7 +227,7 @@ const Page = () => {
                         setSelectedState={setSelectedStatus}
                         label="Status"
                         options={statusOptions}
-                        setCurrentPage
+                        setCurrentPage={setCurrentPage}
 
                     />
 
@@ -153,7 +238,8 @@ const Page = () => {
                         setSelectedState={setSelectedAssignedDate}
                         label="Assigned Date"
                         options={assignedDateOptions}
-                        setCurrentPage
+                        setCurrentPage={setCurrentPage}
+                        showDatePicker
 
                     />
 
@@ -162,7 +248,7 @@ const Page = () => {
                         className={`btn btn-sm ${followUpActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
                         onClick={() => {
                             setFollowUpActive(!followUpActive);
-                            setFollowUpDateFilter("All");
+                            setSelectedFollowedpDate("All");
                             setCurrentPage(1);
                         }}
                     >
@@ -178,10 +264,26 @@ const Page = () => {
                             setSelectedState={setSelectedFollowedpDate}
                             label="Followed Date"
                             options={followedOptions}
-                            setCurrentPage
+                            setCurrentPage={setCurrentPage}
+                            showDatePicker
 
                         />
                     )}
+
+
+                    {/* Missed Follow Ups Toggle */}
+                    <button
+                        className={`btn btn-sm ${missedFUActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
+                        onClick={() => {
+                            setMissedFUActive(!missedFUActive);
+                            setCurrentPage(1);
+                        }}
+                    >
+                        Missed Follow Ups (12)
+                    </button>
+
+                    {/* Filter by Followed Date */}
+
 
                 </div>
 
@@ -194,22 +296,43 @@ const Page = () => {
                 leads={leads}
                 setSelectedLead={setSelectedLead}
                 currentPage={currentPage}
+                leadsPerPage={leadsPerPage}
+                missedFUActive={missedFUActive}
+                followUpActive={followUpActive}
             />
 
             <div className="flex justify-between mt-6">
-                <div className="flex  gap-5 items-center">
-
-                    <p className="text-sm">Showing 1–10 of 45 results</p>
-                </div>
+                <p className="text-sm">Showing {leadCountStart}–{leadCountEnd} of {leadsCount?.count} results</p>
 
                 {/* Pagination */}
-                <Pagination
-                    currentPage={currentPage}
-                    totalPages={10}
-                    onPageChange={(page) => setCurrentPage(page)}
-                />
+                <div className="flex items-center gap-4 flex-wrap">
+                    {/* Items Per Page Selector */}
+                    <div className="flex items-center gap-2">
+                        <p className="text-sm text-nowrap">Per page:</p>
+                        <select
+                            className="select select-sm focus:outline-0"
+                            value={leadsPerPage}
+                            onChange={(e) => {
+                                setLeadsPerPage(parseInt(e.target.value));
+                                setCurrentPage(1);
+                            }}
+                        >
+                            {[10, 25, 50, 100, 200].map((n) => (
+                                <option key={n} value={n}>
+                                    {n}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
-                <SidebarFooter />
+                    {/* Pagination Buttons */}
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={goToPage}
+                    />
+                </div>
+
 
             </div>
 
@@ -223,6 +346,7 @@ const Page = () => {
                 onSearch={handleSearch}
                 results={leads}
                 setCurrentPage={setCurrentPage}
+                setSearchQuery={setSearchQuery}
             />
 
 
@@ -230,6 +354,7 @@ const Page = () => {
                 selectedLead={selectedLead}
                 setSelectedLead={setSelectedLead}
                 statusOptions={statusOptions}
+                refetch={refetch}
 
             />
 
@@ -237,7 +362,7 @@ const Page = () => {
     );
 };
 
-export default Page;
+export default AgentAllLeads;
 
 
 

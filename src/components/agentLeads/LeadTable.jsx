@@ -45,7 +45,7 @@ const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , follow
                             <td>{lead.name}</td>
                             <td>{lead.email}</td>
                             <td>{lead.phone}</td>
-                            <td>{lead.address}</td>
+                            <td className="max-w-[250px] whitespace-normal break-words">{lead.address}</td>
                             <td>{lead.seminarTopic}</td>
                             <td>
                                 <span

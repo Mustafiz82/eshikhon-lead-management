@@ -33,7 +33,7 @@ const page = () => {
                         </thead>
                         <tbody>
                             {agents.map(user => (
-                                <tr className="cursor-pointer" onClick={() => {router.push(`/admin/agents/${user.id}`)}} key={user.id}>
+                                <tr className="cursor-pointer" onClick={() => {router.push(`/admin/agents/${user.email}`)}} key={user.id}>
                                     <td>{user.name}</td>
                                     <td>{user.email}</td>
                                     <td className="pl-10">{user.leadCount ?? 0}</td>
