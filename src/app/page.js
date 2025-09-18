@@ -93,8 +93,8 @@ export default function HomePage() {
         <p className="text-red-500">{error}</p>
 
         {/* Submit */}
-        <button type="submit" className="btn mt-5 bg-blue-600 btn-primary w-full">
-          Login
+        <button disabled={loading} type="submit" className="btn mt-5 bg-blue-600 btn-primary w-full">
+       { !loading ?   "Login" : "Logging in ..."}
         </button>
       </form>
     </div>

@@ -157,7 +157,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) =
                             {notes?.map((note, i) => (
                                 <div key={i} className="border border-base-300 mt-2 p-2 bg-base-200  rounded">
                                     <p className="text-xs opacity-70">
-                                        {formateDate(note.date)} • {note.by}
+                                        {formateDate(note.date || note.createdAt)} • {note.by}
                                         {note?.status == "unsaved" && <span title="Click Save Change Button to save the note" className="ml-2 text-yellow-500 font-semibold">(Unsaved)</span>}
                                     </p>
                                     <p>{note.text}</p>

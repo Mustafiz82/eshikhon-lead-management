@@ -62,7 +62,7 @@ const LeadTable = ({
             const actualIndex =
               (currentPage - 1) * leadsPerPage + index;
             return (
-              <tr key={actualIndex} className={`${selectedIds.has(lead._id)  ? "bg-blue-100 dark:!bg-blue-900/50" : ""}`}>
+              <tr key={actualIndex} className={`${selectedIds.has(lead._id)  ? "!bg-blue-900/50" : ""}`}>
                 <td className="flex items-center gap-2">
                   <input
                     type="checkbox"

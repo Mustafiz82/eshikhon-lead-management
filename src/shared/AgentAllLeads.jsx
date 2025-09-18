@@ -72,6 +72,7 @@ const AgentAllLeads = () => {
         "All",
         "Pending",
         "Enrolled",
+        "Joined on seminar",
         "Will Join on Seminar",
         "Not Interested",
         "Enrolled in Other Institute",
