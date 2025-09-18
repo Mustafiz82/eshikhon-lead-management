@@ -27,10 +27,12 @@ const AgentAllLeads = () => {
     const [selectedSortMethod, setSelectedSortMethod] = useState("Default")
     const [selectedStage, setSelectedStage] = useState("All")
 
+
     const [followUpActive, setFollowUpActive] = useState(false);
     const [selectedFollowedDate, setSelectedFollowedpDate] = useState("All")
-
     const [missedFUActive, setMissedFUActive] = useState(false);
+
+    const [includeGlobalSearch, setIncludeGlobalSearch] = useState(false)
 
     const { user } = useContext(AuthContext)
     const { email } = useParams();
@@ -53,7 +55,7 @@ const AgentAllLeads = () => {
         leadStatus: selectedStatus,
         stage: selectedStage,
         assignDate: selectedAssingedDate,
-        assignTo: decodedEmail ? decodedEmail : user.email,
+        assignTo: !includeGlobalSearch ? (decodedEmail ? decodedEmail : user.email) : null,
         sort: selectedSortMethod,
         showOnlyFollowups: followUpActive,
         followUpDate: selectedFollowedDate,
@@ -149,7 +151,8 @@ const AgentAllLeads = () => {
         selectedFollowedDate,
         followUpActive,
         missedFUActive,
-        user
+        user,
+        includeGlobalSearch
     ])
 
 
@@ -197,7 +200,12 @@ const AgentAllLeads = () => {
                     {searchQuery && (
                         <button
                             className="btn btn-xs btn-outline"
-                            onClick={() => setSearchQuery("")}
+                            onClick={() => {
+                                setSearchQuery("")
+                                setIncludeGlobalSearch(false)
+                            }
+
+                            }
                         >
                             Clear
                         </button>
@@ -348,6 +356,8 @@ const AgentAllLeads = () => {
                 results={leads}
                 setCurrentPage={setCurrentPage}
                 setSearchQuery={setSearchQuery}
+                setIncludeGlobalSearch={setIncludeGlobalSearch}
+                includeGlobalSearch={includeGlobalSearch}
             />
 
 

@@ -11,6 +11,7 @@ import { formatFilename } from "@/utils/formateFileName";
 import { showToast } from "@/utils/showToast";
 import { LuDownload, LuUpload } from "react-icons/lu";
 import Link from "next/link";
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 
 const STATUS = {
@@ -271,7 +272,7 @@ const Page = () => {
                     <h2 className="text-2xl font-semibold text-white mb-6"> Upload {uploadMode == "lead" ? "Leads" : "Attendence"} CSV & History</h2>
                     <div className="flex gap-2">
                         <button onClick={() => setUploadMode(prev => prev == "attendence" ? "lead" : "attendence")} className="btn btn-sm bg-blue-600 border-0 btn-primary"><LuUpload className="text-lg" /> Upload {uploadMode == "lead" ? "Attendence" : "Leads"}  CSV</button>
-                        <Link href={"https://docs.google.com/spreadsheets/d/1I79Tsq5nQwSvDbrHhaPC1pP1iJ3rXA0dSOaszIoUU1M/edit?gid=0#gid=0"} ><button className="btn border-0 btn-sm bg-blue-600 btn-primary"> <LuDownload className="text-lg" /> Download Template</button></Link>
+                        <Link href={"https://docs.google.com/spreadsheets/d/1I79Tsq5nQwSvDbrHhaPC1pP1iJ3rXA0dSOaszIoUU1M/edit?gid=0#gid=0"} ><button className="btn border-0 btn-sm bg-blue-600 btn-primary"> <FaExternalLinkAlt  className="text-" /> View Template</button></Link>
                     </div>
                 </div>
 

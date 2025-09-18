@@ -38,8 +38,11 @@ const Page = () => {
     const [isSearchModalOpen, setIsSearchModalOpen] = useState(false); // search modal open/close
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false); // assign modal open/close
 
+
+
+
     const params = new URLSearchParams({
-        status: (statusFilter == "All") ? "All" :  (statusFilter == "Assigned") ? true : false ,
+        status: (statusFilter == "All") ? "All" : (statusFilter == "Assigned") ? true : false,
         course: categoryFilter,
         search: searchQuery.trim(),
         sort: sortMethod,
@@ -47,15 +50,15 @@ const Page = () => {
         currentPage: currentPage,
     }).toString()
 
-    
+
     const { data: leads, loading, error, refetch } = useFetch(`/leads?${params}`)
     const { data: course } = useFetch("/course")
     const { data: leadsCount, refetch: paginateRefetch } = useFetch(`/leads/count?${params}`)
 
 
-    
+
     const handleQuickSelect = (count) => {
-        
+
         const newSet = new Set();
         for (let i = 0; i < Math.min(count, leads.length); i++) {
             newSet.add(leads[i]._id);
@@ -85,7 +88,7 @@ const Page = () => {
         });
     };
 
-    
+
     const totalPages = Math.round((leadsCount?.count / leadsPerPage)) || 1
 
     console.log(totalPages)
@@ -139,7 +142,7 @@ const Page = () => {
 
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [isSearchModalOpen,  selectedIds, lastSelectedIndex]);
+    }, [isSearchModalOpen, selectedIds, lastSelectedIndex]);
 
 
     useEffect(() => {
@@ -154,13 +157,13 @@ const Page = () => {
 
         refetch()
         paginateRefetch()
-        
-        if(searchQuery){
-             setCurrentPage(1)
+
+        if (searchQuery) {
+            setCurrentPage(1)
         }
     }, [statusFilter, searchQuery, categoryFilter, sortMethod, currentPage, leadsPerPage])
 
-    
+
     return (
         <div className="p-6 h-screen overflow-hidden ">
 
@@ -343,6 +346,7 @@ const Page = () => {
                 setSearchQuery={setSearchQuery}
                 results={leads}
                 setCurrentPage={setCurrentPage}
+                
             />
 
             <AssignModal
