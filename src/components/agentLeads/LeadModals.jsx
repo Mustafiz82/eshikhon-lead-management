@@ -35,6 +35,8 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) =
             lastPaid,
             totalDue } = courseInput
 
+            console.log(totalDue)
+
         if (modelStatus == "Enrolled") {
             if (!enrolledTo && !selectedLead?.enrolledTo) {
                 setSaving(false)
