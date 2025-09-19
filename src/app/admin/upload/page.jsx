@@ -149,7 +149,7 @@ const Page = () => {
     const handleCompleteLeadCSVUpload = async (results, fileName) => {
         const rows = results.data;
         const headers = Object.keys(rows[0] || {});
-        const required = ["name", "email", "phone", "address", "seminarTopic"];
+        const required = ["name", "email", "phone", "address", "seminarTopic" , "seminarType"];
         const missing = required.filter((f) => !headers.includes(f));
         if (missing.length > 0) {
             setStatus(fileName, STATUS.ERROR);
@@ -162,13 +162,14 @@ const Page = () => {
         );
 
         const questionWiseData = filtered.map((item) => {
-            const { name, email, address, phone, seminarTopic, leadSource, ...questions } = item;
+            const { name, email, address, phone, seminarTopic, seminarType , leadSource, ...questions } = item;
             return {
                 name,
                 email,
                 address,
                 phone,
                 seminarTopic,
+                seminarType ,
                 questions,
                 sourceFileName: fileName,
                 createdBy: user?.email
@@ -205,6 +206,7 @@ const Page = () => {
         if (["phone", "phone number", "mobile"].includes(normalized)) return "phone";
         if (["address", "location"].includes(normalized)) return "address";
         if (["seminar topic", "topic", "course"].includes(normalized)) return "seminarTopic";
+        if (["seminar type", "type", "course type"].includes(normalized)) return "seminarType";
         if (["Lead Source", "lead source", "source"].includes(normalized)) return "leadSource";
         return header;
     }
@@ -272,7 +274,7 @@ const Page = () => {
                     <h2 className="text-2xl font-semibold text-white mb-6"> Upload {uploadMode == "lead" ? "Leads" : "Attendence"} CSV & History</h2>
                     <div className="flex gap-2">
                         <button onClick={() => setUploadMode(prev => prev == "attendence" ? "lead" : "attendence")} className="btn btn-sm bg-blue-600 border-0 btn-primary"><LuUpload className="text-lg" /> Upload {uploadMode == "lead" ? "Attendence" : "Leads"}  CSV</button>
-                        <Link href={"https://docs.google.com/spreadsheets/d/1I79Tsq5nQwSvDbrHhaPC1pP1iJ3rXA0dSOaszIoUU1M/edit?gid=0#gid=0"} ><button className="btn border-0 btn-sm bg-blue-600 btn-primary"> <FaExternalLinkAlt  className="text-" /> View Template</button></Link>
+                        <a target="blank" href={"https://docs.google.com/spreadsheets/d/1I79Tsq5nQwSvDbrHhaPC1pP1iJ3rXA0dSOaszIoUU1M/edit?gid=0#gid=0"} ><button className="btn border-0 btn-sm bg-blue-600 btn-primary"> <FaExternalLinkAlt  className="text-" /> View Template</button></a>
                     </div>
                 </div>
 

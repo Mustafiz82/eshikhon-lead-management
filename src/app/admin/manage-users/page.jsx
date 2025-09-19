@@ -14,6 +14,7 @@ export default function Page() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formError, setFormError] = useState("");
     const [role, setRole] = useState("user")
+    const [designation, setDesignation] = useState("")
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -26,6 +27,7 @@ export default function Page() {
             setLoading(false);
         }
     };
+    console.log(designation)
 
     useEffect(() => {
         fetchUsers();
@@ -196,26 +198,43 @@ export default function Page() {
 
 
                                 {(role === "user") && (
-                                    <select
-                                        name="designation"
-                                        defaultValue={editUser?.designation || "Junior Executive"}
-                                        className="select dark:bg-gray-900 select-bordered w-full"
-                                        disabled={isSubmitting}
-                                    >
-                                        {allowedDesignations.map((d) => (
-                                            <option key={d} value={d}>{d}</option>
-                                        ))}
-                                    </select>
+                                    <div>
+                                        <label className="text-xs text-white/80 mb-1">
+                                            Designation
+                                        </label>
+                                        <select
+                                            name="designation"
+                                            onChange={(e) => setDesignation(e.target.value)}
+                                            defaultValue={editUser?.designation || "Junior Executive"}
+                                            className="select dark:bg-gray-900 select-bordered w-full"
+                                            disabled={isSubmitting}
+                                        >
+                                            {allowedDesignations.map((d) => (
+                                                <option key={d} value={d}>{d}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 )}
 
-                                {(role == "user" && <input
-                                    type="number"
-                                    name="target"
-                                    placeholder="Target (%)"
-                                    defaultValue={editUser?.target ?? ""}
-                                    className="input dark:bg-gray-900 input-bordered w-full"
-                                    disabled={isSubmitting}
-                                />)}
+
+
+                                {(role == "user" && <div className="flex flex-col gap-1">
+                                    <label className="text-xs text-white/80 mb-1">
+                                        Target %
+                                    </label>
+                                    <input
+                                        type="number"
+                                        name="target"
+                                        placeholder="Target (%)"
+                                        value={editUser?.target ?? designation == "Senior Executive" ? 10 : designation == "Executive" ? 7 : 5}
+                                        className="input dark:bg-gray-900 input-bordered w-full"
+                                        disabled={isSubmitting}
+                                    />
+                                </div>)}
+
+
+
+
                             </div>
 
                             {/* Inline Error */}

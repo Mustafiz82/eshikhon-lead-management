@@ -10,11 +10,13 @@ const AuthProvider = ({ children }) => {
   const isLoggingOut = useRef(false);
 
   function getUser() {
-    const user = localStorage.getItem("user");
-    if (user) {
-      return JSON.parse(user) || null;
+
+    if (typeof window !== "undefined") {
+      const savedUser = localStorage.getItem("user");
+      return savedUser ? JSON.parse(savedUser) : null;
     }
     return null;
+
   }
 
   useEffect(() => {
@@ -22,8 +24,8 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("user", JSON.stringify(user));
     } else {
       localStorage.removeItem("user");
-      
-      
+
+
       if (isLoggingOut.current) {
         Swal.fire({
           icon: "success",
