@@ -11,6 +11,8 @@ import { AuthContext } from "@/context/AuthContext";
 export default function Layout({ children }) {
 
     const { user } = useContext(AuthContext)
+    const {userData } = useContext(AuthContext)
+    
     return (
         <PrivateRoute>
             <div className="drawer drawer-open bg-gray-900 text-gray-100 transition-colors">

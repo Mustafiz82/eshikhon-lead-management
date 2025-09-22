@@ -1,4 +1,7 @@
 'use client';
+import { AuthContext } from '@/context/AuthContext';
+import useFetch from '@/hooks/useFetch';
+import { useContext } from 'react';
 import CountUp from 'react-countup';
 
 const stats = [
@@ -13,7 +16,10 @@ const stats = [
 ];
 
 
+
+
 const LeadsStatusPanel = () => {
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-8 gap-4">
       {stats.map((item, index) => (

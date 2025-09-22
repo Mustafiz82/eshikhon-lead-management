@@ -285,7 +285,7 @@ const AgentAllLeads = () => {
                         className={`btn btn-sm ${missedFUActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
                         onClick={() => {
                             setMissedFUActive(!missedFUActive);
-                            setCurrentPage(1);
+                            setCurrentPage(1);  
                         }}
                     >
                         Missed Follow Ups (12)

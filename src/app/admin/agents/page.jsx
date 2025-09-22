@@ -5,9 +5,6 @@ import React, { useState } from "react";
 
 
 
-
-
-
 const page = () => {
     const router  = useRouter() 
     const {data:user} = useFetch("/user")
@@ -22,13 +19,14 @@ const page = () => {
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th >Total Assigned</th>
+                                <th>This Month Assigned</th>
+                                <th>Connected Today</th>
+                                <th>Completed</th>
                                 <th>Pending</th>
+                                <th>Enrolled</th>
+                                <th>Sales </th>
                                 <th>Target completion</th>
-                                <th>Follow up</th>
-                                <th>Admitted</th>
-                                <th>Joined </th>
-                               
+                             
                             </tr>
                         </thead>
                         <tbody>
@@ -37,12 +35,14 @@ const page = () => {
                                     <td>{user.name}</td>
                                     <td>{user.email}</td>
                                     <td className="pl-10">{user.leadCount ?? 0}</td>
+                                    <td className="pl-10">{user.connectedCallsToday ?? 0}</td>
+                                    <td className="pl-10">{(user.leadCount - user.pendingCount ) || 0}</td>
                                     <td className="pl-10">{user.pendingCount ?? 0}</td>
-                                    <td className="pl-10">{58}%</td>
-                                
-                                    <td className="pl-10">{user.followUpCount ?? 0}</td>
                                     <td className="pl-10">{user.enrolledCount ?? 0}</td>
-                                    <td className="pl-10">{user.joinedOnSeminarCount ?? 0}</td>
+                                    <td className="pl-10">{user.totalPaidFromEnrolled}</td>
+                                
+                                    <td className="pl-10">{user.targetCompletionRate ?? 0}%</td>
+                                 
 
                                 </tr>
 

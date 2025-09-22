@@ -1,68 +1,67 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { AuthContext } from "@/context/AuthContext";
+import React, { useContext } from "react";
 import CountUp from "react-countup";
 
 const medalIcons = ["🥇", "🥈", "🥉"];
 
-const Leaderboard = ({ dataByFilter , title ,  metricLabel = "Students Admitted" }) => {
-  const [filter, setFilter] = useState("overall");
-  const [displayData, setDisplayData] = useState([]);
+const Leaderboard = ({
+  data = [],
+  title,
+  metricLabel = "Students Admitted",
+  valueKey = "enrolledCount", // 👈 default
+  
+}) => {
 
-  useEffect(() => {
-    if (dataByFilter?.[filter]) {
-      const sorted = [...dataByFilter[filter]].sort((a, b) => b.admitted - a.admitted);
-      setDisplayData(sorted);
-    }
-  }, [filter, dataByFilter]);
 
+  const {user} = useContext(AuthContext)
+  
   return (
-    <div className="bg-gray-800 p-6 rounded-xl shadow-md w-full  mx-auto">
+    <div className="bg-gray-800 p-6 rounded-xl shadow-md w-full mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">{title}</h2>
-        <div className="join">
-          {["week", "month", "overall"].map((key) => (
-            <button
-              key={key}
-              className={`btn rounded-none btn-sm  join-item ${filter === key ? "btn-primary bg-blue-600 " : "btn-outline"}`}
-              onClick={() => setFilter(key)}
-            >
-              {key.charAt(0).toUpperCase() + key.slice(1)}
-            </button>
-          ))}
-        </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="table table-zebra w-full">
-          <thead>
-            <tr className="text-sm text-gray-300">
-              <th>Rank</th>
-              <th>Agent Name</th>
-              <th className="text-right">{metricLabel}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {displayData?.length > 0 ? (
-              displayData.map((agent, index) => (
-                <tr style={{backgroundColor : (index % 2 !== 0) && "#2C3A52"}}  key={index}>
-                  <td className="font-bold text-lg">
-                    {index < 3 ? `${medalIcons[index]} ${(index + 1)}` : <span className="pl-7">{index + 1}</span> }
-                  </td>
-                  <td>{agent.name}</td>
-                  <td className="text-right font-semibold text-blue-600">
-                    <CountUp end={agent.admitted} duration={1.2} />
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="3" className="text-center text-gray-400 py-4">
-                  No data available.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      {/* Header */}
+      <div className="grid grid-cols-5 text-sm text-gray-300 font-medium px-4 py-2 border-b border-gray-700">
+        <div>Rank</div>
+        <div className="col-span-3">Agent Name</div>
+        <div className="text-right text-nowrap">{metricLabel}</div>
+      </div>
+
+      {/* Body */}
+      <div>
+        {data?.length > 0 ? (
+          data.map((agent, index) => (
+            <div
+              key={index}
+              className={`grid grid-cols-5 items-center px-4 py-3 ${(user?.email == agent.email) ? "bg-blue-900/50 font-bold" : ""} `}
+            >
+              {/* Rank */}
+              <div className="font-bold text-lg">
+                {index < 3 ? (
+                  <>
+                    {medalIcons[index]} {index + 1}
+                  </>
+                ) : (
+                  <span className="pl-7">{index + 1}</span>
+                )}
+              </div>
+
+              {/* Name */}
+              <div className="col-span-3">{agent.name}</div>
+
+              {/* Metric */}
+              <div className="text-right font-semibold text-blue-600">
+                <CountUp end={agent[valueKey] || 0} duration={1.2} />
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center text-gray-400 py-4">
+            No data available.
+          </div>
+        )}
       </div>
     </div>
   );

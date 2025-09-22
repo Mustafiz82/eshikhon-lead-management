@@ -9,19 +9,14 @@ import { useContext, useEffect, useState } from "react";
 const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) => {
 
     const [modelStatus, setModelStatus] = useState(selectedLead?.leadStatus || "Pending")
-    const [followUpDate, setFollowUpDate] = useState("")
     const [estemitePaymentDate, setEstimatePaymentDate] = useState(null)
+    const [followUpDate, setFollowUpDate] = useState("")
+    const [courseInput, setCourseInput] = useState({})
+    const [saving, setSaving] = useState(false)
+    const [error, setError] = useState("")
     const [notes, setNotes] = useState(selectedLead?.note)
     const { user } = useContext(AuthContext)
-    const [error, setError] = useState("")
-    const [courseInput, setCourseInput] = useState({})
     const { data: course } = useFetch("/course")
-    const [saving , setSaving] = useState(false)
-
-    console.log(selectedLead?.leadStatus)
-
-
-
 
 
     const handleSaveChanges = async () => {
@@ -35,7 +30,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) =
             lastPaid,
             totalDue } = courseInput
 
-            console.log(totalDue)
+        console.log(totalDue)
 
         if (modelStatus == "Enrolled") {
             if (!enrolledTo && !selectedLead?.enrolledTo) {
@@ -46,7 +41,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) =
 
             if (filteredCourse?.length == 0) {
                 setSaving(false)
-                return setError("Pleas Input a Valid Course Name") ;
+                return setError("Pleas Input a Valid Course Name");
             }
 
         }
@@ -68,6 +63,10 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) =
             lastContacted: Date.now()
         }
 
+        if (modelStatus === "Enrolled" && !selectedLead?.enrolledAt) {
+            obj.enrolledAt = Date.now();
+        }
+
         const cleanedObj = Object.fromEntries(
             Object.entries(obj).filter(([_, v]) => {
                 if (Array.isArray(v)) return v.length > 0;
@@ -86,7 +85,6 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) =
 
     }
 
-
     useEffect(() => {
         if (selectedLead) {
             setModelStatus(selectedLead.leadStatus || "Pending");
@@ -94,11 +92,13 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) =
         }
     }, [selectedLead]);
 
+
     const handleAddNote = (e) => {
         e.preventDefault()
         setNotes([...notes, { text: e.target.note?.value, status: "unsaved", by: user?.name, date: formateDate(Date.now()) }])
         e.target.reset()
     }
+
 
     return (
         selectedLead && <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
@@ -147,9 +147,6 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) =
 
 
 
-                        <div>
-
-                        </div>
                     </div>
 
                     {/*  Column 2: Notes */}
@@ -284,7 +281,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) =
                             disabled={saving}
                             className="btn w-full -mt-1  btn-primary bg-blue-600  text-white hover:bg-[#333] border border-gray-600 "
                         >
-                           {saving ? "Saving..." : " Save Changes"}
+                            {saving ? "Saving..." : " Save Changes"}
                         </button>
                     </div>
 
