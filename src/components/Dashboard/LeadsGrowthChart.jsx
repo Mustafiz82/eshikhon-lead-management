@@ -9,6 +9,7 @@ import {
   Legend,
   Tooltip,
 } from 'chart.js';
+import useFetch from '@/hooks/useFetch';
 
 ChartJS.register(
   LineElement,
@@ -20,6 +21,11 @@ ChartJS.register(
 );
 
 const LeadsGrowthChart = () => {
+
+
+  const {data:leadGrowth} = useFetch("/dashboard/leadGrowth")
+  console.log(leadGrowth)
+
   const labels = [
     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
@@ -30,7 +36,7 @@ const LeadsGrowthChart = () => {
     datasets: [
       {
         label: 'Total Leads',
-        data: [100, 140, 160, 200, 250, 270, 320, 360, 400, 420, 450, 500],
+        data: leadGrowth?.totalLeads || [],
         borderColor: '#06b6d4',
         backgroundColor: '#06b6d4',
         tension: 0.3,
@@ -38,7 +44,7 @@ const LeadsGrowthChart = () => {
       },
       {
         label: 'Admitted Leads',
-        data: [10, 20, 35, 50, 60, 65, 80, 90, 100, 110, 115, 120],
+        data: leadGrowth?.enrolledLeads || [],
         borderColor: '#8b5cf6',
         backgroundColor: '#8b5cf6',
         tension: 0.3,

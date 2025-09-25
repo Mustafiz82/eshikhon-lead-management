@@ -12,7 +12,7 @@ const Page = () => {
   
 
   const { data: leaderboard, loading , refetch } = useFetch(
-    `/leaderboards?month=${selectedFilter}&year=2025`
+    `/dashboard/leaderboards?month=${selectedFilter}&year=2025`
   );
 
   useEffect(() => {
