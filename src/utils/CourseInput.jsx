@@ -13,7 +13,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead 
   const [selectedDiscountinput, setSelectedDiscountInput] = useState("")
   const [selectedDiscountUnit, setSelectedDiscountUnit] = useState("%")
   const [lastPaid, setlastPaid] = useState()
-
+  const [selectedCourseId, setSelectedCourseId] = useState(null);
 
   const { data: course } = useFetch("/course")
   const { data: discount } = useFetch("/discount")
@@ -21,7 +21,9 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead 
 
   const selectedDiscountObject = discount.find(item => (item.name == selectedDiscount) || (item.name == selectedLead?.discountSource))
   const isCommited = selectedDiscountObject?.authority === "committed"
-  const selectedCourse = course.find(item => (item.name.toLowerCase() == searchInput.toLocaleLowerCase()) || (item.name.toLowerCase() == selectedLead?.enrolledTo?.toLocaleLowerCase()))
+  // const selectedCourse = course.find(item => (item.name.toLowerCase() == searchInput.toLocaleLowerCase()) || (item.name.toLowerCase() == selectedLead?.enrolledTo?.toLocaleLowerCase()))
+  const selectedCourse = course.find(item => item._id === selectedCourseId);
+
 
   useEffect(() => {
     const finalUnit = isCommited
@@ -67,11 +69,11 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead 
   }
 
 
-  const handleSearchSuggesionClick = (input) => {
-    setSearchInput(input)
-    setSearchSuggesion("")
-  }
-
+  const handleSearchSuggesionClick = (item) => {
+    setSearchInput(item?.name); // still shows name in input
+    setSelectedCourseId(item?._id); // but internally, we track by id
+    setSearchSuggesion("");
+  };
 
 
   const { minValue, maxValue } = getDiscountBounds(
@@ -161,7 +163,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead 
         {searchSuggesion?.length > 0 && <ul className="bg-base-100 fixed z-50 shadow-md mt-1 rounded-box border border-base-300">
           {
             searchSuggesion.map(item => <li
-              onClick={() => handleSearchSuggesionClick(item.name)}
+              onClick={() => handleSearchSuggesionClick(item)}
               className="px-4 py-2 flex justify-between w-[290px] bg-gray-700 cursor-pointer hover:bg-base-200">
               <span>{item.name} ({item.type})</span>
               <span>৳ {item.price}</span>

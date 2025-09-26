@@ -38,6 +38,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) =
                 return setError("Please input Course Name")
             }
             let filteredCourse = course.filter(item => (item.name == enrolledTo) || (item.name == selectedLead?.enrolledTo))
+            console.log(filteredCourse)
 
             if (filteredCourse?.length == 0) {
                 setSaving(false)
