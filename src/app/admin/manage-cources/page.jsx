@@ -4,13 +4,25 @@ import useDelete from "@/hooks/useDelete";
 import useFetch from "@/hooks/useFetch";
 import useSaveData from "@/hooks/useSaveData";
 import Table from "@/shared/Table";
-import React from "react";
+import CustomSelect from "@/utils/CustomSelect";
+import React, { useEffect, useState } from "react";
+
+
+
+
+const courseOption = [
+  { value: "Online", label:"Online" },
+  { value: "Offline", label: "Offline" },
+  { value: "Video", label: "Video" }
+]
+
 
 export default function ManageCoursePage() {
 
   const { data: courses, loading, error, refetch } = useFetch("/course")
   const { setEditCourse, editCourse, handleSave, loading: isSubmitting, error: submitError } = useSaveData(refetch)
   const { handleDelete } = useDelete(refetch, "course")
+  const [ courseType, setCourseType ] = useState("Online")
 
 
   const handleSubmit = async (e) => {
@@ -19,11 +31,11 @@ export default function ManageCoursePage() {
 
     const payload = {
       name: form.course_name.value.trim(),
-      type: form.type.value,
+      type: courseType,
       price: form.price.value ? Number(form.price.value) : null,
     };
     console.log(payload)
-    await handleSave(payload, form , "/course")
+    await handleSave(payload, form, "/course")
 
   };
 
@@ -50,7 +62,18 @@ export default function ManageCoursePage() {
   }
 
 
-  
+  useEffect(() => {
+
+    if(editCourse)
+    setCourseType(editCourse?.type)
+  } , [editCourse])
+
+
+
+
+
+
+
   return (
     <div className="flex h-screen overflow-hidden">
       {loading ? (
@@ -79,11 +102,11 @@ export default function ManageCoursePage() {
                   required
                   placeholder="Course Name"
                   defaultValue={editCourse?.name || ""}
-                  className="input bg-gray-900 input-bordered w-full"
+                  className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                   disabled={isSubmitting}
                 />
 
-                <select
+                {/* <select
                   name="type"
                   defaultValue={editCourse?.type || "Online"}
                   className="select bg-gray-900 select-bordered w-full"
@@ -92,14 +115,24 @@ export default function ManageCoursePage() {
                   <option value="Online" className="text-black">Online</option>
                   <option value="Offline" className="text-black">Offline</option>
                   <option value="Video" className="text-black">Video</option>
-                </select>
+                </select> */}
+
+                <div>
+                  <CustomSelect
+                    selected={courseType}
+                    setSelected={setCourseType}
+                    options={courseOption}
+                    bgColor
+
+                  />
+                </div>
 
                 <input
                   type="number"
                   name="price"
                   placeholder="Price (৳)"
                   defaultValue={editCourse?.price ?? ""}
-                  className="input bg-gray-900 input-bordered w-full"
+                  className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                   disabled={isSubmitting}
                   min={0}
                   step="1"

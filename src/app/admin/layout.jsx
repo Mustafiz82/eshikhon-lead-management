@@ -7,9 +7,12 @@ import Link from "next/link";
 import SidebarFooter from "@/shared/SidebarFooter";
 import { usePathname, useRouter } from "next/navigation";
 import AdminRoute from "@/components/auth/AdminRoute";
+import { useContext } from "react";
+import { AuthContext } from "@/context/AuthContext";
 
 export default function Layout({ children }) {
     const pathname = usePathname()
+    const {user} = useContext(AuthContext)
 
     const menuItems = [
         { href: "/admin", icon: <RiDashboardFill className="text-xl" />, label: "Dashboard" },
@@ -44,6 +47,15 @@ export default function Layout({ children }) {
                                 </li>
                             </Link>
                         ))}
+                        <li className="mt-auto px-5 flex flex-row py-3 border-t border-gray-700/30 dark:border-gray-200/20 items-center">
+
+                            <div className="p-0 mt-5">
+
+                                <p className="text-sm font-semibold truncate">{user?.name || "User"}</p>
+                                <p className="text-xs opacity-70 truncate">( {user?.role || "Agent"} )</p>
+                            </div>
+                        </li>
+
                         <SidebarFooter />
                     </ul>
                 </div>

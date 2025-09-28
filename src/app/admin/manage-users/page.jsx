@@ -1,11 +1,23 @@
 "use client";
 import axiosPublic from "@/api/axios";
+import CustomSelect from "@/utils/CustomSelect";
+import { showAlert, showConfirm } from "@/utils/swal";
 import React, { useEffect, useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import Swal from "sweetalert2";
 
-const allowedDesignations = ["Junior Executive", "Executive", "Senior Executive"];
+const allowedDesignations = [
+    { value: "Junior Executive", label: "Junior Executive" },
+    { value: "Executive", label: "Executive" },
+    { value: "Senior Executive", label: "Senior Executive" },
+];
+
+
+const roleOption = [
+    { value: "user", label: "User" },
+    { value: "admin", label: "Admin" }
+]
+
 
 export default function Page() {
     const [users, setUsers] = useState([]);
@@ -14,7 +26,10 @@ export default function Page() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formError, setFormError] = useState("");
     const [role, setRole] = useState("user")
-    const [designation, setDesignation] = useState("")
+    const [designation, setDesignation] = useState(editUser?.designation || "Junior Executive")
+    const [fetchError, setFetchError] = useState("")
+
+    console.log(editUser?.designation)
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -22,7 +37,7 @@ export default function Page() {
             const res = await axiosPublic.get("/user");
             setUsers(res.data || []);
         } catch (err) {
-            Swal.fire("Error", err?.response?.data?.error || err.message, "error");
+            setFetchError(err?.response?.data?.error || err.message,)
         } finally {
             setLoading(false);
         }
@@ -41,8 +56,8 @@ export default function Page() {
             name: form.user_name.value.trim(),
             email: form.user_email.value.trim().toLowerCase(),
             password: form.user_password.value,
-            role: form.role.value,
-            designation: form.role.value === "admin" ? null : form.designation?.value || null,
+            role: role,
+            designation: designation,
             target: form.target.value ? Number(form.target.value) : null,
         };
         setIsSubmitting(true);
@@ -73,29 +88,33 @@ export default function Page() {
     };
 
     const handleDelete = async (id) => {
-        const result = await Swal.fire({
-            title: "Are you sure?",
-            text: "This action will permanently delete the user.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, delete it!"
-        });
+        const result = await showConfirm(
+            "Are you sure?",
+            "This action will permanently delete the user.",
+            "Yes, delete it!"
+        );
 
         if (result.isConfirmed) {
             try {
                 await axiosPublic.delete(`/user/${id}`);
-                Swal.fire("Deleted!", "User has been deleted.", "success");
+                showAlert("Deleted!", "User has been deleted.", "success");
+                // or use toast instead:
+                // showToast("User deleted", "success");
                 fetchUsers();
             } catch (error) {
-                Swal.fire("Error", error?.response?.data?.error || error.message, "error");
+                showAlert("Error", error?.response?.data?.error || error.message, "error");
             }
         }
     };
 
 
-    // console.log(editUser.role.toLowerCase().trim())
+    useEffect(() => {
+        if (editUser) {
+            setDesignation(editUser?.designation)
+            setRole(editUser?.role)
+        }
+    }, [editUser])
+
 
     return (
         <div className="flex h-screen overflow-hidden">
@@ -106,15 +125,20 @@ export default function Page() {
                     {/* Table */}
                     <div className="flex-1 p-6">
                         <div className="overflow-x-auto">
-                            <table className="table table-md table-zebra w-full">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th><th>Email</th><th>Role</th><th>Designation</th><th>Target (%)</th><th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {users.length > 0 ? (
-                                        users.map((user) => (
+                            {users.length > 0 ? (
+                                <table className="table table-md table-zebra w-full">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Designation</th>
+                                            <th>Target (%)</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {users.map((user) => (
                                             <tr key={user._id || user.id}>
                                                 <td>{user.name}</td>
                                                 <td>{user.email}</td>
@@ -136,15 +160,16 @@ export default function Page() {
                                                     </button>
                                                 </td>
                                             </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="6" className="text-center text-gray-400">No users found.</td>
-                                        </tr>
-                                    )}
-                                </tbody>
-                            </table>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="w-full text-center py-6 text-gray-400">
+                                    No users found. {fetchError}
+                                </div>
+                            )}
                         </div>
+
                     </div>
 
                     {/* Drawer */}
@@ -161,7 +186,7 @@ export default function Page() {
                                     required
                                     placeholder="Name"
                                     defaultValue={editUser?.name || ""}
-                                    className="input dark:bg-gray-900 input-bordered w-full"
+                                    className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                     disabled={isSubmitting}
                                 />
 
@@ -171,7 +196,7 @@ export default function Page() {
                                     required
                                     placeholder="Email"
                                     defaultValue={editUser?.email || ""}
-                                    className="input dark:bg-gray-900 input-bordered w-full"
+                                    className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                     disabled={isSubmitting}
                                 />
 
@@ -181,12 +206,12 @@ export default function Page() {
                                     placeholder="Password"
                                     minLength={6}
                                     required={!editUser}
-                                    className="input dark:bg-gray-900 input-bordered w-full"
+                                    className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                     autoComplete="new-password"
                                     disabled={isSubmitting}
                                 />
 
-                                <select
+                                {/* <select
                                     name="role"
                                     className="select dark:bg-gray-900 select-bordered w-full"
                                     disabled={isSubmitting}
@@ -194,32 +219,57 @@ export default function Page() {
                                 >
                                     <option selected={editUser?.role?.toLowerCase()?.trim() == "user"} value="user">User</option>
                                     <option selected={editUser?.role?.toLowerCase()?.trim() == "admin"} value="admin">Admin</option>
-                                </select>
+                                </select> */}
+                                <div>
+                                    <p className="text-xs text-white/70 mb-2">
+                                        Role :
+                                    </p>
+                                    <CustomSelect
+                                        selected={role}
+                                        setSelected={setRole}
+                                        options={roleOption}
+                                        bgColor
+
+                                    />
+                                </div>
 
 
                                 {(role === "user") && (
+                                    // <div>
+                                    //     <label className="text-xs text-white/70 mb-1">
+                                    //         Designation
+                                    //     </label>
+                                    //     <select
+                                    //         name="designation"
+                                    //         onChange={(e) => setDesignation(e.target.value)}
+                                    //         defaultValue={editUser?.designation || "Junior Executive"}
+                                    //         className="select dark:bg-gray-900 select-bordered w-full"
+                                    //         disabled={isSubmitting}
+                                    //     >
+                                    //         {allowedDesignations.map((d) => (
+                                    //             <option key={d} value={d}>{d}</option>
+                                    //         ))}
+                                    //     </select>
+                                    // </div>
                                     <div>
-                                        <label className="text-xs text-white/80 mb-1">
-                                            Designation
-                                        </label>
-                                        <select
-                                            name="designation"
-                                            onChange={(e) => setDesignation(e.target.value)}
-                                            defaultValue={editUser?.designation || "Junior Executive"}
-                                            className="select dark:bg-gray-900 select-bordered w-full"
-                                            disabled={isSubmitting}
-                                        >
-                                            {allowedDesignations.map((d) => (
-                                                <option key={d} value={d}>{d}</option>
-                                            ))}
-                                        </select>
+                                        <p className="text-xs text-white/70 mb-2">
+                                            Designation :
+                                        </p>
+
+                                        <CustomSelect
+                                            selected={designation}
+                                            setSelected={setDesignation}
+                                            options={allowedDesignations}
+                                            bgColor
+
+                                        />
                                     </div>
                                 )}
 
 
 
                                 {(role == "user" && <div className="flex flex-col gap-1">
-                                    <label className="text-xs text-white/80 mb-1">
+                                    <label className="text-xs text-white/70 mb-1">
                                         Target %
                                     </label>
                                     <input
@@ -227,7 +277,7 @@ export default function Page() {
                                         name="target"
                                         placeholder="Target (%)"
                                         value={editUser?.target ?? designation == "Senior Executive" ? 10 : designation == "Executive" ? 7 : 5}
-                                        className="input dark:bg-gray-900 input-bordered w-full"
+                                        className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                         disabled={isSubmitting}
                                     />
                                 </div>)}

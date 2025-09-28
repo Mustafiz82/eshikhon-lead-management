@@ -22,14 +22,14 @@ const Page = () => {
   console.log(leaderboard)
 
 
-  if (loading) return <p className="text-white">Loading...</p>;
+  // if (loading) return <p className="text-white">Loading...</p>;
 
   return (
     <div className="p-6  min-h-screen">
       <div className="flex justify-between mb-4">
         <h2 className="text-white text-xl font-semibold capitalize">{user.name} Dashboard</h2>
         <div className="flex gap-2 items-center">
-          <p className="whitespace-nowrap text-gray-300">View Statistics for:</p>
+          <p className="whitespace-nowrap  text-gray-300">View Statistics for:</p>
           <select
             value={selectedFilter}
             onChange={(e) => setSelectedFilter(e.target.value)}
@@ -60,6 +60,7 @@ const Page = () => {
           data={leaderboard?.byAdmitCount || []}
           valueKey="enrolledCount"
           metricLabel="Admits"
+          loading={loading}
         />
 
         <Leaderboard
@@ -67,6 +68,7 @@ const Page = () => {
           data={leaderboard?.bySales || []}
           valueKey="totalPaidFromEnrolled"
           metricLabel="Sales (৳)"
+          loading={loading}
         />
 
         <Leaderboard
@@ -74,6 +76,7 @@ const Page = () => {
           data={leaderboard?.byConversion || []}
           valueKey="conversionRate"
           metricLabel="Conversion (%)"
+          loading={loading}
         />
 
         <Leaderboard
@@ -81,6 +84,7 @@ const Page = () => {
           data={leaderboard?.byTargetFilled || []}
           valueKey="targetFilled"
           metricLabel="Completed Target (%)"
+          loading={loading}
         />
 
       </div>

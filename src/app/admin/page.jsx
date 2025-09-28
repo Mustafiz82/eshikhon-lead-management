@@ -2,10 +2,10 @@
 import CallCountTable from "@/components/Dashboard/CallCountTable";
 import LeadsGrowthChart from "@/components/Dashboard/LeadsGrowthChart";
 import LeadsStatusPanel from "@/components/Dashboard/LeadsStatusPanel";
-import SeminarPieChart from "@/components/Dashboard/SeminarPieChart";
 import { AuthContext } from "@/context/AuthContext";
 import useFetch from "@/hooks/useFetch";
 import Leaderboard from "@/shared/Leaderboard";
+import CustomSelect from "@/utils/CustomSelect";
 import React, { useContext, useEffect, useState } from "react";
 
 const page = () => {
@@ -19,41 +19,38 @@ const page = () => {
         `/dashboard/leaderboards?month=${selectedFilter}&year=2025`
     );
 
-    useEffect(() => {
-        refetch()
-    }, [selectedFilter])
-
     console.log(selectedFilter)
 
+ 
 
-    if (loading) return <p className="text-white">Loading...</p>;
-
-
-
+    const options = [
+            { value: "all", label: "All Time" },
+            { value: "1", label: "January" },
+            { value: "2", label: "February" },
+            { value: "3", label: "March" },
+            { value: "4", label: "April" },
+            { value: "5", label: "May" },
+            { value: "6", label: "June" },
+            { value: "7", label: "July" },
+            { value: "8", label: "August" },
+            { value: "9", label: "September" },
+            { value: "10", label: "October" },
+            { value: "11", label: "November" },
+            { value: "12", label: "December" },
+        ];
+    
     return <div className="">
         <div className="flex p-6 sticky top-0 bg-slate-900 justify-between mb-4">
             <h2 className="text-white text-xl font-semibold capitalize">{user.name} Dashboard</h2>
             <div className="flex gap-2 items-center">
-                <p className="whitespace-nowrap text-gray-300">View Statistics for:</p>
-                <select
-                    value={selectedFilter}
-                    onChange={(e) => setSelectedFilter(e.target.value)}
-                    className="select min-w-xs select-sm bg-gray-800 text-gray-200 border border-gray-700 rounded-md"
-                >
-                    <option value="all">All Time</option>
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">June</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
-                </select>
+                <p className="whitespace-nowrap    text-gray-300">View Statistics for:</p>
+
+                <CustomSelect
+                    selected={selectedFilter}
+                    setSelected={setSelectedFilter}
+                    options={options}
+         
+                />
             </div>
         </div>
 
@@ -68,6 +65,7 @@ const page = () => {
                     data={leaderboard?.byAdmitCount || []}
                     valueKey="enrolledCount"
                     metricLabel="Admits"
+                    loading={loading}
                 />
 
                 <Leaderboard
@@ -75,6 +73,7 @@ const page = () => {
                     data={leaderboard?.bySales || []}
                     valueKey="totalPaidFromEnrolled"
                     metricLabel="Sales (৳)"
+                    loading={loading}
                 />
 
                 <Leaderboard
@@ -82,6 +81,7 @@ const page = () => {
                     data={leaderboard?.byConversion || []}
                     valueKey="conversionRate"
                     metricLabel="Conversion (%)"
+                    loading={loading}
                 />
 
                 <Leaderboard
@@ -89,6 +89,7 @@ const page = () => {
                     data={leaderboard?.byTargetFilled || []}
                     valueKey="targetFilled"
                     metricLabel="Completed Target (%)"
+                    loading={loading}
                 />
             </div>
 

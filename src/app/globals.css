@@ -3,6 +3,7 @@
 /* @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *)); */
 
 
+
 .wrapper {
   mask-image: linear-gradient(to bottom,
       rgba(0, 0, 0, 0),
@@ -217,4 +218,11 @@
 
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(1); /* makes it white */
+}
+
+
+
+.stasticsSelect > option:hover {
+    /* box-shadow: 0 0 10px 100px #000 inset; */
+    background-color: red !important;
 }

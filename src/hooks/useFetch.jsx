@@ -31,7 +31,7 @@ const useFetch = (path) => {
 
     useEffect(() => {
         fetchCourses();
-    }, [refetchState]);
+    }, [path , refetchState]);
 
     return {data , loading , error , refetch}
 }

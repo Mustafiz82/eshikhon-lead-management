@@ -5,9 +5,19 @@ import useDelete from "@/hooks/useDelete";
 import useFetch from "@/hooks/useFetch";
 import useSaveData from "@/hooks/useSaveData";
 import Table from "@/shared/Table";
+import CustomSelect from "@/utils/CustomSelect";
 import React, { useContext, useEffect, useState } from "react";
 import { FiPlus, FiX } from "react-icons/fi"
 import { toast } from "react-toastify";
+
+
+
+const courseTypeOption = [
+    { value: "Online", label: "Online" },
+    { value: "Offline", label: "Offline" },
+    { value: "Video", label: "Video" }
+]
+
 
 export default function ManageCoursePage() {
 
@@ -18,6 +28,7 @@ export default function ManageCoursePage() {
     // when editing a lead, prefill select and questions
 
     const { user } = useContext(AuthContext)
+    const [courseType, setCourseType] = useState("Online")
     const { data: courses } = useFetch("/course")
     const { data: leads, loading, error, refetch } = useFetch(`/leads?createdBy=${user?.email}`)
     const { setEditCourse, editCourse, handleSave, loading: isSubmitting, error: submitError } = useSaveData(refetch)
@@ -82,10 +93,11 @@ export default function ManageCoursePage() {
             address: form.lead_Address.value.trim(),
             questions: formattedQuestions,
             seminarTopic: selectedCourse,
+            seminarType : courseType,
             leadSource: "incoming",
             createdBy: user.email,
             assignTo: user.email,
-            assignDate : Date.now()
+            assignDate: Date.now()
         };
         console.log(payload)
         await handleSave(payload, form, "/leads/single-lead")
@@ -117,7 +129,12 @@ export default function ManageCoursePage() {
     }
 
 
-    
+
+
+
+
+
+
     return (
         <div className="flex  h-screen">
             {loading ? (
@@ -193,6 +210,31 @@ export default function ManageCoursePage() {
                                         </option>
                                     ))}
                                 </select>
+
+
+                                {/* <div>
+                                    <CustomSelect
+                                        selected={selectedCourse}
+                                        setSelected={setSelectedCourse}
+                                        options={courseTypeOption}
+                                        bgColor
+
+                                    />
+                                </div> */}
+
+
+
+                                <div>
+                                    <CustomSelect
+                                        selected={courseType}
+                                        setSelected={setCourseType}
+                                        options={courseTypeOption}
+                                        bgColor
+
+                                    />
+                                </div>
+
+
 
                                 <div className="mt-4">
 

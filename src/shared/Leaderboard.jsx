@@ -3,7 +3,7 @@ import { AuthContext } from "@/context/AuthContext";
 import React, { useContext } from "react";
 import CountUp from "react-countup";
 
-const medalIcons = ["🥇", "🥈", "🥉"];
+const medalIcons = ["/medels/gold.png", "/medels/silver.png", "/medels/bronze.png"];
 
 const Leaderboard = ({
   data = [],
@@ -11,13 +11,15 @@ const Leaderboard = ({
   metricLabel = "Students Admitted",
   valueKey = "enrolledCount", // 👈 default
   
+  
 }) => {
 
 
   const {user} = useContext(AuthContext)
+  let loading = true
   
   return (
-    <div className="bg-gray-800 p-6 rounded-xl shadow-md w-full mx-auto">
+    <div className="bg-gray-800 hover:bg-blue-600/20 duration-300 p-6 rounded-xl shadow-md w-full mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">{title}</h2>
       </div>
@@ -40,9 +42,9 @@ const Leaderboard = ({
               {/* Rank */}
               <div className="font-bold text-lg">
                 {index < 3 ? (
-                  <>
-                    {medalIcons[index]} {index + 1}
-                  </>
+                  <div className="flex gap-1 items-center">
+                    <img className="w-7 h-7" src={medalIcons[index]} alt="" />  {index + 1}
+                  </div>
                 ) : (
                   <span className="pl-7">{index + 1}</span>
                 )}
@@ -59,7 +61,7 @@ const Leaderboard = ({
           ))
         ) : (
           <div className="text-center text-gray-400 py-4">
-            No data available.
+           {loading ? "Loading..." : " No data available."} 
           </div>
         )}
       </div>

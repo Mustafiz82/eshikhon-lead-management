@@ -70,7 +70,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead 
 
 
   const handleSearchSuggesionClick = (item) => {
-    setSearchInput(item?.name); // still shows name in input
+    setSearchInput(item?.name); //  shows name in input
     setSelectedCourseId(item?._id); // but internally, we track by id
     setSearchSuggesion("");
   };

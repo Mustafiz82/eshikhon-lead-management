@@ -252,6 +252,7 @@ export default function ManageDiscountPage() {
                                             defaultValue={editDiscount?.maxValue ?? ""}
                                             className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                             disabled={isSubmitting}
+
                                             min={0}
                                             step="1"
                                             required
@@ -279,8 +280,9 @@ export default function ManageDiscountPage() {
                                     <input
                                         type="date"
                                         name="startAt"
+                                        onClick={(e) => e.target.showPicker && e.target.showPicker()}
                                         defaultValue={editDiscount?.startAt?.slice(0, 10) || ""}
-                                        className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
+                                        className="input bg-gray-900  input-bordered w-full focus:outline-0 focus:border-blue-500"
                                         disabled={isSubmitting}
                                         required
                                     />
@@ -292,6 +294,7 @@ export default function ManageDiscountPage() {
                                     </label>
                                     <input
                                         type="date"
+                                        onClick={(e) => e.target.showPicker && e.target.showPicker()}
                                         name="expireAt"
                                         defaultValue={editDiscount?.expireAt?.slice(0, 10) || ""}
                                         className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"

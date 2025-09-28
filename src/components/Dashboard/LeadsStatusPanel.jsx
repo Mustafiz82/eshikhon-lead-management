@@ -12,7 +12,7 @@ import CountUp from 'react-countup';
 const LeadsStatusPanel = ({selectedFilter}) => {
 
   const { user } = useContext(AuthContext)
-  const { data: userData, refetch } = useFetch(`/dashboard/admin?month=${selectedFilter}&year=2025&email=${user.email}`);
+  const { data: userData, loading } = useFetch(`/dashboard/admin?month=${selectedFilter}&year=2025&email=${user.email}`);
 
 
   console.log(userData)
@@ -38,9 +38,11 @@ const LeadsStatusPanel = ({selectedFilter}) => {
           className={`rounded-md p-4 text-white shadow-sm bg-gradient-to-r ${item.gradient}`}
         >
           <p className="text-sm font-medium mb-1">{item.label}</p>
-          <p className="text-3xl font-bold">
+          {
+            loading ? <p className='animate-pulse py-2'> counting... </p> :  <p className="text-3xl font-bold">
             <CountUp end={item.value || 0} duration={1.5} separator="," />
           </p>
+          }
         </div>
       ))}
     </div>

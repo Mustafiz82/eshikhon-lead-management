@@ -48,6 +48,7 @@ const Page = () => {
         sort: sortMethod,
         limit: leadsPerPage,
         currentPage: currentPage,
+        fields : "table"
     }).toString()
 
 
@@ -351,6 +352,7 @@ const Page = () => {
 
             <AssignModal
                 isOpen={isAssignModalOpen}
+                refetch={refetch}
                 onClose={() => setIsAssignModalOpen(false)}
                 agents={agents}
                 selectedIds={selectedIds}
