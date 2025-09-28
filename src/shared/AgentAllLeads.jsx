@@ -136,24 +136,24 @@ const AgentAllLeads = () => {
 
 
 
-    useEffect(() => {
-        refetch()
-        paginateRefetch()
-    }, [
-        currentPage,
-        leadsPerPage,
-        searchQuery,
-        selectedSeminar,
-        selectedSortMethod,
-        selectedStatus,
-        selectedStage,
-        selectedAssingedDate,
-        selectedFollowedDate,
-        followUpActive,
-        missedFUActive,
-        user,
-        includeGlobalSearch
-    ])
+    // useEffect(() => {
+    //     refetch()
+    //     paginateRefetch()
+    // }, [
+    //     currentPage,
+    //     leadsPerPage,
+    //     searchQuery,
+    //     selectedSeminar,
+    //     selectedSortMethod,
+    //     selectedStatus,
+    //     selectedStage,
+    //     selectedAssingedDate,
+    //     selectedFollowedDate,
+    //     followUpActive,
+    //     missedFUActive,
+    //     user,
+    //     includeGlobalSearch
+    // ])
 
 
 
@@ -366,6 +366,7 @@ const AgentAllLeads = () => {
                 setSelectedLead={setSelectedLead}
                 statusOptions={statusOptions}
                 refetch={refetch}
+                course={course}
                 
 
             />

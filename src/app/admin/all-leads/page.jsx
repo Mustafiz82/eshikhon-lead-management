@@ -156,8 +156,8 @@ const Page = () => {
 
     useEffect(() => {
 
-        refetch()
-        paginateRefetch()
+        // refetch()
+        // paginateRefetch()
 
         if (searchQuery) {
             setCurrentPage(1)

@@ -79,14 +79,13 @@ const AssignModal = ({
 
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Assign to Agent" size="max-w-4xl">
+    <Modal isOpen={isOpen} onClose={onClose} title="Assign to Agent" size="max-w-lg">
       <div className="overflow-x-auto">
         <table className="table w-full">
           <thead>
             <tr className="bg-base-200 text-sm text-base-content/70">
               <th>Agent Name</th>
-              <th>Assigned Leads</th>
-              <th>Pending Leads</th>
+             
               <th>Action</th>
             </tr>
           </thead>
@@ -94,8 +93,7 @@ const AssignModal = ({
             {agents.map((agent, idx) => (
               <tr key={idx} className="hover:bg-base-200/50">
                 <td className="font-medium">{agent?.name}</td>
-                <td>{agent.leadCount}</td>
-                <td>{agent.pendingCount}</td>
+
                 <td>
                   <button
                     disabled={assigningEmail == agent?.email}

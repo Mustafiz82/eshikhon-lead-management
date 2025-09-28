@@ -15,11 +15,7 @@ const Page = () => {
     `/dashboard/leaderboards?month=${selectedFilter}&year=2025`
   );
 
-  useEffect(() => {
-    refetch()
-  }, [selectedFilter])
 
-  console.log(leaderboard)
 
 
   // if (loading) return <p className="text-white">Loading...</p>;

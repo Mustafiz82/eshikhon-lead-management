@@ -6,7 +6,7 @@ import { formateDate } from "@/utils/date";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 
-const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) => {
+const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch , course }) => {
 
     const [modelStatus, setModelStatus] = useState(selectedLead?.leadStatus || "Pending")
     const [estemitePaymentDate, setEstimatePaymentDate] = useState(null)
@@ -16,7 +16,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) =
     const [error, setError] = useState("")
     const [notes, setNotes] = useState(selectedLead?.note)
     const { user } = useContext(AuthContext)
-    const { data: course } = useFetch("/course")
+   
 
 
     const handleSaveChanges = async () => {
@@ -255,6 +255,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) =
 
                             <input
                                 type="datetime-local"
+                                 onClick={(e) => e.target.showPicker && e.target.showPicker()}
                                 className="input input-bordered bg- border border-gray-600 text-white rounded-md w-full focus:outline-none  focus:border-blue-600"
                                 value={followUpDate}
                                 onChange={(e) => setFollowUpDate(e.target.value)}
@@ -267,6 +268,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch }) =
 
                             <input
                                 type="datetime-local"
+                                 onClick={(e) => e.target.showPicker && e.target.showPicker()}
                                 className="input input-bordered bg- border border-gray-600 text-white rounded-md w-full focus:outline-none  focus:border-blue-600"
                                 value={estemitePaymentDate}
                                 onChange={(e) => setEstimatePaymentDate(e.target.value)}

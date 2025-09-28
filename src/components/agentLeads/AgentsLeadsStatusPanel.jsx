@@ -10,12 +10,10 @@ import CountUp from 'react-countup';
 const AgentsLeadsStatusPanel = ({ selectedFilter }) => {
 
   const { user } = useContext(AuthContext)
-  const { data: userData, refetch, loading } = useFetch(`/user?month=${selectedFilter}&year=2025&email=${user.email}`);
+  const { data: userData, refetch, loading } = useFetch(`/dashboard/agent?month=${selectedFilter}&year=2025&email=${user.email}`);
 
 
-  useEffect(() => {
-    refetch()
-  }, [selectedFilter])
+  
 
   const stats = [
     // 1. Start → Awareness / total pool

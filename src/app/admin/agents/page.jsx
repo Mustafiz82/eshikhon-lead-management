@@ -11,7 +11,7 @@ const page = () => {
     const currentMonth = new Date().getMonth() + 1;
     console.log(currentMonth)
     const [selectedFilter, setSelectedFilter] = useState(String(currentMonth));
-    const { data: user, loading } = useFetch(`/user?month=${selectedFilter}&year=2025`)
+    const { data: user, loading } = useFetch(`/dashboard/agent?month=${selectedFilter}&year=2025`)
     const agents = user.filter(user => user.role == "user")
 
 
