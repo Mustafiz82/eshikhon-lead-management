@@ -30,7 +30,9 @@ const AgentAllLeads = () => {
 
     const [followUpActive, setFollowUpActive] = useState(false);
     const [selectedFollowedDate, setSelectedFollowedpDate] = useState("All")
+
     const [missedFUActive, setMissedFUActive] = useState(false);
+    const [selectedMissedFollowedDate, setSelectedMissedFolllowUpDate] = useState("All")
 
     const [includeGlobalSearch, setIncludeGlobalSearch] = useState(false)
 
@@ -60,12 +62,13 @@ const AgentAllLeads = () => {
         showOnlyFollowups: followUpActive,
         followUpDate: selectedFollowedDate,
         showOnlyMissedFollowUps: missedFUActive,
+        missedFollwUpDate: selectedMissedFollowedDate
 
     })
 
 
     const { data: leadsCount, refetch: paginateRefetch } = useFetch(`/leads/count?${params}`)
-    const { data: leads, refetch } = useFetch(`/leads?${params}`)
+    const { data: leads, loading, refetch } = useFetch(`/leads?${params}`)
     const { data: course } = useFetch("/course")
 
 
@@ -158,12 +161,12 @@ const AgentAllLeads = () => {
 
 
     return (
-        <div className="p-6 mx-auto">
+        <div className="p-6 mx-auto min-h-screen">
             {/* Filters */}
             <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
                 {/*filter by stage */}
                 <div className="flex gap-2">
-                    {stageOptions.map((option) => (
+                    {/* {stageOptions.map((option) => (
                         <button
                             key={option}
                             className={`btn btn-sm ${selectedStage === option ? "bg-blue-600 text-white" : "btn-outline"}`}
@@ -174,17 +177,39 @@ const AgentAllLeads = () => {
                         >
                             {option} (45)
                         </button>
-                    ))}
+                    ))} */}
 
                     {/* Sort By Dropdown */}
                     <Dropdown
-                        dropdownPosition="dropdown-end"
+                        dropdownPosition="dropdown-start"
+                        selectedState={selectedStage}
+                        setSelectedState={setSelectedStage}
+                        label="Contact Status"
+                        options={stageOptions}
+                        setCurrentPage={setCurrentPage}
+                        defaultOptions={"All"}
+                    />
+
+
+                    {/* Sort By Dropdown */}
+                    <Dropdown
+                        dropdownPosition="dropdown-start"
                         selectedState={selectedSortMethod}
                         setSelectedState={setSelectedSortMethod}
                         label="Sort By"
                         options={["Default", "Ascending", "Descending"]}
                         setCurrentPage={setCurrentPage}
                         defaultOptions={"Default"}
+                    />
+
+                        <Dropdown
+                        dropdownPosition="dropdown-end"
+                        selectedState={selectedSeminar}
+                        setSelectedState={setSelectedSeminar}
+                        label="Seminar Topic"
+                        options={["All", ...course.map(item => item.name)]}
+                        setCurrentPage={setCurrentPage}
+
                     />
                 </div>
 
@@ -219,15 +244,7 @@ const AgentAllLeads = () => {
 
 
                     {/* filter by Seminar topic*/}
-                    <Dropdown
-                        dropdownPosition="dropdown-end"
-                        selectedState={selectedSeminar}
-                        setSelectedState={setSelectedSeminar}
-                        label="Seminar Topic"
-                        options={["All", ...course.map(item => item.name)]}
-                        setCurrentPage={setCurrentPage}
-
-                    />
+                
 
                     {/* filter by Status */}
                     <Dropdown
@@ -285,7 +302,8 @@ const AgentAllLeads = () => {
                         className={`btn btn-sm ${missedFUActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
                         onClick={() => {
                             setMissedFUActive(!missedFUActive);
-                            setCurrentPage(1);  
+                            setSelectedMissedFolllowUpDate("All")
+                            setCurrentPage(1);
                         }}
                     >
                         Missed Follow Ups (12)
@@ -293,59 +311,81 @@ const AgentAllLeads = () => {
 
                     {/* Filter by Followed Date */}
 
+                    {missedFUActive && (
+
+                        <Dropdown
+                            dropdownPosition="dropdown-end"
+                            selectedState={selectedMissedFollowedDate}
+                            setSelectedState={setSelectedMissedFolllowUpDate}
+                            label="Missed Folloup Date"
+                            options={assignedDateOptions}
+                            setCurrentPage={setCurrentPage}
+                            showDatePicker
+
+                        />
+                    )}
+
+
 
                 </div>
 
 
             </div>
+            {
+                loading ? <div className="w-full flex gap-3 justify-center items-center h-96"><span className="loading loading-spinner text-blue-600"></span> Loading...  </div> : ""
 
-            {/* Leads Table */}
+            }
 
-            <LeadTable
-                leads={leads}
-                setSelectedLead={setSelectedLead}
-                currentPage={currentPage}
-                leadsPerPage={leadsPerPage}
-                missedFUActive={missedFUActive}
-                followUpActive={followUpActive}
-            />
+            {/* Table */}
+            {!loading && <>
 
-            <div className="flex justify-between mt-6">
-                <p className="text-sm">Showing {leadCountStart}–{leadCountEnd} of {leadsCount?.count} results</p>
+                {/* Leads Table */}
 
-                {/* Pagination */}
-                <div className="flex items-center gap-4 flex-wrap">
-                    {/* Items Per Page Selector */}
-                    <div className="flex items-center gap-2">
-                        <p className="text-sm text-nowrap">Per page:</p>
-                        <select
-                            className="select select-sm focus:outline-0"
-                            value={leadsPerPage}
-                            onChange={(e) => {
-                                setLeadsPerPage(parseInt(e.target.value));
-                                setCurrentPage(1);
-                            }}
-                        >
-                            {[10, 25, 50, 100, 200].map((n) => (
-                                <option key={n} value={n}>
-                                    {n}
-                                </option>
-                            ))}
-                        </select>
+                <LeadTable
+                    leads={leads}
+                    setSelectedLead={setSelectedLead}
+                    currentPage={currentPage}
+                    leadsPerPage={leadsPerPage}
+                    missedFUActive={missedFUActive}
+                    followUpActive={followUpActive}
+                />
+
+                <div className="flex justify-between mt-6">
+                    <p className="text-sm">Showing {leadCountStart}–{leadCountEnd} of {leadsCount?.count} results</p>
+
+                    {/* Pagination */}
+                    <div className="flex items-center gap-4 flex-wrap">
+                        {/* Items Per Page Selector */}
+                        <div className="flex items-center gap-2">
+                            <p className="text-sm text-nowrap">Per page:</p>
+                            <select
+                                className="select select-sm focus:outline-0"
+                                value={leadsPerPage}
+                                onChange={(e) => {
+                                    setLeadsPerPage(parseInt(e.target.value));
+                                    setCurrentPage(1);
+                                }}
+                            >
+                                {[10, 25, 50, 100, 200].map((n) => (
+                                    <option key={n} value={n}>
+                                        {n}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Pagination Buttons */}
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={goToPage}
+                        />
                     </div>
 
-                    {/* Pagination Buttons */}
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={goToPage}
-                    />
+
                 </div>
 
-
-            </div>
-
-
+            </>}
 
             <SearchModal
                 isOpen={isSearchModalOpen}
@@ -367,7 +407,7 @@ const AgentAllLeads = () => {
                 statusOptions={statusOptions}
                 refetch={refetch}
                 course={course}
-                
+
 
             />
 
