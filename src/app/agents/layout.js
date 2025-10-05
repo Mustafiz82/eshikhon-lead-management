@@ -16,9 +16,6 @@ export default function Layout({ children }) {
     const { userData } = useContext(AuthContext)
     const isSmall = useIsSmall();
 
-
-    
-
     return (
         <PrivateRoute>
             <div className="drawer  bg-gray-900 text-gray-100 transition-colors">
