@@ -36,7 +36,7 @@ export default function Layout({ children }) {
 
                 <div className="drawer-content h-full">
                     <div className="flex bg-gray-900 fixed z-[999] w-full  2xl:hidden p-5 top-0 h-fit justify-between items-center">
-                        <h2>eshikhon</h2>
+                       <a href="https://eshikhon.com/" target="blank"> <img className="h-10" src={"/logo/eshikhon.svg"} /></a> 
                         <label htmlFor="my-drawer" className="btn btn-primary bg-blue-600 text-xl drawer-button"><LuMenu /></label>
                     </div>
                     <div className="mt-16 2xl:mt-0">
@@ -59,6 +59,11 @@ export default function Layout({ children }) {
                                 </li>
                             </Link>
                         ))}
+
+
+
+
+
                         <li className="mt-auto px-5 flex flex-row py-3 border-t border-gray-700/30 dark:border-gray-200/20 items-center">
 
                             <div className="p-0 mt-5">
@@ -68,7 +73,12 @@ export default function Layout({ children }) {
                             </div>
                         </li>
 
+
                         <SidebarFooter />
+
+                        <div className="flex  mt-2 px-5 justify-start">
+                          <a href="https://eshikhon.com/" target="blank"> <img className="h-12  " src={"/logo/eshikhon.svg"} /></a> 
+                        </div>
                     </ul>
                 </div>
             </div>

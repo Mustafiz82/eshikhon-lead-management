@@ -25,7 +25,7 @@ export default function Layout({ children }) {
                 <input id="my-drawer" type="checkbox" className="drawer-toggle" />
                 <div className="drawer-content h-full">
                     <div className="flex bg-gray-900 fixed z-[999] w-full  xl:hidden p-5 top-0 h-fit justify-between items-center">
-                        <h2>eshikhon</h2>
+                        <a href="https://eshikhon.com/" target="blank"><img className="h-10" src={"/logo/eshikhon.svg"}/></a>
                         <label htmlFor="my-drawer" className="btn btn-primary bg-blue-600 text-xl drawer-button"><LuMenu /></label>
                     </div>
                     <div className="mt-16 xl:ml-10 2xl:ml-0 xl:mt-0">
@@ -66,6 +66,11 @@ export default function Layout({ children }) {
                         </li>
 
                         <SidebarFooter />
+
+                           <div className="flex mt-2  px-5 justify-start">
+                            <a href="https://eshikhon.com/" target="blank">
+                            <img className="h-12  " src={"/logo/eshikhon.svg"} /></a>
+                        </div>
                     </ul>
                 </div>
             </div>
