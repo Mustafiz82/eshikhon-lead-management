@@ -43,7 +43,7 @@ const page = () => {
         <div className="flex p-6 sticky top-0 bg-slate-900 justify-between mb-4">
             <h2 className="text-white text-xl font-semibold capitalize">{user.name} Dashboard</h2>
             <div className="flex gap-2 items-center">
-                <p className="whitespace-nowrap    text-gray-300">View Statistics for:</p>
+                <p className="whitespace-nowrap  hidden lg:bl  text-gray-300">View Statistics for:</p>
 
                 <CustomSelect
                     selected={selectedFilter}
@@ -59,7 +59,7 @@ const page = () => {
             <LeadsGrowthChart />
             <CallCountTable />
             {/* <SeminarPieChart/> */}
-            <div className="mt-20 grid grid-cols-2 gap-5">
+            <div className="mt-20 grid grid-cols-1 lg:grid-cols-2 gap-5">
                 <Leaderboard
                     title="Most Performing Agents (by Admit count)"
                     data={leaderboard?.byAdmitCount || []}
@@ -88,7 +88,7 @@ const page = () => {
                     title="Target Completion by Agent"
                     data={leaderboard?.byTargetFilled || []}
                     valueKey="targetFilled"
-                    metricLabel="Completed Target (%)"
+                    metricLabel="Target"
                     loading={loading}
                 />
             </div>

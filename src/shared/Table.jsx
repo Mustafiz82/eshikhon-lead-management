@@ -1,9 +1,9 @@
-const Table = ({ data, config , dataType }) => {
+const Table = ({ data, config , dataType , width=""}) => {
     return (
         <div className="flex-1 h-screen overflow-auto  p-6">
             <div className="overflow-x-auto">
                 {data.length > 0 ? (
-                    <table className="table table-pin-rows table-pin-cols  w-full">
+                    <table style={{minWidth : width}} className="table table-pin-rows  w-full">
                         <thead>
                             <tr>
                                 {config.header.map((item, index) => (

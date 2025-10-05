@@ -35,13 +35,13 @@ const page = () => {
 
 
     return (
-        <div className="p-6 h-screen overflow-hidden">
+        <div className="p-6 min-h-[calc(100vh-100px)] lg:h-screen overflow-hidden">
 
 
             <div className="flex  bg-slate-900 justify-between mb-4">
-                <h2 className="text-white text-xl font-semibold capitalize">Agent Overview</h2>
+                <h2 className="text-white text-lg lg:text-xl font-semibold capitalize">Agent Overview</h2>
                 <div className="flex gap-2 items-center">
-                    <p className="whitespace-nowrap    text-gray-300">View Statistics for:</p>
+                    <p className="whitespace-nowrap    text-gray-300 hidden lg:block">View Statistics for:</p>
 
                     <CustomSelect
                         selected={selectedFilter}

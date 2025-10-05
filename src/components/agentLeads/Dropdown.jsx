@@ -15,16 +15,17 @@ const Dropdown = ({
     const handleSelect = (val) => {
         setSelectedState(val);
         setCurrentPage(1);
-
     };
 
+    
+
     return (
-        <div className="flex items-center gap-3">
-            <div className={`dropdown  ${dropdownPosition}`}>
+        <div className="flex flex-1 lg:flex-auto items-center gap-3">
+            <div className={`dropdown flex-1 lg:flex-auto ${dropdownPosition}`}>
                 <button
                     type="button"
 
-                    className={`btn btn-sm capitalize ${selectedState !== (defaultOptions || "All")
+                    className={`btn btn-sm text-[10px] 2xl:text-[12px] w-full capitalize ${selectedState !== (defaultOptions || "All")
                         ? "btn-blue-600 bg-blue-600 text-white"
                         : "btn-outline"
                         }`}

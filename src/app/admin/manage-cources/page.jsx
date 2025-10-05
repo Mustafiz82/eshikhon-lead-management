@@ -11,7 +11,7 @@ import React, { useEffect, useState } from "react";
 
 
 const courseOption = [
-  { value: "Online", label:"Online" },
+  { value: "Online", label: "Online" },
   { value: "Offline", label: "Offline" },
   { value: "Video", label: "Video" }
 ]
@@ -22,7 +22,8 @@ export default function ManageCoursePage() {
   const { data: courses, loading, error, refetch } = useFetch("/course")
   const { setEditCourse, editCourse, handleSave, loading: isSubmitting, error: submitError } = useSaveData(refetch)
   const { handleDelete } = useDelete(refetch, "course")
-  const [ courseType, setCourseType ] = useState("Online")
+  const [courseType, setCourseType] = useState("Online")
+  const [showModal, setShowModal] = useState(false)
 
 
   const handleSubmit = async (e) => {
@@ -64,9 +65,9 @@ export default function ManageCoursePage() {
 
   useEffect(() => {
 
-    if(editCourse)
-    setCourseType(editCourse?.type)
-  } , [editCourse])
+    if (editCourse)
+      setCourseType(editCourse?.type)
+  }, [editCourse])
 
 
 
@@ -75,7 +76,7 @@ export default function ManageCoursePage() {
 
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex  min-h-[calc(100vh-100px)] lg:h-screen overflow-hidden">
       {loading ? (
         <p className="h-[300px] flex justify-center items-center w-full">Loading...</p>
       ) : error ? <p className="h-[300px] text-red-500 flex justify-center items-center w-full">Error Fetching Data</p> : (
@@ -85,13 +86,16 @@ export default function ManageCoursePage() {
           <Table data={courses} config={courseConfig} />
 
           {/* Drawer / Form */}
-          <div className="h-full w-[400px] bg-gray-800 shadow-lg p-6">
+          <div className={`h-full ${showModal ? "fixed lg:static top-0 left-0 w-full lg:w-auto z-[9999] block " : "hidden lg:block"}  w-[400px] bg-gray-800 shadow-lg p-6`}>
             <form autoComplete="off" onSubmit={handleSubmit} className="flex flex-col h-full">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">
                   {editCourse ? "Edit Course" : "Add New Course"}
                 </h2>
-                <button type="button" className="btn btn-xs btn-outline" onClick={() => setEditCourse(null)}>
+                <button type="button" className="btn btn-xs btn-outline" onClick={() => {
+                  setEditCourse(null)
+                  setShowModal(false)
+                }}>
                   Close
                 </button>
               </div>
@@ -147,19 +151,16 @@ export default function ManageCoursePage() {
                 <button type="submit" className="btn bg-blue-600 btn-primary w-full" disabled={isSubmitting}>
                   {isSubmitting ? (editCourse ? "Updating..." : "Creating...") : editCourse ? "Update Course" : "Create Course"}
                 </button>
-                <button
-                  type="button"
-                  className="btn btn-ghost w-full"
-                  onClick={() => setEditCourse(null)}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </button>
+
               </div>
             </form>
           </div>
         </>
       )}
+
+      <button onClick={() => setShowModal(true)} type="submit" className="btn z-50  lg:hidden fixed bottom-2 bg-blue-600 btn-primary w-full" >
+          Create New course
+      </button>
     </div>
   );
 }

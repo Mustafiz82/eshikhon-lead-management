@@ -1,5 +1,6 @@
 "use client"
 
+import { showAlert, showToast } from "@/utils/swal";
 import { createContext, useEffect, useState, useRef } from "react";
 import Swal from "sweetalert2";
 
@@ -27,12 +28,7 @@ const AuthProvider = ({ children }) => {
 
 
       if (isLoggingOut.current) {
-        Swal.fire({
-          icon: "success",
-          title: "Logged out successfully",
-          showConfirmButton: false,
-          timer: 1500,
-        });
+        showAlert("Logged out successfully" , "" , "success");
         isLoggingOut.current = false; // reset flag
       }
     }

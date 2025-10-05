@@ -5,10 +5,12 @@ import React, { useEffect, useState } from "react";
 
 const CallCountTable = () => {
 
-    const days = Array.from({ length: 30 }, (_, i) => i + 1);
+
     const currentMonth = new Date().getMonth() + 1;
     const [selectedFilter, setSelectedFilter] = useState(String(currentMonth));
     const { data: callCount } = useFetch(`/dashboard/getDailyCallCount?month=${selectedFilter}&year=2025`)
+    const daysCount = callCount?.[0]?.calls?.length || 30;
+    const days = Array.from({ length: daysCount }, (_, i) => i + 1)
 
   
     const months = [
@@ -31,9 +33,9 @@ const CallCountTable = () => {
         <div className="mt-24 ">
 
             <div className="flex justify-between mt-10 mb-6 items-center gap-5">
-                <h2 className="text-xl font-semibold ">Daily Connected Call Count per Agent</h2>
+                <h2 className=" lg:text-xl font-semibold ">Daily Connected Call Count per Agent</h2>
                 <div className="flex gap-2 items-center">
-                    <p className="whitespace-nowrap text-gray-300">View Call Count for:</p>
+                    <p className="whitespace-nowrap text-gray-300 hidden lg:block">View Call Count for:</p>
 
                     <CustomSelect
                         selected={selectedFilter}
@@ -43,8 +45,8 @@ const CallCountTable = () => {
                     />
                 </div>
             </div>
-            <div className="w-full z-[-1]">
-                <table className="table-auto w-full border-collapse border border-gray-300 rounded-lg shadow-md text-sm">
+            <div className="w-full overflow-x-auto z-[-1]">
+                <table className="table-auto  w-full border-collapse border border-gray-300 rounded-lg shadow-md text-sm">
                     <thead className="bg-slate-800 text-white ">
                         <tr>
                             <th className="border bg-blue-600 border-gray-300 px-3 py-2 text-left">Agent/Day</th>

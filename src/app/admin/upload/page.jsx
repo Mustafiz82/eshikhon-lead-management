@@ -20,6 +20,7 @@ const STATUS = {
     SAVING: "saving",
     COMPLETED: "completed",
     DUPLICATE: "duplicate",
+    REGISTERING: "registering",
     ERROR: "error",
 };
 
@@ -84,16 +85,7 @@ const Page = () => {
         setStatus(fileName, STATUS.PENDING);
 
         // 1) Register file name (server “history”)
-        try {
-            await axiosPublic.post("/file", { fileName, type: uploadMode });
-            // keep pending until parsing starts
-        } catch (err) {
-            console.log(err)
 
-            setStatus(fileName, STATUS.ERROR);
-            showToast("Something went wrong while registering the file", "error");
-            return;
-        }
 
         // 2) Parse CSV
         setStatus(fileName, STATUS.PARSING);
@@ -111,9 +103,6 @@ const Page = () => {
                 console.error(err);
             },
         });
-
-
-
 
     };
 
@@ -149,8 +138,9 @@ const Page = () => {
     const handleCompleteLeadCSVUpload = async (results, fileName) => {
         const rows = results.data;
         const headers = Object.keys(rows[0] || {});
-        const required = ["name", "email", "phone", "address", "seminarTopic" , "seminarType"];
+        const required = ["name", "email", "phone", "address", "seminarTopic", "seminarType"];
         const missing = required.filter((f) => !headers.includes(f));
+
         if (missing.length > 0) {
             setStatus(fileName, STATUS.ERROR);
             showToast(`Missing required fields: ${missing.join(", ")}`, "error");
@@ -162,14 +152,14 @@ const Page = () => {
         );
 
         const questionWiseData = filtered.map((item) => {
-            const { name, email, address, phone, seminarTopic, seminarType , leadSource, ...questions } = item;
+            const { name, email, address, phone, seminarTopic, seminarType, leadSource, ...questions } = item;
             return {
                 name,
                 email,
                 address,
                 phone,
                 seminarTopic,
-                seminarType ,
+                seminarType,
                 questions,
                 sourceFileName: fileName,
                 createdBy: user?.email
@@ -180,21 +170,35 @@ const Page = () => {
             showToast(
                 `${rows.length - filtered.length} of ${rows.length} rows skipped due to missing required fields`, "warning"
             );
-
         }
 
-        // 3) Save leads
+        // ---- Save leads first ----
         setStatus(fileName, STATUS.SAVING);
+
         try {
-            await axiosPublic.post("/leads", questionWiseData);
+            const res =  await axiosPublic.post("/leads", questionWiseData);
+            console.log(res)
+
+            // ✅ Only if leads save succeeds → save file in history
+            setStatus(fileName, STATUS.REGISTERING);
+            await axiosPublic.post("/file", { fileName, type: uploadMode });
+
             setStatus(fileName, STATUS.COMPLETED);
             refetch(); // refresh server-side history list
+            showToast(`Successfully saved ${questionWiseData.length} leads`, "success");
+
         } catch (error) {
+            console.log(error)
             setStatus(fileName, STATUS.ERROR);
-            showToast(`Saved ${questionWiseData.length} leads`, "success");
-            showToast(error.message || "Failed to save leads", "error");
+
+            if (error.response?.status === 413) {
+                showToast("Too many leads in one file. Please split into smaller files and try again.", "error");
+            } else {
+                showToast(error.message || "Failed to save leads", "error");
+            }
         }
-    }
+    };
+
 
 
 
@@ -222,20 +226,28 @@ const Page = () => {
 
 
     const handleCompleteAttendenceCSVUpload = async (results, fileName) => {
+        console.log(results);
 
-        console.log(results)
         const filteredData = results.data.map(row => ({
             phone: row.phone || row.Phone || row.PHONE,
             email: row.email || row.Email || row.EMAIL,
         }));
 
-        console.log(filteredData)
+        console.log(filteredData);
 
         setStatus(fileName, STATUS.SAVING);
 
         try {
+            // 1) Save attendance
             const res = await axiosPublic.post("/leads/mark-attendence", filteredData);
+
+            // 2) Register file only if attendance update succeeds
+            setStatus(fileName, STATUS.REGISTERING);
+            await axiosPublic.post("/file", { fileName, type: uploadMode });
+
+            // 3) Mark completed
             setStatus(fileName, STATUS.COMPLETED);
+
             let updated = res.data.updated ?? 0;
             const total = results?.data?.length ?? 0;
             const message = `${updated} out of ${total} lead${total === 1 ? "" : "s"} updated`;
@@ -247,21 +259,19 @@ const Page = () => {
 
             console.log("Touched leads:", res.data.touched); // debug
             refetch();
+
         } catch (error) {
             setStatus(fileName, STATUS.ERROR);
             showToast(error.message || "Failed to process attendance", "error");
         }
-
-    }
-
-
+    };
 
 
 
 
     return (
         <div
-            className="min-h-screen bg-gray-900 p-6 flex items-center justify-center"
+            className="min-h-[calc(100vh-100px)] lg:min-h-screen bg-gray-900 p-6 flex items-center justify-center"
             onDragOver={(e) => {
                 e.preventDefault();
                 setDragActive(true);
@@ -270,11 +280,11 @@ const Page = () => {
             onDrop={handleDrop}
         >
             <div className="bg-gray-800 rounded-2xl shadow-lg p-6 w-full max-w-6xl transition-colors">
-                <div className="flex justify-between">
-                    <h2 className="text-2xl font-semibold text-white mb-6"> Upload {uploadMode == "lead" ? "Leads" : "Attendence"} CSV & History</h2>
-                    <div className="flex gap-2">
-                        <button onClick={() => setUploadMode(prev => prev == "attendence" ? "lead" : "attendence")} className="btn btn-sm bg-blue-600 border-0 btn-primary"><LuUpload className="text-lg" /> Upload {uploadMode == "lead" ? "Attendence" : "Leads"}  CSV</button>
-                        <a target="blank" href={"https://docs.google.com/spreadsheets/d/1I79Tsq5nQwSvDbrHhaPC1pP1iJ3rXA0dSOaszIoUU1M/edit?gid=0#gid=0"} ><button className="btn border-0 btn-sm bg-blue-600 btn-primary"> <FaExternalLinkAlt  className="text-" /> View Template</button></a>
+                <div className="flex mb-5 flex-col lg:flex-row justify-between">
+                    <h2 className="text-xl lg:text-2xl font-semibold text-white mb-3 lg:mb-6"> Upload {uploadMode == "lead" ? "Leads" : "Attendence"} CSV & History</h2>
+                    <div className="flex  gap-2">
+                        <button onClick={() => setUploadMode(prev => prev == "attendence" ? "lead" : "attendence")} className="btn btn-sm bg-blue-600 flex-1 lg:flex-auto border-0 btn-primary"><LuUpload className="text-lg" /> Upload {uploadMode == "lead" ? "Attendence" : "Leads"}  CSV</button>
+                        <a target="blank" href={"https://docs.google.com/spreadsheets/d/1I79Tsq5nQwSvDbrHhaPC1pP1iJ3rXA0dSOaszIoUU1M/edit?gid=0#gid=0"} ><button className="btn border-0 btn-sm bg-blue-600 flex-1 lg:flex-auto btn-primary"> <FaExternalLinkAlt className="text-" /> View Template</button></a>
                     </div>
                 </div>
 

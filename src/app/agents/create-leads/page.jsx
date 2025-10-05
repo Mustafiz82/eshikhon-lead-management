@@ -21,7 +21,7 @@ const courseTypeOption = [
 
 export default function ManageCoursePage() {
 
-
+    
     const [selectedCourse, setSelectedCourse] = useState("");
     const [questions, setQuestions] = useState([]); // [{title, value}]
 
@@ -33,6 +33,7 @@ export default function ManageCoursePage() {
     const { data: leads, loading, error, refetch } = useFetch(`/leads?createdBy=${user?.email}`)
     const { setEditCourse, editCourse, handleSave, loading: isSubmitting, error: submitError } = useSaveData(refetch)
     const { handleDelete } = useDelete(refetch, "course")
+    const [showModal, setShowModal] = useState(false)
 
 
 
@@ -93,7 +94,7 @@ export default function ManageCoursePage() {
             address: form.lead_Address.value.trim(),
             questions: formattedQuestions,
             seminarTopic: selectedCourse,
-            seminarType : courseType,
+            seminarType: courseType,
             leadSource: "incoming",
             createdBy: user.email,
             assignTo: user.email,
@@ -130,11 +131,6 @@ export default function ManageCoursePage() {
 
 
 
-
-
-
-
-
     return (
         <div className="flex  h-screen">
             {loading ? (
@@ -147,13 +143,18 @@ export default function ManageCoursePage() {
 
 
                     {/* Drawer / Form */}
-                    <div className="h-full w-[400px] bg-gray-800 shadow-lg p-6">
+                    <div className={`h-full ${showModal ? "fixed lg:static top-0 left-0 w-full lg:w-auto z-[9999] block " : "hidden lg:block"}  w-[400px] bg-gray-800 shadow-lg p-6`}>
                         <form autoComplete="off" onSubmit={handleSubmit} className="flex flex-col h-full">
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-lg font-semibold">
                                     {editCourse ? "Edit Lead" : "Add New Lead"}
                                 </h2>
-                                <button type="button" className="btn btn-xs btn-outline" onClick={() => setEditCourse(null)}>
+                                <button type="button" className="btn btn-xs btn-outline" onClick={() => {
+                                    setEditCourse(null)
+                                    setShowModal(false)
+                                }
+
+                                }>
                                     Close
                                 </button>
                             </div>
@@ -296,7 +297,12 @@ export default function ManageCoursePage() {
                         </form>
                     </div>
                 </>
-            )}
-        </div>
+            )
+            }
+
+            <button onClick={() => setShowModal(true)} type="submit" className="btn z-50  lg:hidden fixed bottom-2 bg-blue-600 btn-primary w-full" >
+               Create New Lead
+            </button>
+        </div >
     );
 }

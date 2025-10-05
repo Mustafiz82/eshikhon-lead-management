@@ -16,13 +16,13 @@ const LeadTable = ({
 
 
   return (
-    <div className="rounded-sm  h-[calc(100vh-160px)] overflow-scroll  border border-base-content/10 bg-base-200/10 shadow overflow-x-auto">
+    <div className="rounded-sm  h-[calc(100vh-390px)] lg:h-[calc(100vh-160px)] overflow-scroll  border border-base-content/10 bg-base-200/10 shadow overflow-x-auto">
 
       {
         leads?.length == 0 ? <div className=" flex gap-2 text-center my-20 justify-center text-sm text-white/70">
           <p>No Leads Found.</p>
           <Link href={"/admin/upload"} className="text-blue-500">Clck here to upload leads</Link>
-        </div> : <table className="table table-pin-rows table-pin-cols table-zebra w-full">
+        </div> : <table className="table min-w-[1500px] lg:min-w-auto table-xs 2xl:table-sm  table-pin-rows lg:table-pin-cols table-zebra w-full">
 
         <thead className="text-base-content/70  text-sm uppercase tracking-wide bg-base-300">
           <tr>

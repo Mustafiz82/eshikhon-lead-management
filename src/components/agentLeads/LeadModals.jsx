@@ -102,12 +102,12 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch , co
 
 
     return (
-        selectedLead && <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center">
+        selectedLead && <div className="fixed inset-0 z-[9999] bg-black/40 flex items-center justify-center">
             <div>
-                <div className={`bg-base-100 w-full  rounded-lg shadow-lg p-6 relative grid grid-cols-1 ${modelStatus == "Enrolled" ? "md:grid-cols-4 max-w-7xl" : "grid-cols-3 max-w-5xl"} gap-6 max-h-[90vh] overflow-y-auto`}>
+                <div className={`bg-base-100 w-full   rounded-lg shadow-lg p-6 relative grid grid-cols-1 ${modelStatus == "Enrolled" ? "md:grid-cols-2 lg:grid-cols-4 max-w-7xl" : "md:grid-cols-3 lg:grid-cols-3 max-w-5xl"} gap-6 max-h-[90vh] overflow-y-auto`}>
 
                     {/* Top bar with lead info */}
-                    <div className="absolute top-3 right-3">
+                    <div className="sticky md:absolute ml-auto   top-3 right-3">
                         <button
                             onClick={() => setSelectedLead(null)}
                             className="btn btn-sm "

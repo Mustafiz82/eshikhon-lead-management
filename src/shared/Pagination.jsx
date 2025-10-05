@@ -69,7 +69,7 @@ const Pagination = ({
   };
 
   return (
-    <div className={`join ${className}`}>
+    <div className={`join  ${className}`}>
       <button
         className="join-item bg-blue-600 btn btn-sm"
         onClick={() => onPageChange(currentPage - 1)}

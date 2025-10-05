@@ -3,8 +3,10 @@ import axiosPublic from "@/api/axios";
 import CustomSelect from "@/utils/CustomSelect";
 import { showAlert, showConfirm } from "@/utils/swal";
 import React, { useEffect, useState } from "react";
-import { FaEdit } from "react-icons/fa";
+import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
+import { FaEdit, FaPlus } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
+import { TiUserAdd } from "react-icons/ti";
 
 const allowedDesignations = [
     { value: "Junior Executive", label: "Junior Executive" },
@@ -28,6 +30,9 @@ export default function Page() {
     const [role, setRole] = useState("user")
     const [designation, setDesignation] = useState(editUser?.designation || "Junior Executive")
     const [fetchError, setFetchError] = useState("")
+    const [showPassword, setShowPassword] = useState(false);
+
+    const [showModal, setShowModal] = useState(false)
 
     console.log(editUser?.designation)
 
@@ -115,18 +120,20 @@ export default function Page() {
         }
     }, [editUser])
 
+    console.log(showModal)
+
 
     return (
-        <div className="flex h-screen overflow-hidden">
+        <div className="flex min-h-[calc(100vh-100px)] lg:h-screen max-w-screen ">
             {loading ? (
                 <p className="h-[300px] flex justify-center items-center w-full">Loading...</p>
             ) : (
                 <>
                     {/* Table */}
-                    <div className="flex-1 p-6">
-                        <div className="overflow-x-auto">
+                    <div className="flex-1 max-w-screen overflow-auto p-6">
+                        <div className="w-full overflow-x-auto">
                             {users.length > 0 ? (
-                                <table className="table table-md table-zebra w-full">
+                                <table className="table  table-md table-zebra  w-full">
                                     <thead>
                                         <tr>
                                             <th>Name</th>
@@ -173,11 +180,14 @@ export default function Page() {
                     </div>
 
                     {/* Drawer */}
-                    <div className="h-full w-[400px] bg-gray-800 shadow-lg p-6">
+                    <div className={`h-full ${showModal ? "fixed lg:static top-0 left-0 w-full lg:w-auto z-[9999] block " : "hidden lg:block"}  w-[400px] bg-gray-800 shadow-lg p-6`}>
                         <form autoComplete="off" onSubmit={handleSubmit} className="flex flex-col h-full">
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-lg font-semibold">{editUser ? "Edit User" : "Add New User"}</h2>
-                                <button type="button" className="btn btn-xs btn-outline" onClick={() => setEditUser(null)}>Close</button>
+                                <button type="button" className="btn btn-xs btn-outline" onClick={() => {
+                                    setEditUser(null)
+                                    setShowModal(false)
+                                }}>Close</button>
                             </div>
 
                             <div className="flex flex-col gap-4">
@@ -200,16 +210,26 @@ export default function Page() {
                                     disabled={isSubmitting}
                                 />
 
-                                <input
-                                    type="password"
-                                    name="user_password"
-                                    placeholder="Password"
-                                    minLength={6}
-                                    required={!editUser}
-                                    className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
-                                    autoComplete="new-password"
-                                    disabled={isSubmitting}
-                                />
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        name="user_password"
+                                        placeholder="Password"
+                                        minLength={6}
+                                        required={!editUser}
+                                        className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
+                                        autoComplete="new-password"
+                                        disabled={isSubmitting}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 cursor-pointer top-[12px] text-gray-500 z-10"
+                                        tabIndex={-1}
+                                    >
+                                        {showPassword ? <BsEyeFill className="text-blue-600" /> : <BsEyeSlashFill />}
+                                    </button>
+                                </div>
 
                                 {/* <select
                                     name="role"
@@ -296,19 +316,17 @@ export default function Page() {
                                 <button type="submit" className="btn bg-blue-600 btn-primary w-full" disabled={isSubmitting}>
                                     {isSubmitting ? (editUser ? "Updating..." : "Creating...") : editUser ? "Update User" : "Create User"}
                                 </button>
-                                <button
-                                    type="button"
-                                    className="btn btn-ghost w-full"
-                                    onClick={() => setEditUser(null)}
-                                    disabled={isSubmitting}
-                                >
-                                    Cancel
-                                </button>
+                               
                             </div>
                         </form>
                     </div>
                 </>
             )}
+
+
+            <button onClick={() => setShowModal(true)} type="submit" className="btn z-50  lg:hidden fixed bottom-2 bg-blue-600 btn-primary w-full" >
+               <TiUserAdd/>  Create New User
+            </button>
         </div>
     );
 }

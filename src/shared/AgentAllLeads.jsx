@@ -10,6 +10,7 @@ import LeadTable from "@/components/agentLeads/LeadTable";
 import useFetch from "@/hooks/useFetch";
 import { AuthContext } from "@/context/AuthContext";
 import { useParams } from "next/navigation";
+import { IoIosArrowDown } from "react-icons/io";
 
 
 const AgentAllLeads = () => {
@@ -35,16 +36,13 @@ const AgentAllLeads = () => {
     const [selectedMissedFollowedDate, setSelectedMissedFolllowUpDate] = useState("All")
 
     const [includeGlobalSearch, setIncludeGlobalSearch] = useState(false)
+    const [dropdownOpen, setDropDownOpen] = useState(false)
 
     const { user } = useContext(AuthContext)
     const { email } = useParams();
     const decodedEmail = email ? decodeURIComponent(email) : user?.email;
 
     console.log(decodedEmail, "decoded email");
-
-
-
-
 
     const [isSearchModalOpen, setSearchModalOpen] = useState(false);
     const [selectedLead, setSelectedLead] = useState(null);
@@ -81,7 +79,7 @@ const AgentAllLeads = () => {
         "Will Join on Seminar",
         "Not Interested",
         "Enrolled in Other Institute",
-        "Cut the Call",
+        "Call declined",
         "Call Not Received",
         "Number Off or Busy",
         "Wrong Number"
@@ -139,45 +137,19 @@ const AgentAllLeads = () => {
 
 
 
-    // useEffect(() => {
-    //     refetch()
-    //     paginateRefetch()
-    // }, [
-    //     currentPage,
-    //     leadsPerPage,
-    //     searchQuery,
-    //     selectedSeminar,
-    //     selectedSortMethod,
-    //     selectedStatus,
-    //     selectedStage,
-    //     selectedAssingedDate,
-    //     selectedFollowedDate,
-    //     followUpActive,
-    //     missedFUActive,
-    //     user,
-    //     includeGlobalSearch
-    // ])
-
 
 
     return (
-        <div className="p-6 mx-auto min-h-screen">
+        <div className="p-6 mx-auto min-h-[calc(100vh-100px)]  xl:min-h-screen">
             {/* Filters */}
-            <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
+            <div className={`flex ${dropdownOpen ? "h-64 md:h-42" : "h-10"} bg-gray-900 -mt-2  fixed xl:static z-[999] w-full left-0 px-5 xl:px-0 duration-300 overflow-hidden flex-wrap justify-between  gap-4 mb-4`}>
+
+                <div onClick={() => setDropDownOpen(!dropdownOpen)} className="flex xl:hidden justify-between items-center w-full  px-0">
+                    <h2 className="text-lg ">Open filter </h2>
+                    <IoIosArrowDown />
+                </div>
                 {/*filter by stage */}
-                <div className="flex gap-2">
-                    {/* {stageOptions.map((option) => (
-                        <button
-                            key={option}
-                            className={`btn btn-sm ${selectedStage === option ? "bg-blue-600 text-white" : "btn-outline"}`}
-                            onClick={() => {
-                                setSelectedStage(option);
-                                setCurrentPage(1);
-                            }}
-                        >
-                            {option} (45)
-                        </button>
-                    ))} */}
+                <div className=" grid grid-cols-2 md:flex w-full xl:w-auto  flex-wrap gap-2">
 
                     {/* Sort By Dropdown */}
                     <Dropdown
@@ -202,7 +174,7 @@ const AgentAllLeads = () => {
                         defaultOptions={"Default"}
                     />
 
-                        <Dropdown
+                    <Dropdown
                         dropdownPosition="dropdown-end"
                         selectedState={selectedSeminar}
                         setSelectedState={setSelectedSeminar}
@@ -211,16 +183,28 @@ const AgentAllLeads = () => {
                         setCurrentPage={setCurrentPage}
 
                     />
+
+                    {/* filter by Status */}
+                    <Dropdown
+                        dropdownPosition=""
+                        selectedState={selectedStatus}
+                        setSelectedState={setSelectedStatus}
+                        label="Status"
+                        options={statusOptions}
+                        setCurrentPage={setCurrentPage}
+
+                    />
+
                 </div>
 
                 {/* Search */}
-                <div className="flex items-center gap-2">
+                <div className="flex fixed xl:static top-7 z-[999] right-[25%] md:right-24 items-center gap-2">
                     <button
                         onClick={() => setSearchModalOpen(true)}
                         className="flex cursor-pointer items-center gap-2"
                     >
                         <IoSearchOutline className="text-lg" />
-                        <span className="hidden text-sm text-white/70 md:inline">Ctrl + K</span>
+                        <span className="hidden text-sm text-white/70 xl:inline">Ctrl + K</span>
                     </button>
                     {searchQuery && (
                         <button
@@ -238,24 +222,12 @@ const AgentAllLeads = () => {
                 </div>
 
 
-
-
-                <div className="flex flex-wrap justify-between items-center gap-4 ">
+                <div className="grid grid-cols-2 md:flex w-full xl:w-auto  flex-wrap justify-between items-center gap-2 ">
 
 
                     {/* filter by Seminar topic*/}
-                
 
-                    {/* filter by Status */}
-                    <Dropdown
-                        dropdownPosition=""
-                        selectedState={selectedStatus}
-                        setSelectedState={setSelectedStatus}
-                        label="Status"
-                        options={statusOptions}
-                        setCurrentPage={setCurrentPage}
 
-                    />
 
                     {/* Filter by Assigned Date  */}
                     <Dropdown
@@ -341,21 +313,63 @@ const AgentAllLeads = () => {
 
                 {/* Leads Table */}
 
-                <LeadTable
-                    leads={leads}
-                    setSelectedLead={setSelectedLead}
-                    currentPage={currentPage}
-                    leadsPerPage={leadsPerPage}
-                    missedFUActive={missedFUActive}
-                    followUpActive={followUpActive}
-                />
+                <div className="mt-10 xl:mt-0">
+                    <LeadTable
+                        leads={leads}
+                        setSelectedLead={setSelectedLead}
+                        currentPage={currentPage}
+                        leadsPerPage={leadsPerPage}
+                        missedFUActive={missedFUActive}
+                        followUpActive={followUpActive}
+                    />
+                </div>
 
-                <div className="flex justify-between mt-6">
-                    <p className="text-sm">Showing {leadCountStart}–{leadCountEnd} of {leadsCount?.count} results</p>
+                <div className="flex flex-col justify-between mt-6">
+
 
                     {/* Pagination */}
                     <div className="flex items-center gap-4 flex-wrap">
                         {/* Items Per Page Selector */}
+                        <div className="flex justify-between w-full items-center gap-5">
+                            <p className="text-sm flex-1 text-nowrap">Showing {leadCountStart}–{leadCountEnd} of {leadsCount?.count} results</p>
+                            <div className="flex justify-between w-full md:w-auto items-center gap-2">
+                                <p className="text-sm flex-1 text-nowrap">per page :</p>
+                                <select
+                                    className="select select-sm focus:outline-0"
+                                    value={leadsPerPage}
+                                    onChange={(e) => {
+                                        setLeadsPerPage(parseInt(e.target.value));
+                                        setCurrentPage(1);
+                                    }}
+                                >
+                                    {[10, 25, 50, 100, 200].map((n) => (
+                                        <option key={n} value={n}>
+                                            {n}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="hidden md:block">
+                                <Pagination
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    onPageChange={goToPage}
+                                />
+                            </div>
+                        </div>
+
+                        {/* Pagination Buttons */}
+                        <div className="flex md:hidden justify-center w-full xl:w-auto">
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={goToPage}
+                            />
+                        </div>
+                    </div>
+                    {/* Pagination */}
+                    {/* <div className="flex items-center gap-4 flex-wrap">
+                       
                         <div className="flex items-center gap-2">
                             <p className="text-sm text-nowrap">Per page:</p>
                             <select
@@ -374,13 +388,13 @@ const AgentAllLeads = () => {
                             </select>
                         </div>
 
-                        {/* Pagination Buttons */}
+                       
                         <Pagination
                             currentPage={currentPage}
                             totalPages={totalPages}
                             onPageChange={goToPage}
                         />
-                    </div>
+                    </div> */}
 
 
                 </div>

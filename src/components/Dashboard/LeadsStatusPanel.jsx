@@ -31,11 +31,11 @@ const LeadsStatusPanel = ({selectedFilter}) => {
 
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-7 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-4">
       {stats.map((item, index) => (
         <div
           key={index}
-          className={`rounded-md p-4 text-white shadow-sm bg-gradient-to-r ${item.gradient}`}
+          className={`rounded-md p-4 text-white shadow-sm bg-gradient-to-r ${item.gradient} ${(stats?.length - 1) == index && "col-span-2 lg:col-span-1"}`}
         >
           <p className="text-sm font-medium mb-1">{item.label}</p>
           {

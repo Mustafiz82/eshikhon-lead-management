@@ -9,10 +9,12 @@ import { usePathname, useRouter } from "next/navigation";
 import AdminRoute from "@/components/auth/AdminRoute";
 import { useContext } from "react";
 import { AuthContext } from "@/context/AuthContext";
+import { LuMenu } from "react-icons/lu";
 
 export default function Layout({ children }) {
     const pathname = usePathname()
-    const {user} = useContext(AuthContext)
+    const { user } = useContext(AuthContext)
+
 
     const menuItems = [
         { href: "/admin", icon: <RiDashboardFill className="text-xl" />, label: "Dashboard" },
@@ -28,12 +30,22 @@ export default function Layout({ children }) {
 
     return (
         <AdminRoute>
-            <div className="drawer drawer-open bg-gray-900 text-gray-100 transition-colors">
+            <div className="drawer 2xl:drawer-open h-full bg-gray-900 text-gray-100 transition-colors">
                 <input id="my-drawer" type="checkbox" className="drawer-toggle" />
-                <div className="drawer-content">{children}</div>
-                <div className="drawer-side p-0">
+
+
+                <div className="drawer-content h-full">
+                    <div className="flex bg-gray-900 fixed z-[999] w-full  2xl:hidden p-5 top-0 h-fit justify-between items-center">
+                        <h2>eshikhon</h2>
+                        <label htmlFor="my-drawer" className="btn btn-primary bg-blue-600 text-xl drawer-button"><LuMenu /></label>
+                    </div>
+                    <div className="mt-16 2xl:mt-0">
+                        {children}
+                    </div>
+                </div>
+                <div className="drawer-side !z-[9999] p-0">
                     <label htmlFor="my-drawer" className="drawer-overlay" />
-                    <ul className="menu  p-0 pt-8 bg-gray-800 gap-3  text-gray-100 min-h-full w-80 transition-colors">
+                    <ul className="menu  p-0 pt-8 !z-[9999] relative bg-gray-800 gap-3  text-gray-100 min-h-full w-80 transition-colors">
                         {menuItems.map((item) => (
                             <Link key={item.href} href={item.href}>
                                 <li

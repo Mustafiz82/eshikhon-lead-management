@@ -8,7 +8,7 @@ const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , follow
         "Will Join on Seminar": "badge-primary", // 🔵 Strong intent, upcoming
         "Not Interested": "badge-error",      // 🔴 Rejected, negative
         "Enrolled in Other Institute": "badge-secondary", // 🌸 Pink → sidelined/alternative
-        "Cut the Call": "badge-error",        // 🔴 Abrupt stop
+        "Call declined": "badge-error",        // 🔴 Abrupt stop
         "Call Not Received": "badge-warning", // 🟨 Needs caution/attention
         "Number Off or Busy": "badge-neutral", // ⚫ Inactive/unavailable
         "Wrong Number": "badge-error",        // 🔴 Mistake
@@ -17,8 +17,8 @@ const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , follow
 
 
     return <div>
-        <div className="rounded-sm h-[calc(100vh-160px)] overflow-scroll border border-base-content/10 bg-base-200/10 shadow overflow-x-auto">
-            <table className="table table-zebra w-full">
+        <div className="rounded-sm h-[calc(100vh-260px)]  lg:h-[calc(100vh-160px)] overflow-scroll border border-base-content/10 bg-base-200/10 shadow overflow-x-auto">
+            <table className="table table-xs 2xl:table-sm table-zebra table-pin-rows w-full">
                 <thead>
                     <tr className="bg-base-200">
                         <th>#</th>

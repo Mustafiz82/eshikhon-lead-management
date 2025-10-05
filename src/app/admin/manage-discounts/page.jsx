@@ -33,6 +33,7 @@ export default function ManageDiscountPage() {
             ? editDiscount.appliesTo.map(String)
             : []
     );
+    const [showModal, setShowModal] = useState(false)
 
     useEffect(() => {
         setAuthority(editDiscount?.authority || "");
@@ -143,7 +144,7 @@ export default function ManageDiscountPage() {
     };
 
     return (
-        <div className="flex h-screen overflow-hidden">
+        <div className="flex min-h-[calc(100vh-100px)] lg:h-screen overflow-hidden">
             {loading ? (
                 <p className="h-[300px] flex justify-center items-center w-full">
                     Loading...
@@ -154,9 +155,9 @@ export default function ManageDiscountPage() {
                 </p>
             ) : (
                 <>
-                    <Table data={discounts} config={courseConfig} />
+                    <Table data={discounts}  width={"1000px"} config={courseConfig} />
 
-                    <div className="h-full w-[420px] bg-gray-800 shadow-lg p-6">
+                    <div className={`h-full ${showModal ? "fixed lg:static top-0 left-0 w-full lg:w-auto z-[9999] block " : "hidden lg:block"}  w-[400px] bg-gray-800 shadow-lg p-6`}>
                         <form
                             autoComplete="off"
                             onSubmit={handleSubmit}
@@ -169,7 +170,10 @@ export default function ManageDiscountPage() {
                                 <button
                                     type="button"
                                     className="btn btn-xs btn-outline"
-                                    onClick={() => setEditDiscount(null)}
+                                    onClick={() => {
+                                        setEditDiscount(null)
+                                        setShowModal(false)
+                                    }}
                                     disabled={isSubmitting}
                                 >
                                     Close
@@ -184,7 +188,7 @@ export default function ManageDiscountPage() {
                                     defaultValue={editDiscount?.name || ""}
                                     className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                     disabled={isSubmitting}
-                                />
+                                />  
 
                                 <select
                                     name="authority"
@@ -347,19 +351,16 @@ export default function ManageDiscountPage() {
                                             ? "Update Discount"
                                             : "Create Discount"}
                                 </button>
-                                <button
-                                    type="button"
-                                    className="btn btn-ghost w-full"
-                                    onClick={() => setEditDiscount(null)}
-                                    disabled={isSubmitting}
-                                >
-                                    Cancel
-                                </button>
+                              
                             </div>
                         </form>
                     </div>
                 </>
             )}
+
+                <button onClick={() => setShowModal(true)} type="submit" className="btn z-50  lg:hidden fixed bottom-2 bg-blue-600 btn-primary w-full" >
+                Create New Discount
+            </button>
         </div>
     );
 }

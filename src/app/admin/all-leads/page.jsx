@@ -48,7 +48,7 @@ const Page = () => {
         sort: sortMethod,
         limit: leadsPerPage,
         currentPage: currentPage,
-        fields : "table"
+        fields: "table"
     }).toString()
 
 
@@ -166,17 +166,17 @@ const Page = () => {
 
 
     return (
-        <div className="p-6 h-screen overflow-hidden ">
+        <div className="p-6 min-h-[calc(100vh-100px)] lg:h-screen overflow-hidden ">
 
 
             {/* Filters */}
-            <div className="flex flex-wrap justify-between items-center gap-4 mb-4">
+            <div className="flex  flex-wrap justify-between items-center gap-4 mb-4">
                 {/* Status Filter */}
-                <div className="flex gap-2">
+                <div className="flex w-full lg:w-auto  gap-2">
                     {["All", "Assigned", "Not Assigned"].map((status) => (
                         <button
                             key={status}
-                            className={`btn btn-sm ${statusFilter === status
+                            className={`btn flex-1 lg:flex-auto  btn-sm ${statusFilter === status
                                 ? "btn-primary bg-blue-600 text-white"
                                 : "btn-outline"
                                 }`}
@@ -191,7 +191,7 @@ const Page = () => {
                 </div>
 
 
-                <div className="flex items-center gap-2">
+                <div className="flex fixed lg:static top-7 right-[25%] items-center gap-2">
                     <button
                         onClick={() => setIsSearchModalOpen(true)}
                         className="flex items-center gap-2"
@@ -212,9 +212,9 @@ const Page = () => {
 
 
 
-                <div className="flex gap-2">
+                <div className="flex w-full lg:w-auto gap-2">
                     <Dropdown
-                        dropdownPosition="dropdown-end"
+                        dropdownPosition="lg:dropdown-end"
                         selectedState={categoryFilter}
                         setSelectedState={setCategoryFilter}
                         label="Select Course"
@@ -253,13 +253,13 @@ const Page = () => {
                 />
 
                 {/* Footer Controls */}
-                <div className="mt-4 flex flex-wrap justify-between items-center gap-4 border-t border-base-content/10 pt-4">
+                <div className="mt-4 flex flex-col lg:flex-row   justify-between items-center gap-4 border-t border-base-content/10 pt-4">
                     {/* Assignment Tools */}
-                    <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-sm">
+                    <div className="flex  w-full  justify-between  items-center gap-2">
+                        <span className="text-sm hidden md:block text-nowrap">
                             Selected: <b>{selectedIds.size}</b>
                         </span>
-                        <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex w-full md:w-auto lg:w-full items-center gap-2 ">
                             <span className="text-sm">Quick Select:</span>
                             {[10, 50, 100].map((count) => (
                                 <button
@@ -291,22 +291,22 @@ const Page = () => {
                                 />
 
                             </form>
+                            <button
+                                className="btn bg-blue-600 btn-sm btn-primary"
+                                onClick={() => setIsAssignModalOpen(true)}
+                            >
+                                Assign to
+                            </button>
                         </div>
 
 
-                        <button
-                            className="btn bg-blue-600 btn-sm btn-primary"
-                            onClick={() => setIsAssignModalOpen(true)}
-                        >
-                            Assign to
-                        </button>
 
                     </div>
 
                     {/* Pagination */}
-                    <div className="flex items-center gap-4 flex-wrap">
+                    <div className="flex md:justify-between md:w-full items-center gap-4 flex-wrap">
                         {/* Items Per Page Selector */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex justify-between lg:ml-auto lg:justify-start w-full md:w-auto items-center gap-2">
                             <p className="text-sm text-nowrap">Per page:</p>
                             <select
                                 className="select select-sm focus:outline-0"
@@ -322,6 +322,9 @@ const Page = () => {
                                     </option>
                                 ))}
                             </select>
+                            <span className="text-sm lg:hidden text-nowrap">
+                                Selected: <b>{selectedIds.size}</b>
+                            </span>
                         </div>
 
                         {/* Pagination Buttons */}
@@ -347,7 +350,7 @@ const Page = () => {
                 setSearchQuery={setSearchQuery}
                 results={leads}
                 setCurrentPage={setCurrentPage}
-                
+
             />
 
             <AssignModal

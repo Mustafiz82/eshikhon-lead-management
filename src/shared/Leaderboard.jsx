@@ -10,18 +10,18 @@ const Leaderboard = ({
   title,
   metricLabel = "Students Admitted",
   valueKey = "enrolledCount", // 👈 default
-  
+  loading
   
 }) => {
 
 
   const {user} = useContext(AuthContext)
-  let loading = true
+
   
   return (
     <div className="bg-gray-800 hover:bg-blue-600/20 duration-300 p-6 rounded-xl shadow-md w-full mx-auto">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">{title}</h2>
+        <h2 className="lg:text-xl font-semibold">{title}</h2>
       </div>
 
       {/* Header */}
