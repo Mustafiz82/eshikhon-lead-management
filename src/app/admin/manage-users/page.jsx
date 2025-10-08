@@ -60,20 +60,33 @@ export default function Page() {
         const payload = {
             name: form.user_name.value.trim(),
             email: form.user_email.value.trim().toLowerCase(),
-            password: form.user_password.value,
+           
             role: role,
             designation: designation,
-            target: form.target.value ? Number(form.target.value) : null,
+            target: form.target.value ? Number(form.target.value) : null,   
         };
+
+        const updatedPayload = {
+            ...payload,
+            password: form.user_password.value,
+        }
         setIsSubmitting(true);
         setFormError(""); // clear old error
+        console.log(form.user_password.value?.length)
 
         try {
             if (editUser) {
                 const id = editUser._id || editUser.id;
-                await axiosPublic.put(`/user/${id}`, payload);
+                if (form.user_password.value?.length == 0) {
+                    console.log("hittttt")
+                    await axiosPublic.put(`/user/${id}`, payload);
+                }
+                else {
+
+                    await axiosPublic.put(`/user/${id}`, updatedPayload);
+                }
             } else {
-                await axiosPublic.post("/user", payload);
+                await axiosPublic.post("/user", updatedPayload);
             }
 
             await fetchUsers();
@@ -316,7 +329,7 @@ export default function Page() {
                                 <button type="submit" className="btn bg-blue-600 btn-primary w-full" disabled={isSubmitting}>
                                     {isSubmitting ? (editUser ? "Updating..." : "Creating...") : editUser ? "Update User" : "Create User"}
                                 </button>
-                               
+
                             </div>
                         </form>
                     </div>
@@ -325,7 +338,7 @@ export default function Page() {
 
 
             <button onClick={() => setShowModal(true)} type="submit" className="btn z-50  lg:hidden fixed bottom-2 bg-blue-600 btn-primary w-full" >
-               <TiUserAdd/>  Create New User
+                <TiUserAdd />  Create New User
             </button>
         </div>
     );
