@@ -1,5 +1,6 @@
 "use client";
 
+import Dropdown from "@/components/agentLeads/Dropdown";
 import useDelete from "@/hooks/useDelete";
 import useFetch from "@/hooks/useFetch";
 import useSaveData from "@/hooks/useSaveData";
@@ -19,11 +20,24 @@ const courseOption = [
 
 export default function ManageCoursePage() {
 
-  const { data: courses, loading, error, refetch } = useFetch("/course")
+  const [courseType, setCourseType] = useState("Online")
+
+  const [showModal, setShowModal] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const [selectedSortMethod, setSelectedSortMethod] = useState("Default")
+
+  const [searchQuery, setSearchQuery] = useState("")
+  const [searchText, setSearchText] = useState("")
+
+  const [filterCourseType, setFilterCourseType] = useState("All")
+
+  const { data: courses, loading, error, refetch } = useFetch(`/course?sort=${selectedSortMethod}&q=${searchQuery}&type=${(filterCourseType !== "All") ? filterCourseType : ""}`)
   const { setEditCourse, editCourse, handleSave, loading: isSubmitting, error: submitError } = useSaveData(refetch)
   const { handleDelete } = useDelete(refetch, "course")
-  const [courseType, setCourseType] = useState("Online")
-  const [showModal, setShowModal] = useState(false)
+
+
+  console.log(searchQuery)
 
 
   const handleSubmit = async (e) => {
@@ -41,7 +55,7 @@ export default function ManageCoursePage() {
   };
 
   const actionsCell = (row) => (
-    <div className="flex gap-2">
+    <div className="flex justify-end gap-2">
       <button
         className="btn btn-sm bg-blue-600 btn-primary"
         onClick={() => setEditCourse(row)}           // <- selected row here
@@ -69,7 +83,12 @@ export default function ManageCoursePage() {
       setCourseType(editCourse?.type)
   }, [editCourse])
 
-
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      setSearchQuery(searchText)
+    }, 500)
+    return () => clearTimeout(delay)
+  }, [searchText])
 
 
 
@@ -83,7 +102,54 @@ export default function ManageCoursePage() {
         <>
 
 
-          <Table data={courses} config={courseConfig} />
+
+
+
+
+          <div className=" flex-1 justify-between items-center overflow-auto lg:overflow-x-hidden  ">
+            <div className="flex flex-col-reverse md:flex-row  p-6 pb-0 justify-between">
+              <div className="md:w-fit w-full  flex gap-2">
+                <Dropdown
+                  dropdownPosition="dropdown-start"
+                  selectedState={selectedSortMethod}
+                  setSelectedState={setSelectedSortMethod}
+                  label="Sort By"
+                  options={["Default", "Name (Ascending)", "Name (Descending)", "Price (Ascending)", "Price (Descending)"]}
+                  setCurrentPage={setCurrentPage}
+                  defaultOptions={"Default"}
+                />
+                <Dropdown
+                  dropdownPosition="dropdown-end"
+                  selectedState={filterCourseType}
+                  setSelectedState={setFilterCourseType}
+                  label="Course Type"
+                  options={["All", "Online", "Offline",]}
+                  setCurrentPage={setCurrentPage}
+                  defaultOptions={"All"}
+                />
+
+
+
+              </div>
+              <form onSubmit={(e) => {
+                e.preventDefault()
+                setSearchQuery(searchText)
+
+              }}>
+                <input
+                  type="text"
+                  placeholder="🔍︎ Search by name, type or price"
+                  className="input lg:min-w-[300px] input-bordered focus:outline-0 focus:border-blue-600 w-full mb-4"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  autoFocus
+                />
+              </form>
+            </div>
+            <div className="lg:-mr-4 overflow-auto  ">
+              <Table data={courses} config={courseConfig} />
+            </div>
+          </div>
 
           {/* Drawer / Form */}
           <div className={`h-full ${showModal ? "fixed lg:static top-0 left-0 w-full lg:w-auto z-[9999] block " : "hidden lg:block"}  w-[400px] bg-gray-800 shadow-lg p-6`}>
@@ -92,11 +158,11 @@ export default function ManageCoursePage() {
                 <h2 className="text-lg font-semibold">
                   {editCourse ? "Edit Course" : "Add New Course"}
                 </h2>
-                <button type="button" className="btn btn-xs btn-outline" onClick={() => {
+                <button type="button" className={`btn btn-xs btn-outline ${(!editCourse && !showModal) && "hidden"}`} onClick={() => {
                   setEditCourse(null)
                   setShowModal(false)
                 }}>
-                  Close
+                  Clear
                 </button>
               </div>
 
@@ -159,7 +225,7 @@ export default function ManageCoursePage() {
       )}
 
       <button onClick={() => setShowModal(true)} type="submit" className="btn z-50  lg:hidden fixed bottom-2 bg-blue-600 btn-primary w-full" >
-          Create New course
+        Create New course
       </button>
     </div>
   );

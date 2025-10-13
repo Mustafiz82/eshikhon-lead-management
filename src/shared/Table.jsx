@@ -1,13 +1,13 @@
 const Table = ({ data, config , dataType , width=""}) => {
     return (
-        <div className="flex-1 h-screen overflow-auto  p-6">
-            <div className="overflow-x-auto">
+        <div className="flex-1 h-[calc(100vh-120px)] overflow-auto pt-0 p-2 lg:pt-0 lg:p-6">
+            <div className="overflow-x-auto lg:overflow-visible">
                 {data.length > 0 ? (
-                    <table style={{minWidth : width}} className="table table-pin-rows  w-full">
+                    <table style={{minWidth : width}} className="table   table-pin-rows  w-full">
                         <thead>
-                            <tr>
+                            <tr className="">
                                 {config.header.map((item, index) => (
-                                    <th key={index}>{item}</th>
+                                    <th className={index == (config.header.length - 1) &&  "text-right"} key={index}>{item}</th>
                                 ))}
                             </tr>
                         </thead>
