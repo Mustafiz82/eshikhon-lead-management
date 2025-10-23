@@ -14,7 +14,7 @@ import React, { useEffect, useState } from "react";
 const courseOption = [
   { value: "Online", label: "Online" },
   { value: "Offline", label: "Offline" },
-  { value: "Video", label: "Video" }
+  { value: "Video", label: "Video" },
 ]
 
 
@@ -38,6 +38,26 @@ export default function ManageCoursePage() {
 
 
   console.log(searchQuery)
+
+
+
+
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Focus search input when Ctrl + K is pressed
+      if (e.ctrlKey && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        const searchInput = document.getElementById("course-search-input");
+        if (searchInput) return searchInput.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+
 
 
   const handleSubmit = async (e) => {
@@ -91,6 +111,19 @@ export default function ManageCoursePage() {
   }, [searchText])
 
 
+  useEffect(() => {
+
+  }, [])
+
+  const list = Array.isArray(courses?.items) ? courses.items : courses;
+
+  const online = list?.filter(i => i?.type?.toLowerCase() === "online")?.length || 0;
+  const offline = list?.filter(i => i?.type?.toLowerCase() === "offline")?.length || 0;
+
+
+  console.log(online, offline)
+
+
 
 
 
@@ -107,7 +140,7 @@ export default function ManageCoursePage() {
 
 
           <div className=" flex-1 justify-between items-center overflow-auto lg:overflow-x-hidden  ">
-            <div className="flex flex-col-reverse md:flex-row  p-6 pb-0 justify-between">
+            <div className="flex lg:items-start flex-col-reverse md:flex-row  p-6 pb-0 justify-between">
               <div className="md:w-fit w-full  flex gap-2">
                 <Dropdown
                   dropdownPosition="dropdown-start"
@@ -130,7 +163,11 @@ export default function ManageCoursePage() {
 
 
 
+
+
+
               </div>
+              <p className="hidden lg:block">Total course :  {courses?.length} (online : {online} , offline : {offline})</p>
               <form onSubmit={(e) => {
                 e.preventDefault()
                 setSearchQuery(searchText)
@@ -138,11 +175,12 @@ export default function ManageCoursePage() {
               }}>
                 <input
                   type="text"
+                  id="course-search-input"
                   placeholder="🔍︎ Search by name, type or price"
                   className="input lg:min-w-[300px] input-bordered focus:outline-0 focus:border-blue-600 w-full mb-4"
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
-                  autoFocus
+
                 />
               </form>
             </div>

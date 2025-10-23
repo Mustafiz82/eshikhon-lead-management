@@ -2,6 +2,7 @@
 
 
 "use client";
+import axiosPublic from "@/api/axios";
 import Dropdown from "@/components/agentLeads/Dropdown";
 import AssignModal from "@/components/allLeads/AssignModal";
 import LeadTable from "@/components/allLeads/LeadTable";
@@ -11,6 +12,8 @@ import { leads } from "@/data/leads";
 import useFetch from "@/hooks/useFetch";
 import Pagination from "@/shared/Pagination";
 import { formateDate } from "@/utils/date";
+import { showAlert, showConfirm } from "@/utils/swal";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 
@@ -165,6 +168,40 @@ const Page = () => {
     }, [statusFilter, searchQuery, categoryFilter, sortMethod, currentPage, leadsPerPage])
 
 
+    const handleDeleteLeads = async () => {
+
+        const ids = [...selectedIds];
+
+        if (!(ids?.length > 0)) {
+            return showAlert(
+                "No leads selected",
+                "Please select at least one lead To Delete",
+                "warning"
+            );
+        }
+        const result = await showConfirm(
+            "Are you sure?",
+            "This action will permanently delete selected leads.",
+            "Yes, delete it!"
+        );
+
+        if (result.isConfirmed) {
+
+            try {
+                const res = await axiosPublic.delete("/leads", { data: { ids } })
+                console.log(res.data)
+                refetch()
+                paginateRefetch()
+            } catch (error) {
+                console.log(error)
+            }
+
+            console.log(ids);
+        }
+
+    }
+
+
     return (
         <div className="p-6 min-h-[calc(100vh-100px)] lg:h-screen overflow-hidden ">
 
@@ -296,6 +333,12 @@ const Page = () => {
                                 onClick={() => setIsAssignModalOpen(true)}
                             >
                                 Assign to
+                            </button>
+                            <button
+                                className="btn bg-red-500 btn-sm btn-error text-white"
+                                onClick={handleDeleteLeads}
+                            >
+                                Delete
                             </button>
                         </div>
 
