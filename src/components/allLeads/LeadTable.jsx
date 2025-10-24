@@ -1,6 +1,8 @@
 
 import { formateDate } from "@/utils/date";
 import Link from "next/link";
+import { BiSolidLockAlt } from "react-icons/bi";
+import { BiSolidLockOpen } from "react-icons/bi";
 
 const LeadTable = ({
   selectedIds,
@@ -22,7 +24,7 @@ const LeadTable = ({
         leads?.length == 0 ? <div className=" flex gap-2 text-center my-20 justify-center text-sm text-white/70">
           <p>No Leads Found.</p>
           <Link href={"/admin/upload"} className="text-blue-500">Clck here to upload leads</Link>
-        </div> : <table className="table min-w-[1500px] lg:min-w-auto table-xs 2xl:table-sm  table-pin-rows lg:table-pin-cols table-zebra w-full">
+        </div> : <table className="table min-w-[1500px] lg:min-w-auto table-xs 2xl:table-sm 3xl:table-md  table-pin-rows lg:table-pin-cols table-zebra w-full">
 
         <thead className="text-base-content/70  text-sm uppercase tracking-wide bg-base-300">
           <tr>
@@ -45,6 +47,7 @@ const LeadTable = ({
               </div>
             </th>
 
+           
             <th className="sticky top-0 bg-base-300 z-10">Date</th>
             <th className="sticky top-0 bg-base-300 z-10">Name</th>
             <th className="sticky top-0 bg-base-300 z-10">Email</th>
@@ -63,6 +66,7 @@ const LeadTable = ({
               (currentPage - 1) * leadsPerPage + index;
             return (
               <tr key={actualIndex} className={`${selectedIds.has(lead._id)  ? "!bg-blue-900/50" : ""}`}>
+              
                 <td className="flex items-center gap-2">
                   <input
                     type="checkbox"
@@ -77,7 +81,9 @@ const LeadTable = ({
                     {actualIndex + 1}
                   </span>
                 </td>
-                <td>{formateDate(lead?.createdAt)}</td>
+
+                
+                <td> <span className="relative ">{lead?.isLocked && <BiSolidLockAlt title="Agent will not be able modify these lease leads" className="text-[#F7BB07] absolute -left-5 top-1/2 -translate-y-1/2"/>  } {formateDate(lead?.createdAt)}</span> </td>
                 <td>{lead.name}</td>
                 <td>{lead.email}</td>
                 <td > <span className="text-nowrap">{lead.phone}</span></td>

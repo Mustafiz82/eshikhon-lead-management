@@ -280,8 +280,10 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch , co
                         <p className="text-red-500 font-semibold">{error}</p>
 
                         <button
+                           
                             onClick={handleSaveChanges}
-                            disabled={saving}
+                            title={selectedLead?.isLocked ? "Lead is Locked . Contact Admin to modify the leads " : ""}
+                            disabled={saving || selectedLead?.isLocked}
                             className="btn w-full -mt-1  btn-primary bg-blue-600  text-white hover:bg-[#333] border border-gray-600 "
                         >
                             {saving ? "Saving..." : " Save Changes"}

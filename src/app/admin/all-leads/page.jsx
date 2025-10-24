@@ -16,13 +16,17 @@ import { showAlert, showConfirm } from "@/utils/swal";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
+import { BiSolidLockAlt } from "react-icons/bi";
+import { BiSolidLockOpen } from "react-icons/bi";
+import { MdDelete } from "react-icons/md";
 
 
 const Page = () => {
     // 🔹 Filters
     const [statusFilter, setStatusFilter] = useState("All");       // filter leads by status
     const [categoryFilter, setCategoryFilter] = useState("All");   // filter leads by category
-    const [sortMethod, setSortMethod] = useState("Default")
+    const [sortMethod, setSortMethod] = useState("Default");
+    const [lockSTatus, setLockStatus] = useState("All");
 
     // 🔹 Search
     const [searchText, setSearchText] = useState("");              // text typed in search modal input
@@ -51,7 +55,8 @@ const Page = () => {
         sort: sortMethod,
         limit: leadsPerPage,
         currentPage: currentPage,
-        fields: "table"
+        fields: "table",
+        lock : lockSTatus
     }).toString()
 
 
@@ -165,7 +170,7 @@ const Page = () => {
         if (searchQuery) {
             setCurrentPage(1)
         }
-    }, [statusFilter, searchQuery, categoryFilter, sortMethod, currentPage, leadsPerPage])
+    }, [statusFilter, searchQuery, categoryFilter, sortMethod, currentPage, leadsPerPage , lockSTatus])
 
 
     const handleDeleteLeads = async () => {
@@ -194,6 +199,7 @@ const Page = () => {
                 paginateRefetch()
             } catch (error) {
                 console.log(error)
+
             }
 
             console.log(ids);
@@ -201,6 +207,77 @@ const Page = () => {
 
     }
 
+
+
+
+    const findLockStatus = () => {
+        const ids = [...selectedIds];
+
+        const filteredLeads = leads.filter(lead =>
+            ids.includes(lead._id.toString())
+        );
+
+        if (filteredLeads.length === 0) return false;
+        // Check if ALL filtered leads have isLocked = true
+        const allLocked = filteredLeads.every(lead => lead.isLocked === true);
+
+        console.log("All Locked:", allLocked);
+        return allLocked;
+    };
+
+    const showLockStatus = findLockStatus();
+
+
+
+    const handleLockLeads = async () => {
+
+        const ids = [...selectedIds];
+
+        if (!(ids?.length > 0)) {
+            return showAlert(
+                "No leads selected",
+                `Please select at least one lead To ${showLockStatus ? "Unlock" : "lock"}`,
+                "warning"
+            );
+        }
+        const result = await showConfirm(
+            "Are you sure?",
+            `This action will ${showLockStatus ? "unlock" : "lock"} the selected leads, ${showLockStatus ? "allowing" : "preventing"} agents from making changes.`,
+            `Yes,  ${showLockStatus ? "Unlock" : "lock"} it!`
+        );
+
+        if (result.isConfirmed) {
+
+
+            console.log(ids)
+
+            const payload = {
+                ids: ids,
+                update: { isLocked: !showLockStatus }
+            }
+
+            try {
+                const res = await axiosPublic.patch("/leads", payload)
+                console.log(res.data)
+                refetch()
+                paginateRefetch()
+                setSelectedIds(new Set())
+            } catch (error) {
+                console.log(error)
+
+            }
+
+            console.log(ids);
+        }
+    }
+
+
+    useEffect(() => {
+        findLockStatus()
+    }, [selectedIds])
+
+
+    console.log(showLockStatus)
 
     return (
         <div className="p-6 min-h-[calc(100vh-100px)] lg:h-screen overflow-hidden ">
@@ -250,6 +327,15 @@ const Page = () => {
 
 
                 <div className="flex w-full lg:w-auto gap-2">
+                    <Dropdown
+                        dropdownPosition="dropdown-start"
+                        selectedState={lockSTatus}
+                        setSelectedState={setLockStatus}
+                        label="Lock Status"
+                        options={["All", "Locked", "Unlocked"]}
+                        setCurrentPage={setCurrentPage}
+                        defaultOptions={"All"}
+                    />
                     <Dropdown
                         dropdownPosition="lg:dropdown-end"
                         selectedState={categoryFilter}
@@ -335,10 +421,18 @@ const Page = () => {
                                 Assign to
                             </button>
                             <button
-                                className="btn bg-red-500 btn-sm btn-error text-white"
+                                className="btn flex gap-1 bg-red-500 btn-sm btn-error text-white"
                                 onClick={handleDeleteLeads}
                             >
+                                <MdDelete />
                                 Delete
+                            </button>
+                            <button
+                                className="btn flex bg-[#a855f7]  btn-sm btn-primary border-[#a855f7] text-white"
+                                onClick={handleLockLeads}
+                            >
+                              {showLockStatus ? <BiSolidLockOpen/>: <BiSolidLockAlt />}  {showLockStatus ? "Unlock" : "lock"}
+
                             </button>
                         </div>
 

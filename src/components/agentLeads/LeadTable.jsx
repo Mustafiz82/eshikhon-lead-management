@@ -1,4 +1,5 @@
 import { formateDate } from "@/utils/date";
+import { BiSolidLockAlt } from "react-icons/bi";
 
 const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , followUpActive , missedFUActive}) => {
 
@@ -42,7 +43,7 @@ const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , follow
                             className="cursor-pointer hover:bg-base-300/40 transition"
                         >
                             <td>{(currentPage - 1) * leadsPerPage + index + 1}</td>
-                            <td>{lead.name}</td>
+                            <td> <span className="relative ">{lead?.isLocked && <BiSolidLockAlt title="Lead is Locked . Contact Admin to modify the leads" className="text-[#F7BB07] absolute -left-5 top-1/2 -translate-y-1/2"/>  } {lead.name}</span> </td>
                             <td>{lead.email}</td>
                             <td>{lead.phone}</td>
                             <td className="max-w-[250px] whitespace-normal break-words">{lead.address}</td>
