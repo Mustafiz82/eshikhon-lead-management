@@ -229,6 +229,23 @@ const Page = () => {
 
 
 
+
+    const findAssignStatus = () => {
+        const ids = [...selectedIds];
+        const filteredLeads = leads.filter(lead => ids.includes(lead._id.toString()));
+
+        if (filteredLeads.length === 0) return false;
+
+        // check if ALL are assigned
+        const allAssigned = filteredLeads.every(lead => lead.assignStatus === true);
+        return allAssigned;
+    };
+
+    const showAssignStatus = findAssignStatus(); // true = all assigned
+
+
+
+
     const handleLockLeads = async () => {
 
         const ids = [...selectedIds];
@@ -272,9 +289,59 @@ const Page = () => {
     }
 
 
+    const handleAssignToggle = async () => {
+        const ids = [...selectedIds];
+
+        if (!(ids?.length > 0)) {
+            return showAlert(
+                "No leads selected",
+                `Please select at least one lead to ${showAssignStatus ? "unassign" : "assign"}.`,
+                "warning"
+            );
+        }
+
+        // If not assigned, open modal instead of assigning directly
+        if (!showAssignStatus) {
+            setIsAssignModalOpen(true);
+            return;
+        }
+
+        // If already assigned → Unassign directly
+        const result = await showConfirm(
+            "Are you sure?",
+            "This action will unassign the selected leads.",
+            "Yes, unassign them!"
+        );
+
+        if (result.isConfirmed) {
+            try {
+                const payload = { ids, update: { assignTo: "", assignStatus: false } };
+                const res = await axiosPublic.patch("/leads", payload);
+
+                showAlert("Unassigned", `${res.data.modified || ids.length} lead(s) unassigned successfully.`, "success");
+
+                refetch();
+                paginateRefetch();
+                setSelectedIds(new Set());
+            } catch (error) {
+                console.log(error);
+                showAlert("Error", error.message, "error");
+            }
+        }
+    };
+
+
+
     useEffect(() => {
         findLockStatus()
     }, [selectedIds])
+
+    useEffect(() => {
+        findAssignStatus();
+    }, [selectedIds]);
+
+
+
 
 
     console.log(showLockStatus)
@@ -418,12 +485,19 @@ const Page = () => {
                                 />
 
                             </form>
-                            <button
+                            {/* <button
                                 className="btn bg-blue-600 btn-sm btn-primary"
                                 onClick={() => setIsAssignModalOpen(true)}
                             >
                                 Assign to
+                            </button> */}
+                            <button
+                                className="btn flex bg-blue-600 btn-sm btn-success border-blue-600 text-white"
+                                onClick={handleAssignToggle}
+                            >
+                                {showAssignStatus ? "Unassign" : "Assign"}
                             </button>
+
                             <button
                                 className="btn flex gap-1 bg-red-500 btn-sm btn-error text-white"
                                 onClick={handleDeleteLeads}

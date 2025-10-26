@@ -10,6 +10,8 @@ const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , follow
         "Not Interested": "badge-error",      // 🔴 Rejected, negative
         "Enrolled in Other Institute": "badge-secondary", // 🌸 Pink → sidelined/alternative
         "Call declined": "badge-error",        // 🔴 Abrupt stop
+        "Call later": "badge-primary",        // 🔴 Abrupt stop
+
         "Call Not Received": "badge-warning", // 🟨 Needs caution/attention
         "Number Off or Busy": "badge-neutral", // ⚫ Inactive/unavailable
         "Wrong Number": "badge-error",        // 🔴 Mistake

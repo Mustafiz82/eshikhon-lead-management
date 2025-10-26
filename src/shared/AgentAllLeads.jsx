@@ -80,6 +80,7 @@ const AgentAllLeads = () => {
         "Not Interested",
         "Enrolled in Other Institute",
         "Call declined",
+        "Call later",
         "Call Not Received",
         "Number Off or Busy",
         "Wrong Number"
