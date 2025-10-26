@@ -61,7 +61,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead 
   const handleSearch = (e) => {
     const searchText = e.target.value
     setSearchInput(searchText)
-    const Suggesion = course.filter(item => item.name.toLowerCase().startsWith(searchText.toLowerCase()))
+    const Suggesion = course.filter(item => item.name.toLowerCase().includes(searchText.toLowerCase()))
     if (searchText.length > 0) {
       setSearchSuggesion(Suggesion)
     }
@@ -118,7 +118,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead 
 
 
   useEffect(() => {
-    setSearchInput(selectedLead?.enrolledTo ?? "");
+    setSearchInput(selectedLead?.enrolledTo ?? selectedLead?.seminarTopic ?? "");
     setSelectedDiscount(selectedLead?.discountSource ?? "");
     setSelectedDiscountInput(selectedLead?.leadDiscount ?? "");
     setSelectedDiscountUnit(selectedLead?.discountUnit == "percent" ? "%" : "৳");

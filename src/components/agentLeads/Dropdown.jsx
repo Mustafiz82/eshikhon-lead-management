@@ -17,11 +17,11 @@ const Dropdown = ({
         setCurrentPage(1);
     };
 
-    
+
 
     return (
-        <div className="flex flex-1 lg:flex-auto items-center gap-3">
-            <div className={`dropdown flex-1 lg:flex-auto ${dropdownPosition}`}>
+        <div className="flex z-[9999] flex-1 lg:flex-auto items-center gap-3">
+            <div className={`dropdown bg-gray-800 flex-1 lg:flex-auto ${dropdownPosition}`}>
                 <button
                     type="button"
 
@@ -34,42 +34,44 @@ const Dropdown = ({
                 </button>
 
                 <ul
-                    className="dropdown-content z-[1] menu p-2 shadow bg-gray-800 rounded-box w-64"
+                    className="dropdown-content  menu p-2 shadow bg-gray-800 rounded-box  !w-64 "
                     // prevent closing when interacting inside
                     onMouseDown={(e) => e.stopPropagation()}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {options.map((item) => (
-                        <li key={item}>
-                            <button
-                                type="button"
-                                onClick={() => handleSelect(item)}
-                                className={selectedState === item ? "font-bold text-blue-600" : ""}
-                            >
-                                {item}
-                            </button>
-                        </li>
-                    ))}
-                    {
-                        showDatePicker && <>
-                            {/* optional divider/title */}
-                            <li className="menu-title mt-1">
-                                <span className="opacity-70">Pick a date</span>
+                    <div className="max-h-[800px] overflow-y-auto" >
+                        {options.map((item) => (
+                            <li key={item}>
+                                <button
+                                    type="button"
+                                    onClick={() => handleSelect(item)}
+                                    className={selectedState === item ? "font-bold text-blue-600" : ""}
+                                >
+                                    {item}
+                                </button>
                             </li>
+                        ))}
+                        {
+                            showDatePicker && <>
+                                {/* optional divider/title */}
+                                <li className="menu-title mt-1">
+                                    <span className="opacity-70">Pick a date</span>
+                                </li>
 
-                            <li className="px-2 py-1">
-                                <input
-                                    type="date"
-                                    className="date-input input input-sm w-full bg-gray-700 text-base-content border-base-300
+                                <li className="px-2 py-1">
+                                    <input
+                                        type="date"
+                                        className="date-input input input-sm w-full bg-gray-700 text-base-content border-base-300
                          focus:outline-none focus:ring-0 focus:border-blue-600"
-                                    value={/^\d{4}-\d{2}-\d{2}$/.test(selectedState) ? selectedState : ""}
-                                    onClick={(e) => e.target.showPicker && e.target.showPicker()}
-                                    onChange={(e) => handleSelect(e.target.value)}
-                                />
-                            </li>
+                                        value={/^\d{4}-\d{2}-\d{2}$/.test(selectedState) ? selectedState : ""}
+                                        onClick={(e) => e.target.showPicker && e.target.showPicker()}
+                                        onChange={(e) => handleSelect(e.target.value)}
+                                    />
+                                </li>
 
-                        </>
-                    }
+                            </>
+                        }
+                    </div>
                 </ul>
             </div>
         </div>

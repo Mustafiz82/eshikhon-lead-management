@@ -56,7 +56,7 @@ const Page = () => {
         limit: leadsPerPage,
         currentPage: currentPage,
         fields: "table",
-        lock : lockSTatus
+        lock: lockSTatus
     }).toString()
 
 
@@ -170,7 +170,7 @@ const Page = () => {
         if (searchQuery) {
             setCurrentPage(1)
         }
-    }, [statusFilter, searchQuery, categoryFilter, sortMethod, currentPage, leadsPerPage , lockSTatus])
+    }, [statusFilter, searchQuery, categoryFilter, sortMethod, currentPage, leadsPerPage, lockSTatus])
 
 
     const handleDeleteLeads = async () => {
@@ -341,7 +341,11 @@ const Page = () => {
                         selectedState={categoryFilter}
                         setSelectedState={setCategoryFilter}
                         label="Select Course"
-                        options={["All", ...course.map(item => item.name)]}
+                        options={["All", ...course
+                            .slice() // clone to avoid mutating original
+                            .sort((a, b) => a.name.localeCompare(b.name)) // ✅ sort alphabetically
+                            .map(item => item.name)
+                        ]}
                         setCurrentPage={setCurrentPage}
                     />
                     <Dropdown
@@ -431,7 +435,7 @@ const Page = () => {
                                 className="btn flex bg-[#a855f7]  btn-sm btn-primary border-[#a855f7] text-white"
                                 onClick={handleLockLeads}
                             >
-                              {showLockStatus ? <BiSolidLockOpen/>: <BiSolidLockAlt />}  {showLockStatus ? "Unlock" : "lock"}
+                                {showLockStatus ? <BiSolidLockOpen /> : <BiSolidLockAlt />}  {showLockStatus ? "Unlock" : "lock"}
 
                             </button>
                         </div>

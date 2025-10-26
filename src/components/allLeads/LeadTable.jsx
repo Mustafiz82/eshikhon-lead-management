@@ -53,7 +53,7 @@ const LeadTable = ({
             <th className="sticky top-0 bg-base-300 z-10">Email</th>
             <th className="sticky top-0 bg-base-300 z-10">Number</th>
             <th className="sticky top-0 bg-base-300 z-10">Address</th>
-            <th className="sticky top-0 bg-base-300 z-10">Seminar Topic</th>
+            <th className="sticky top-0 bg-base-300 z-10">Internsted Course </th>
             <th className="sticky top-0 bg-base-300 z-10">Status</th>
           </tr>
         </thead>

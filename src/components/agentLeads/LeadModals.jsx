@@ -124,10 +124,9 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch , co
                             <p><span className="font-semibold text-white/80">Email:</span> {selectedLead.email}</p>
                             <p><span className="font-semibold text-white/80">Phone:</span> {selectedLead.phone}</p>
                             <p><span className="font-semibold text-white/80">Address:</span> {selectedLead.address}</p>
-                            <p><span className="font-semibold text-white/80">Seminar Topic:</span> {selectedLead.seminarTopic}</p>
+                            <p><span className="font-semibold text-white/80">Internsted Course:</span> {selectedLead.seminarTopic}</p>
+                            <p><span className="font-semibold text-white/80">Course Type:</span> {selectedLead.seminarType}</p>
                             <p><span className="font-semibold text-white/80">Created By:</span> {selectedLead.createdBy}</p>
-
-
                             <p><span className="font-semibold text-white/80">Assigned Date:</span> {formateDate(selectedLead.assignDate)}</p>
                             <p><span className="font-semibold text-white/80">Follow-Up Date:</span> {selectedLead.followUpDate ? formateDate(selectedLead.followUpDate) : "N/A"}</p>
                             <p><span className="font-semibold text-white/80">Last Contacted:</span> {selectedLead.lastContacted ? formateDate(selectedLead.lastContacted) : "N/A"}</p>
