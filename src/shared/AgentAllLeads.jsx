@@ -85,6 +85,8 @@ const AgentAllLeads = () => {
         "Number Off or Busy",
         "Wrong Number"
     ]
+
+    
     const assignedDateOptions = ["All", "Today", "This Week", "This Month", "This Year"]
     const followedOptions = ["All", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
     const stageOptions = ["All", "Pending", "Contacted"];

@@ -19,6 +19,7 @@ import { IoSearchOutline } from "react-icons/io5";
 import { BiSolidLockAlt } from "react-icons/bi";
 import { BiSolidLockOpen } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
+import EditDrawer from "@/components/allLeads/EditDrawer";
 
 
 const Page = () => {
@@ -46,6 +47,12 @@ const Page = () => {
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false); // assign modal open/close
 
 
+    //editLeadsDrawer
+    const [showDrawer, setShowDrawer] = useState(false);
+    const [editLead, setEditLead] = useState(null);
+
+
+
 
 
     const params = new URLSearchParams({
@@ -61,7 +68,20 @@ const Page = () => {
 
 
     const { data: leads, loading, error, refetch } = useFetch(`/leads?${params}`)
-    const { data: course } = useFetch("/course")
+    const { data: rawCourses } = useFetch("/course");
+
+    console.log(rawCourses)
+
+    // Remove duplicates
+    
+
+    const course = Array.from(
+        new Map(rawCourses?.map((item) => [item.name, item])).values()
+    );
+
+
+    console.log(course)
+
     const { data: leadsCount, refetch: paginateRefetch } = useFetch(`/leads/count?${params}`)
 
 
@@ -344,6 +364,9 @@ const Page = () => {
 
 
 
+
+
+
     console.log(showLockStatus)
 
     return (
@@ -410,7 +433,7 @@ const Page = () => {
                         label="Select Course"
                         options={["All", ...course
                             .slice() // clone to avoid mutating original
-                            .sort((a, b) => a.name.localeCompare(b.name)) // ✅ sort alphabetically
+                            .sort((a, b) => a?.name?.localeCompare(b.name)) // ✅ sort alphabetically
                             .map(item => item.name)
                         ]}
                         setCurrentPage={setCurrentPage}
@@ -443,6 +466,10 @@ const Page = () => {
                     leadsPerPage={leadsPerPage}
                     selectedIds={selectedIds}
                     setSelectedIds={setSelectedIds}
+                    onEdit={(lead) => {
+                        setEditLead(lead);
+                        setShowDrawer(true);
+                    }}
 
                 />
 
@@ -576,6 +603,18 @@ const Page = () => {
                 selectedIds={selectedIds}
                 setSelectedIds={setSelectedIds}
                 setIsAssignModalOpen={setIsAssignModalOpen}
+            />
+
+
+            {/* 🟦 Lead Edit Drawer */}
+            <EditDrawer
+                showDrawer={showDrawer}
+                setShowDrawer={setShowDrawer}
+                editLead={editLead}
+                course={course}
+                setEditLead={setEditLead}
+                refetch={refetch}
+
             />
 
         </div>
