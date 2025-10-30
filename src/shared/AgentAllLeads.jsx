@@ -86,7 +86,7 @@ const AgentAllLeads = () => {
         "Wrong Number"
     ]
 
-    
+
     const assignedDateOptions = ["All", "Today", "This Week", "This Month", "This Year"]
     const followedOptions = ["All", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
     const stageOptions = ["All", "Pending", "Contacted"];
@@ -334,7 +334,7 @@ const AgentAllLeads = () => {
                     <div className="flex items-center gap-4 flex-wrap">
                         {/* Items Per Page Selector */}
                         <div className="flex justify-between w-full items-center gap-5">
-                            <p className="text-sm flex-1 text-nowrap">Showing {leadCountStart}–{leadCountEnd} of {leadsCount?.count} results</p>
+                            <p className="text-sm flex-1 text-nowrap">Showing {leadCountStart + 1}–{leadCountEnd + 1} of {leadsCount?.count} results</p>
                             <div className="flex justify-between w-full md:w-auto items-center gap-2">
                                 <p className="text-sm flex-1 text-nowrap">per page :</p>
                                 <select
