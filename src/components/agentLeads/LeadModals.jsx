@@ -5,8 +5,9 @@ import CourseInput from "@/utils/CourseInput";
 import { formateDate } from "@/utils/date";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
+import QR from "./QR";
 
-const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch , course }) => {
+const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, course }) => {
 
     const [modelStatus, setModelStatus] = useState(selectedLead?.leadStatus || "Pending")
     const [estemitePaymentDate, setEstimatePaymentDate] = useState(null)
@@ -16,7 +17,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch , co
     const [error, setError] = useState("")
     const [notes, setNotes] = useState(selectedLead?.note)
     const { user } = useContext(AuthContext)
-   
+
 
 
     const handleSaveChanges = async () => {
@@ -98,6 +99,31 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch , co
         e.preventDefault()
         setNotes([...notes, { text: e.target.note?.value, status: "unsaved", by: user?.name, date: formateDate(Date.now()) }])
         e.target.reset()
+    }
+
+    function formatBDNumber(number) {
+        // Keep original input in case it's not BD
+        const original = number;
+
+        // Remove all non-digit characters
+        let digits = number.replace(/\D/g, '');
+
+        // Normalize Bangladeshi numbers
+        if (digits.startsWith('880')) {
+            digits = '0' + digits.slice(3);
+        } else if (digits.startsWith('88')) {
+            digits = '0' + digits.slice(2);
+        } else if (!digits.startsWith('0') && digits.length === 10) {
+            digits = '0' + digits;
+        }
+
+        // Check if it's a valid BD local number (11 digits, starts with 01)
+        if (digits.length === 11 && digits.startsWith('01')) {
+            return digits;
+        }
+
+        // Otherwise return original
+        return original;
     }
 
 
@@ -197,25 +223,31 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch , co
                     {/*  Column 3: Actions */}
                     <div className="flex flex-col gap-4">
                         <h3 className="text-lg font-semibold">Actions</h3>
-                        <div className="space-y-2">
 
-                            <a
-                                // href={`tel:017429500624`}
-                                href={`tel:${selectedLead?.phone?.startsWith("880") ? selectedLead?.phone?.slice(2) : selectedLead?.phone}`}
-                                // href="http://192.168.10.10/webclient/#/call/017429500624"
-                                className=" flex gap-2 !py-3 w-full bg-[#373737] border border-[#373737] btn  "
-                            >
-                                Call on <Image alt="3CX" src={"/logo/3cx.png"} className="w-auto h-5 " width={1000} height={1000} />
-                            </a>
+                        <div className="flex gap-2 justify-center ">
+                            <div className="flex-1">
+                                <QR value={formatBDNumber(selectedLead?.phone)} />
+                            </div>
+                            <div className="space-y-2 flex-2">
 
-                            <a
-                                href={`https://web.whatsapp.com/send/?phone=%2B${selectedLead.phone}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className=" flex gap-2 !py-3 w-full bg-[#34DA51] border border-[#34DA51] btn "
-                            >
-                                <Image alt="wsp" src={"/logo/whatsapp.png"} className="w-auto h-5 " width={1000} height={1000} />  Call on Whatsapp
-                            </a>
+                                <a
+                                    // href={`tel:017429500624`}
+                                    href={`tel:${formatBDNumber(selectedLead?.phone)}`}
+                                    // href="http://192.168.10.10/webclient/#/call/017429500624"
+                                    className=" flex gap-2 !py-3 w-full bg-[#373737] border border-[#373737] btn  "
+                                >
+                                    Call on <Image alt="3CX" src={"/logo/3cx.png"} className="w-auto h-5 " width={1000} height={1000} />
+                                </a>
+
+                                <a
+                                    href={`https://web.whatsapp.com/send/?phone=%2B${selectedLead.phone}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className=" flex gap-2 !py-3 w-full bg-[#34DA51] border border-[#34DA51] btn "
+                                >
+                                    <Image alt="wsp" src={"/logo/whatsapp.png"} className="w-auto h-5 " width={1000} height={1000} />  Call on Whatsapp
+                                </a>
+                            </div>
                         </div>
 
                         <div className="relative w-full">
@@ -254,7 +286,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch , co
 
                             <input
                                 type="datetime-local"
-                                 onClick={(e) => e.target.showPicker && e.target.showPicker()}
+                                onClick={(e) => e.target.showPicker && e.target.showPicker()}
                                 className="input input-bordered bg- border border-gray-600 text-white rounded-md w-full focus:outline-none  focus:border-blue-600"
                                 value={followUpDate}
                                 onChange={(e) => setFollowUpDate(e.target.value)}
@@ -267,7 +299,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch , co
 
                             <input
                                 type="datetime-local"
-                                 onClick={(e) => e.target.showPicker && e.target.showPicker()}
+                                onClick={(e) => e.target.showPicker && e.target.showPicker()}
                                 className="input input-bordered bg- border border-gray-600 text-white rounded-md w-full focus:outline-none  focus:border-blue-600"
                                 value={estemitePaymentDate}
                                 onChange={(e) => setEstimatePaymentDate(e.target.value)}
@@ -279,7 +311,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch , co
                         <p className="text-red-500 font-semibold">{error}</p>
 
                         <button
-                           
+
                             onClick={handleSaveChanges}
                             title={selectedLead?.isLocked ? "Lead is Locked . Contact Admin to modify the leads " : ""}
                             disabled={saving || selectedLead?.isLocked}
