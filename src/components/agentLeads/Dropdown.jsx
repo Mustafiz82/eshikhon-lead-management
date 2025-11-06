@@ -40,8 +40,8 @@ const Dropdown = ({
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="max-h-[800px] overflow-y-auto" >
-                        {options.map((item) => (
-                            <li key={item}>
+                        {options.map((item ,idx) => (
+                            <li key={idx}>
                                 <button
                                     type="button"
                                     onClick={() => handleSelect(item)}

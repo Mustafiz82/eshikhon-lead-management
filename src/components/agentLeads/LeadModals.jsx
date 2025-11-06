@@ -10,9 +10,13 @@ import QR from "./QR";
 const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, course }) => {
 
     const [modelStatus, setModelStatus] = useState(selectedLead?.leadStatus || "Pending")
-    const [estemitePaymentDate, setEstimatePaymentDate] = useState(null)
+
     const [followUpDate, setFollowUpDate] = useState("")
     const [courseInput, setCourseInput] = useState({})
+    const [searchInput, setSearchInput] = useState("")
+    const [selectedCourseId, setSelectedCourseId] = useState(null);
+    const [searchSuggesion, setSearchSuggesion] = useState("")
+    const [selectedCourseType, setSelectedCourseType] = useState(null)
     const [saving, setSaving] = useState(false)
     const [error, setError] = useState("")
     const [notes, setNotes] = useState(selectedLead?.note)
@@ -23,35 +27,55 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     const handleSaveChanges = async () => {
         setSaving(true)
         const {
-            enrolledTo,
+            // enrolledTo,
+            estemitePaymentDate,
             discountSource,
             leadDiscount,
             discountUnit,
             originalPrice,
             lastPaid,
-            totalDue } = courseInput
+            totalDue, minValue, maxValue } = courseInput
 
-        console.log(totalDue)
+        // console.log(totalDue)
 
-        if (modelStatus == "Enrolled") {
-            if (!enrolledTo && !selectedLead?.enrolledTo) {
-                setSaving(false)
-                return setError("Please input Course Name")
-            }
-            let filteredCourse = course.filter(item => (item.name == enrolledTo) || (item.name == selectedLead?.enrolledTo))
-            console.log(filteredCourse)
+        // console.log(searchInput)
 
-            if (filteredCourse?.length == 0) {
-                setSaving(false)
-                return setError("Pleas Input a Valid Course Name");
-            }
-
+        if (!searchInput) {
+            setSaving(false)
+            return setError("Please input Course Name")
         }
+        let filteredCourse = course.filter(item => (item.name == searchInput))
+        // console.log(filteredCourse)
+
+        if (filteredCourse?.length == 0) {
+            setSaving(false)
+            return setError("Pleas Input a Valid Course Name");
+        }
+
+        if(modelStatus === "Enrolled"){
+            console.log("enrolled" , leadDiscount)
+            if(leadDiscount !== null){
+                console.log("leaddisocunt enry" , minValue , maxValue)
+                if((leadDiscount < minValue) || (leadDiscount > maxValue)){
+                    console.log("condition  matched")
+                    return  setError(`Discount must be between ${minValue} and ${maxValue}`)
+                }
+            }
+        }
+
+        // console.log(minValue, maxValue, leadDiscount)
+        // if (
+        //     leadDiscount &&
+        //     (leadDiscount < minValue || leadDiscount > maxValue)
+        // ) {
+        //     return;
+        // }
+
 
         setError("")
 
         const obj = {
-            enrolledTo,
+            seminarTopic: (searchInput ?? "").trim(),
             discountSource,
             leadDiscount,
             discountUnit: discountUnit == "%" ? "percent" : "flat",
@@ -76,7 +100,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             })
         );
 
-        console.log(obj, "ojbeanedObj")
+        // console.log(obj, "ojbeanedObj")
 
 
         const res = await axiosPublic.patch(`/leads/${selectedLead?._id}`, cleanedObj)
@@ -91,6 +115,15 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         if (selectedLead) {
             setModelStatus(selectedLead.leadStatus || "Pending");
             setNotes(selectedLead?.note)
+            setSearchInput(selectedLead?.seminarTopic ?? selectedLead?.seminarTopic ?? "");
+            setSelectedCourseType(selectedLead.seminarType ?? selectedLead?.seminarTopic ?? "")
+            setError("")
+
+
+
+            const selectedCourse = course.find(courseItem => ((courseItem.name === selectedLead?.seminarTopic) && (courseItem.type === selectedLead?.seminarType)))
+            setSelectedCourseId(selectedCourse?._id)
+            console.log(selectedCourse?._id)
         }
     }, [selectedLead]);
 
@@ -100,6 +133,25 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         setNotes([...notes, { text: e.target.note?.value, status: "unsaved", by: user?.name, date: formateDate(Date.now()) }])
         e.target.reset()
     }
+
+
+    const handleSearch = (e) => {
+        const searchText = e.target.value
+        setSearchInput(searchText)
+        const Suggesion = course.filter(item => item.name.toLowerCase().includes(searchText.toLowerCase()))
+        if (searchText.length > 0) {
+            setSearchSuggesion(Suggesion)
+        }
+
+    }
+
+    const handleSearchSuggesionClick = (item) => {
+        setSearchInput(item?.name); //  shows name in input
+        setSelectedCourseId(item?._id); // but internally, we track by id
+        setSearchSuggesion("");
+        setSelectedCourseType(item.type)
+    };
+
 
     function formatBDNumber(number) {
         // Keep original input in case it's not BD
@@ -125,6 +177,43 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         // Otherwise return original
         return original;
     }
+
+
+    function formatForWhatsApp(number) {
+        if (!number) return "";
+
+        const original = number;
+        let digits = number.replace(/\D/g, ''); // remove non-digits
+
+        // --- Handle Bangladeshi numbers ---
+        if (
+            digits.startsWith('8801') || // +880 format
+            digits.startsWith('01') ||   // local format
+            (digits.length === 10 && digits.startsWith('1')) // missing 0
+        ) {
+            // Normalize BD number
+            if (digits.startsWith('8801')) {
+                // already correct (e.g. 8801742...)
+            } else if (digits.startsWith('01')) {
+                digits = '880' + digits.slice(1);
+            } else if (digits.startsWith('1')) {
+                digits = '880' + digits;
+            }
+
+            // Return BD number only if length is correct (13 digits)
+            if (digits.length === 13) return digits;
+        }
+
+        // --- Handle other countries ---
+        // If starts with country code (e.g., 61, 91, 44), remove leading '+' if exists
+        if (original.trim().startsWith('+')) {
+            return digits; // keep international code, remove '+'
+        }
+
+        // If user gave plain digits but not BD, just return cleaned number
+        return digits || original;
+    }
+
 
 
     return (
@@ -214,6 +303,8 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                             courseInput={courseInput}
                             setCourseInput={setCourseInput}
                             selectedLead={selectedLead}
+                            selectedCourseId={selectedCourseId}
+                            setError={setError}
 
                         />
 
@@ -226,7 +317,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
                         <div className="flex gap-2 justify-center ">
                             <div className="flex-1">
-                                <QR value={formatBDNumber(selectedLead?.phone)} />
+                                <QR value={`tel:${formatBDNumber(selectedLead?.phone)}`} />
                             </div>
                             <div className="space-y-2 flex-2">
 
@@ -240,7 +331,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                 </a>
 
                                 <a
-                                    href={`https://web.whatsapp.com/send/?phone=%2B${selectedLead.phone}`}
+                                    href={`https://wa.me/${formatForWhatsApp(selectedLead?.phone)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className=" flex gap-2 !py-3 w-full bg-[#34DA51] border border-[#34DA51] btn "
@@ -251,10 +342,10 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                         </div>
 
                         <div className="relative w-full">
-                            <div className="dropdown  w-full">
+                            <div className="dropdown   w-full">
                                 <label
                                     tabIndex={0}
-                                    className="btn min-w-full btn-outline capitalize"
+                                    className="btn min-w-full border-gray-500 btn-outline capitalize"
                                 >
                                     Status ({modelStatus})
                                 </label>
@@ -280,6 +371,31 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                         </div>
 
 
+                        <div className="mt-3 relative">
+                            <input
+                                type="text"
+                                value={searchInput}
+                                onChange={handleSearch}
+                                placeholder="Course Name"
+                                className="input input-bordered w-full  focus:outline-0 focus:border-blue-600"
+                            />
+
+                            <span className="absolute border-gray-600 bg-gray-800 text-xs right-5 border p-1 px-2 rounded-full -top-2">{selectedCourseType}</span>
+
+                            {searchSuggesion?.length > 0 && <ul className="bg-base-100 fixed z-50 shadow-md mt-1 rounded-box border border-base-300">
+                                {
+                                    searchSuggesion.map(item => <li
+                                        onClick={() => handleSearchSuggesionClick(item)}
+                                        className="px-4 py-2 flex justify-between w-[290px] bg-gray-700 cursor-pointer hover:bg-base-200">
+                                        <span>{item.name} ({item.type})</span>
+                                        <span>৳ {item.price}</span>
+                                    </li>)
+                                }
+                            </ul>
+                            }
+                        </div>
+
+
 
                         <div className="flex flex-col mt-auto gap-3">
                             <label className="text-sm ">Next Follow-Up Date</label>
@@ -294,7 +410,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
                         </div>
 
-                        {modelStatus == "Enrolled" && <div className="flex flex-col mt-2 gap-3">
+                        {/* {modelStatus == "Enrolled" && <div className="flex flex-col mt-2 gap-3">
                             <label className="text-sm ">Next Estimate payment Date</label>
 
                             <input
@@ -306,7 +422,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                             />
 
                         </div>
-                        }
+                        } */}
 
                         <p className="text-red-500 font-semibold">{error}</p>
 

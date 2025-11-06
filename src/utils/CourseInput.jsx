@@ -5,15 +5,17 @@ import { FaBangladeshiTakaSign } from "react-icons/fa6";
 import { formateDate } from "./date";
 import { getDiscountBounds } from "./getDiscountBounds";
 
-export default function CourseInput({ courseInput, setCourseInput, selectedLead }) {
+export default function CourseInput({ courseInput, setCourseInput, selectedLead, selectedCourseId }) {
 
   const [searchInput, setSearchInput] = useState("")
   const [searchSuggesion, setSearchSuggesion] = useState("")
+
+  const [estemitePaymentDate, setEstimatePaymentDate] = useState(null)
   const [selectedDiscount, setSelectedDiscount] = useState("")
   const [selectedDiscountinput, setSelectedDiscountInput] = useState("")
   const [selectedDiscountUnit, setSelectedDiscountUnit] = useState("%")
   const [lastPaid, setlastPaid] = useState()
-  const [selectedCourseId, setSelectedCourseId] = useState(null);
+
 
   const { data: course } = useFetch("/course")
   const { data: discount } = useFetch("/discount")
@@ -35,16 +37,18 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead 
       : (selectedDiscountinput ?? 0);
 
     setCourseInput({
-      enrolledTo: (searchInput ?? "").trim(),
+      // enrolledTo: (searchInput ?? "").trim(),
+      estemitePaymentDate : estemitePaymentDate ?? null , 
       discountSource: selectedDiscount ?? "",
       leadDiscount: finalLeadDiscount,
       discountUnit: finalUnit,
       originalPrice: selectedCourse?.price ?? 0,
       lastPaid: lastPaid ?? 0,
       totalDue: calcTotalDue(),
+      minValue, maxValue
     });
   }, [
-    searchInput,
+    // searchInput,
     selectedDiscount,
     selectedDiscountinput,
     selectedDiscountUnit,
@@ -52,28 +56,29 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead 
     lastPaid,
     isCommited,
     selectedDiscountObject,
-    selectedLead?.totalPaid
+    selectedLead?.totalPaid,
+    estemitePaymentDate
   ]);
 
 
 
 
-  const handleSearch = (e) => {
-    const searchText = e.target.value
-    setSearchInput(searchText)
-    const Suggesion = course.filter(item => item.name.toLowerCase().includes(searchText.toLowerCase()))
-    if (searchText.length > 0) {
-      setSearchSuggesion(Suggesion)
-    }
+  // const handleSearch = (e) => {
+  //   const searchText = e.target.value
+  //   setSearchInput(searchText)
+  //   const Suggesion = course.filter(item => item.name.toLowerCase().includes(searchText.toLowerCase()))
+  //   if (searchText.length > 0) {
+  //     setSearchSuggesion(Suggesion)
+  //   }
 
-  }
+  // }
 
 
-  const handleSearchSuggesionClick = (item) => {
-    setSearchInput(item?.name); //  shows name in input
-    setSelectedCourseId(item?._id); // but internally, we track by id
-    setSearchSuggesion("");
-  };
+  // const handleSearchSuggesionClick = (item) => {
+  //   setSearchInput(item?.name); //  shows name in input
+  //   setSelectedCourseId(item?._id); // but internally, we track by id
+  //   setSearchSuggesion("");
+  // };
 
 
   const { minValue, maxValue } = getDiscountBounds(
@@ -111,14 +116,14 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead 
       }
     }
 
-    const due = price - alreadyPaid - last - discountAmount;
+    const due = Math.round(price - alreadyPaid - last - discountAmount);
     return due < 0 ? 0 : due; // never negative
   }
 
 
 
   useEffect(() => {
-    setSearchInput(selectedLead?.enrolledTo ?? selectedLead?.seminarTopic ?? "");
+    // setSearchInput(selectedLead?.enrolledTo ?? selectedLead?.seminarTopic ?? "");
     setSelectedDiscount(selectedLead?.discountSource ?? "");
     setSelectedDiscountInput(selectedLead?.leadDiscount ?? "");
     setSelectedDiscountUnit(selectedLead?.discountUnit == "percent" ? "%" : "৳");
@@ -148,10 +153,11 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead 
 
 
 
+
   return (
     <div className="w-full max-w-xl mx-auto space-y-4">
       {/* Course Name */}
-      <div className="mt-3">
+      {/* <div className="mt-3">
         <input
           type="text"
           value={searchInput}
@@ -171,7 +177,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead 
           }
         </ul>
         }
-      </div>
+      </div> */}
 
       {/* Discount Type */}
       <select
@@ -278,9 +284,22 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead 
         </div>
       </div>
 
+        <div className="flex flex-col mt-2 gap-3">
+          <label className="text-sm ">Next Estimate payment Date</label>
+
+          <input
+            type="datetime-local"
+            onClick={(e) => e.target.showPicker && e.target.showPicker()}
+            className="input input-bordered bg- border border-gray-600 text-white rounded-md w-full focus:outline-none  focus:border-blue-600"
+            value={estemitePaymentDate}
+            onChange={(e) => setEstimatePaymentDate(e.target.value)}
+          />
+
+        </div>
+
       {/* History */}
       <div>
-        <h2 className="text-lg font-semibold mt-9">History</h2>
+        <h2 className="text-lg font-semibold ">History</h2>
         <div className="max-h-28 overflow-y-auto">
           {
             selectedLead?.history?.map(item => <div className="flex w-full mt-3 justify-between">
