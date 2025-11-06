@@ -28,6 +28,7 @@ const AgentAllLeads = () => {
     const [selectedAssingedDate, setSelectedAssignedDate] = useState("All")
     const [selectedSortMethod, setSelectedSortMethod] = useState("Default")
     const [selectedStage, setSelectedStage] = useState("All")
+    const [selectedSource, setSelectedSource] = useState("All")
 
 
     const [followUpActive, setFollowUpActive] = useState(false);
@@ -61,7 +62,9 @@ const AgentAllLeads = () => {
         showOnlyFollowups: followUpActive,
         followUpDate: selectedFollowedDate,
         showOnlyMissedFollowUps: missedFUActive,
-        missedFollwUpDate: selectedMissedFollowedDate
+        missedFollwUpDate: selectedMissedFollowedDate,
+        leadSource : selectedSource,
+        
 
     })
 
@@ -69,6 +72,7 @@ const AgentAllLeads = () => {
     const { data: leadsCount, refetch: paginateRefetch } = useFetch(`/leads/count?${params}`)
     const { data: leads, loading, refetch } = useFetch(`/leads?${params}`)
     const { data: course } = useFetch("/course")
+    const { data: leadSource } = useFetch("/leads/source")
 
 
 
@@ -182,7 +186,7 @@ const AgentAllLeads = () => {
                         dropdownPosition="dropdown-end"
                         selectedState={selectedSeminar}
                         setSelectedState={setSelectedSeminar}
-                        label="Seminar Topic"
+                        label="Course"
                         options={["All", ...course.map(item => item.name)]}
                         setCurrentPage={setCurrentPage}
 
@@ -195,6 +199,15 @@ const AgentAllLeads = () => {
                         setSelectedState={setSelectedStatus}
                         label="Status"
                         options={statusOptions}
+                        setCurrentPage={setCurrentPage}
+
+                    />
+                    <Dropdown
+                        dropdownPosition=""
+                        selectedState={selectedSource}
+                        setSelectedState={setSelectedSource}
+                        label="source"
+                        options={leadSource}
                         setCurrentPage={setCurrentPage}
 
                     />
@@ -247,14 +260,14 @@ const AgentAllLeads = () => {
 
                     {/* Follow Ups Toggle */}
                     <button
-                        className={`btn btn-sm ${followUpActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
+                        className={`btn btn-sm text-[10px] 3xl:text-[12px] ${followUpActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
                         onClick={() => {
                             setFollowUpActive(!followUpActive);
                             setSelectedFollowedpDate("All");
                             setCurrentPage(1);
                         }}
                     >
-                        Follow Ups (12)
+                        Follow Ups 
                     </button>
 
                     {/* Filter by Followed Date */}
@@ -275,14 +288,14 @@ const AgentAllLeads = () => {
 
                     {/* Missed Follow Ups Toggle */}
                     <button
-                        className={`btn btn-sm ${missedFUActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
+                        className={`btn text-[10px] 3xl:text-[12px] btn-sm ${missedFUActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
                         onClick={() => {
                             setMissedFUActive(!missedFUActive);
                             setSelectedMissedFolllowUpDate("All")
                             setCurrentPage(1);
                         }}
                     >
-                        Missed Follow Ups (12)
+                        Missed FU
                     </button>
 
                     {/* Filter by Followed Date */}
@@ -293,7 +306,7 @@ const AgentAllLeads = () => {
                             dropdownPosition="dropdown-end"
                             selectedState={selectedMissedFollowedDate}
                             setSelectedState={setSelectedMissedFolllowUpDate}
-                            label="Missed Folloup Date"
+                            label="Missed FU Date"
                             options={assignedDateOptions}
                             setCurrentPage={setCurrentPage}
                             showDatePicker

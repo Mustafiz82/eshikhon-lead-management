@@ -30,6 +30,7 @@ const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , follow
                         <th>Address</th>
                         <th>Intersted Course</th>
                         <th>Type</th>
+                        <th>Lead Source</th>
                         <th>Status</th>
                         <th>{followUpActive ||  missedFUActive  ? "Follow Up Date" : "Assigned At" }</th>
                     </tr>
@@ -51,6 +52,7 @@ const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , follow
                             <td className="max-w-[250px] whitespace-normal break-words">{lead.address}</td>
                             <td>{lead.seminarTopic}</td>
                             <td>{lead.seminarType}</td>
+                            <td>{lead.leadSource}</td>
                             <td>
                                 <span
                                     className={`badge badge-sm text-white text-nowrap ${statusColors[lead.leadStatus] || "badge-neutral"
