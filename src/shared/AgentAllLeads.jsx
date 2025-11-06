@@ -207,7 +207,7 @@ const AgentAllLeads = () => {
                         selectedState={selectedSource}
                         setSelectedState={setSelectedSource}
                         label="source"
-                        options={leadSource}
+                       options={["All", ...leadSource]}
                         setCurrentPage={setCurrentPage}
 
                     />
