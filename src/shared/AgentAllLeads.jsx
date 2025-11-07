@@ -12,6 +12,10 @@ import useFetch from "@/hooks/useFetch";
 import { AuthContext } from "@/context/AuthContext";
 import { useParams } from "next/navigation";
 import { IoIosArrowDown } from "react-icons/io";
+import { FaFileExport } from "react-icons/fa";
+import Papa from "papaparse";
+import { showToast } from "@/utils/showToast";
+
 
 
 const AgentAllLeads = () => {
@@ -63,8 +67,8 @@ const AgentAllLeads = () => {
         followUpDate: selectedFollowedDate,
         showOnlyMissedFollowUps: missedFUActive,
         missedFollwUpDate: selectedMissedFollowedDate,
-        leadSource : selectedSource,
-        
+        leadSource: selectedSource,
+
 
     })
 
@@ -145,6 +149,89 @@ const AgentAllLeads = () => {
 
 
 
+    const reverseHeaderLead = (key) => {
+        switch (key) {
+            case "name": return "Full Name";
+            case "email": return "Email Address";
+            case "phone": return "Phone Number";
+            case "address": return "Address";
+            case "seminarTopic": return "Seminar Topic";
+            case "seminarType": return "Seminar Type";
+            case "leadSource": return "Lead Source";
+            default: return key;
+        }
+    };
+
+
+
+const handleLeadExport = (leads) => {
+  if (!Array.isArray(leads) || leads.length === 0) {
+    return showToast("No leads found to export", "warning");
+  }
+
+  // Prepare only required fields
+  const exportData = leads.map((l) => {
+    // --- calculate discounted price ---
+    let discountedPrice = l.originalPrice || 0;
+    if (l.leadDiscount && l.leadDiscount > 0) {
+      if (l.discountUnit === "percent") {
+        discountedPrice = Math.round(l.originalPrice * (1 - l.leadDiscount / 100));
+      } else if (l.discountUnit === "flat") {
+        discountedPrice = Math.max(0, l.originalPrice - l.leadDiscount);
+      }
+    }
+
+    // --- format payment history ---
+    const historyText = (l.history || [])
+      .map((h) => `${new Date(h.date).toLocaleString()} → ${h.paidAmount}`)
+      .join(" | ");
+
+    // --- format notes ---
+    const noteText = (l.note || [])
+      .map((n) => `${n.by || "unknown"}: ${n.text}`)
+      .join(" | ");
+
+    return {
+      "Full Name": l.name || "",
+      "Email Address": l.email || "",
+      "Phone Number": l.phone || "",
+      "Address": l.address || "",
+      "Seminar Topic": l.seminarTopic || "",
+      "Seminar Type": l.seminarType || "",
+      "Lead Source": l.leadSource || "",
+      "Lead Status": l.leadStatus || "",
+      "Original Price": l.originalPrice ?? 0,
+      "Discounted Price": discountedPrice,
+      "Total Paid": l.totalPaid ?? 0,
+      "Total Due": l.totalDue ?? 0,
+      "Last Payment Amount": l.lastPayment?.paidAmount ?? 0,
+      "Last Payment Date": l.lastPayment?.date
+        ? new Date(l.lastPayment.date).toLocaleString()
+        : "",
+      "Payment History": historyText,
+      "Notes": noteText,
+      "Created At": l.createdAt
+        ? new Date(l.createdAt).toLocaleString()
+        : "",
+    };
+  });
+
+  // Convert to CSV
+  const csv = Papa.unparse(exportData);
+
+  // Trigger download
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `lead_export_${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+
+  showToast("Lead export completed", "success");
+};
+
+
+
 
 
     return (
@@ -207,7 +294,7 @@ const AgentAllLeads = () => {
                         selectedState={selectedSource}
                         setSelectedState={setSelectedSource}
                         label="source"
-                       options={["All", ...leadSource]}
+                        options={["All", ...leadSource]}
                         setCurrentPage={setCurrentPage}
 
                     />
@@ -267,7 +354,7 @@ const AgentAllLeads = () => {
                             setCurrentPage(1);
                         }}
                     >
-                        Follow Ups 
+                        Follow Ups
                     </button>
 
                     {/* Filter by Followed Date */}
@@ -373,6 +460,9 @@ const AgentAllLeads = () => {
                                     onPageChange={goToPage}
                                 />
                             </div>
+
+                            <button onClick={handleLeadExport} className="btn btn-primary btn-sm bg-blue-600 "> <FaFileExport />  Export selected</button>
+
                         </div>
 
                         {/* Pagination Buttons */}
@@ -382,8 +472,14 @@ const AgentAllLeads = () => {
                                 totalPages={totalPages}
                                 onPageChange={goToPage}
                             />
+
+
+
                         </div>
                     </div>
+
+
+
                     {/* Pagination */}
                     {/* <div className="flex items-center gap-4 flex-wrap">
                        
