@@ -177,15 +177,22 @@ const Page = () => {
 
         try {
             const res =  await axiosPublic.post("/leads", questionWiseData);
-            console.log(res)
+            console.log(res.data)
 
-            // ✅ Only if leads save succeeds → save file in history
+            // ✅ Only if lead  s save succeeds → save file in history
             setStatus(fileName, STATUS.REGISTERING);
             await axiosPublic.post("/file", { fileName, type: uploadMode });
 
             setStatus(fileName, STATUS.COMPLETED);
             refetch(); // refresh server-side history list
-            showToast(`Successfully saved ${questionWiseData.length} leads`, "success");
+
+            if(res.data.ok == false){
+                showToast(res.data.message , "error")
+            }
+            else{
+                
+                showToast(res.data.message, "success");
+            }
 
         } catch (error) {
             console.log(error)
