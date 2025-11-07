@@ -195,7 +195,9 @@ const Page = () => {
 
     const handleDeleteLeads = async () => {
 
-        const ids = [...selectedIds];
+        let ids = [...selectedIds];
+
+        console.log(ids)
 
         if (!(ids?.length > 0)) {
             return showAlert(
@@ -215,6 +217,8 @@ const Page = () => {
             try {
                 const res = await axiosPublic.delete("/leads", { data: { ids } })
                 console.log(res.data)
+                ids = []
+                setSelectedIds(new Set())
                 refetch()
                 paginateRefetch()
             } catch (error) {
