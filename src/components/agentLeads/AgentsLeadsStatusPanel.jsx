@@ -43,7 +43,7 @@ const AgentsLeadsStatusPanel = ({ selectedFilter }) => {
     // 4. Daily effort → connected calls
     {
       label: "Connected Calls Today",
-      value: userData?.connectedCallsToday,
+      value: userData?.connectedCallCount,
       unit: "",
       outOf: "/60",
       gradient: "from-orange-600 to-rose-400" // Orange = activity, energy

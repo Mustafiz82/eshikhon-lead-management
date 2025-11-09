@@ -6,7 +6,7 @@ export const leads = [
     email: "galib@example.com",
     number: "01818216440",
     address: "Madertek, Dhaka",
-    seminarTopic: "Graphic Design",
+    interstedCourse: "Graphic Design",
     status: "Assigned",
     date: "2025-07-30T10:00:00.000Z",
     notes: [
@@ -53,7 +53,7 @@ export const leads = [
     email: "tanjina@example.com",
     number: "01815633016",
     address: "Savar, Dhaka",
-    seminarTopic: "Web Development",
+    interstedCourse: "Web Development",
     status: "Not Assigned",
     date: "2025-07-30T10:02:00.000Z",
     notes: [
@@ -76,7 +76,7 @@ export const leads = [
     email: "shawon@example.com",
     number: "01730000000",
     address: "Mirpur, Dhaka",
-    seminarTopic: "Digital Marketing",
+    interstedCourse: "Digital Marketing",
     status: "Assigned",
     date: "2025-07-30T10:04:00.000Z"
   },
@@ -86,7 +86,7 @@ export const leads = [
     email: "mahadi@example.com",
     number: "01911223344",
     address: "Badda, Dhaka",
-    seminarTopic: "UI/UX Design",
+    interstedCourse: "UI/UX Design",
     status: "Assigned",
     date: "2025-07-30T10:06:00.000Z"
   },
@@ -96,7 +96,7 @@ export const leads = [
     email: "nafisa@example.com",
     number: "01719887766",
     address: "Dhanmondi, Dhaka",
-    seminarTopic: "App Development",
+    interstedCourse: "App Development",
     status: "Not Assigned",
     date: "2025-07-30T10:08:00.000Z"
   },
@@ -106,7 +106,7 @@ export const leads = [
     email: "rezaul@example.com",
     number: "01890011223",
     address: "Chittagong",
-    seminarTopic: "Graphic Design",
+    interstedCourse: "Graphic Design",
     status: "Assigned",
     date: "2025-07-30T10:10:00.000Z"
   },
@@ -116,7 +116,7 @@ export const leads = [
     email: "mithila@example.com",
     number: "01612345678",
     address: "Banani, Dhaka",
-    seminarTopic: "Web Development",
+    interstedCourse: "Web Development",
     status: "Assigned",
     date: "2025-07-30T10:12:00.000Z"
   },
@@ -126,7 +126,7 @@ export const leads = [
     email: "ashraful@example.com",
     number: "01566778899",
     address: "Khilgaon, Dhaka",
-    seminarTopic: "Digital Marketing",
+    interstedCourse: "Digital Marketing",
     status: "Not Assigned",
     date: "2025-07-30T10:14:00.000Z"
   },
@@ -136,7 +136,7 @@ export const leads = [
     email: "farzana@example.com",
     number: "01822334455",
     address: "Mohakhali, Dhaka",
-    seminarTopic: "App Development",
+    interstedCourse: "App Development",
     status: "Assigned",
     date: "2025-07-30T10:16:00.000Z"
   },
@@ -146,7 +146,7 @@ export const leads = [
     email: "rafiul@example.com",
     number: "01399887766",
     address: "Uttara, Dhaka",
-    seminarTopic: "UI/UX Design",
+    interstedCourse: "UI/UX Design",
     status: "Assigned",
     date: "2025-07-30T10:18:00.000Z"
   },
@@ -156,7 +156,7 @@ export const leads = [
     email: "sumaiya@example.com",
     number: "01770111222",
     address: "Lalbagh, Dhaka",
-    seminarTopic: "Digital Marketing",
+    interstedCourse: "Digital Marketing",
     status: "Not Assigned",
     date: "2025-07-30T10:20:00.000Z"
   },
@@ -166,7 +166,7 @@ export const leads = [
     email: "barkat@example.com",
     number: "01988776655",
     address: "Narayanganj",
-    seminarTopic: "Graphic Design",
+    interstedCourse: "Graphic Design",
     status: "Assigned",
     date: "2025-07-30T10:22:00.000Z"
   },
@@ -176,7 +176,7 @@ export const leads = [
     email: "israt@example.com",
     number: "01411223344",
     address: "Jatrabari, Dhaka",
-    seminarTopic: "Web Development",
+    interstedCourse: "Web Development",
     status: "Not Assigned",
     date: "2025-07-30T10:24:00.000Z"
   },
@@ -186,7 +186,7 @@ export const leads = [
     email: "kawsar@example.com",
     number: "01890000111",
     address: "Gazipur",
-    seminarTopic: "App Development",
+    interstedCourse: "App Development",
     status: "Assigned",
     date: "2025-07-30T10:26:00.000Z"
   },
@@ -196,7 +196,7 @@ export const leads = [
     email: "nasima@example.com",
     number: "01711223344",
     address: "Barishal",
-    seminarTopic: "Digital Marketing",
+    interstedCourse: "Digital Marketing",
     status: "Assigned",
     date: "2025-07-30T10:28:00.000Z"
   },

@@ -123,7 +123,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
 
 
   useEffect(() => {
-    // setSearchInput(selectedLead?.enrolledTo ?? selectedLead?.seminarTopic ?? "");
+    // setSearchInput(selectedLead?.enrolledTo ?? selectedLead?.interstedCourse ?? "");
     setSelectedDiscount(selectedLead?.discountSource ?? "");
     setSelectedDiscountInput(selectedLead?.leadDiscount ?? "");
     setSelectedDiscountUnit(selectedLead?.discountUnit == "percent" ? "%" : "৳");

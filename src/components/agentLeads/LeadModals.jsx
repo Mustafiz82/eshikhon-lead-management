@@ -10,6 +10,7 @@ import QR from "./QR";
 const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, course }) => {
 
     const [modelStatus, setModelStatus] = useState(selectedLead?.leadStatus || "Pending")
+    const [InterstedSeminarStatus, setInterstedSeminarStatus] = useState(selectedLead?.interstedSeminar || "None")
 
     const [followUpDate, setFollowUpDate] = useState("")
     const [courseInput, setCourseInput] = useState({})
@@ -25,6 +26,8 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
 
     const handleSaveChanges = async () => {
+
+        console.log(followUpDate)
         setSaving(true)
         const {
             // enrolledTo,
@@ -52,13 +55,14 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             return setError("Pleas Input a Valid Course Name");
         }
 
-        if(modelStatus === "Enrolled"){
-            console.log("enrolled" , leadDiscount)
-            if(leadDiscount !== null){
-                console.log("leaddisocunt enry" , minValue , maxValue)
-                if((leadDiscount < minValue) || (leadDiscount > maxValue)){
+        if (modelStatus === "Enrolled") {
+            console.log("enrolled", leadDiscount)
+            if (leadDiscount !== null) {
+                console.log("leaddisocunt enry", minValue, maxValue)
+                if ((leadDiscount < minValue) || (leadDiscount > maxValue)) {
                     console.log("condition  matched")
-                    return  setError(`Discount must be between ${minValue} and ${maxValue}`)
+                    setSaving(false)
+                    return setError(`Discount must be between ${minValue} and ${maxValue}`)
                 }
             }
         }
@@ -75,7 +79,8 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         setError("")
 
         const obj = {
-            seminarTopic: (searchInput ?? "").trim(),
+            interstedCourse: (searchInput ?? "").trim(),
+            interstedSeminar: InterstedSeminarStatus,
             discountSource,
             leadDiscount,
             discountUnit: discountUnit == "%" ? "percent" : "flat",
@@ -89,6 +94,8 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             lastContacted: Date.now()
         }
 
+        console.log(obj)
+
         if (modelStatus === "Enrolled" && !selectedLead?.enrolledAt) {
             obj.enrolledAt = Date.now();
         }
@@ -99,6 +106,8 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                 return Boolean(v);
             })
         );
+
+        if (followUpDate === "") cleanedObj.followUpDate = null;
 
         // console.log(obj, "ojbeanedObj")
 
@@ -114,16 +123,21 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     useEffect(() => {
         if (selectedLead) {
             setModelStatus(selectedLead.leadStatus || "Pending");
+            setInterstedSeminarStatus(selectedLead.interstedSeminar || "None")
             setNotes(selectedLead?.note)
-            setSearchInput(selectedLead?.seminarTopic ?? selectedLead?.seminarTopic ?? "");
-            setSelectedCourseType(selectedLead.seminarType ?? selectedLead?.seminarTopic ?? "")
+            setSearchInput(selectedLead?.interstedCourse ?? selectedLead?.interstedCourse ?? "");
+            setSelectedCourseType(selectedLead.interstedCourseType ?? selectedLead?.interstedCourse ?? "")
             setError("")
 
-
-
-            const selectedCourse = course.find(courseItem => ((courseItem.name === selectedLead?.seminarTopic) && (courseItem.type === selectedLead?.seminarType)))
+            const selectedCourse = course.find(courseItem => ((courseItem.name === selectedLead?.interstedCourse) && (courseItem.type === selectedLead?.interstedCourseType)))
             setSelectedCourseId(selectedCourse?._id)
             console.log(selectedCourse?._id)
+
+            setFollowUpDate(
+                selectedLead?.followUpDate
+                    ? new Date(selectedLead.followUpDate).toISOString().slice(0, 16)
+                    : ""
+            );
         }
     }, [selectedLead]);
 
@@ -239,8 +253,8 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                             <p><span className="font-semibold text-white/80">Email:</span> {selectedLead.email}</p>
                             <p><span className="font-semibold text-white/80">Phone:</span> {selectedLead.phone}</p>
                             <p><span className="font-semibold text-white/80">Address:</span> {selectedLead.address}</p>
-                            <p><span className="font-semibold text-white/80">Internsted Course:</span> {selectedLead.seminarTopic}</p>
-                            <p><span className="font-semibold text-white/80">Course Type:</span> {selectedLead.seminarType}</p>
+                            <p><span className="font-semibold text-white/80">Internsted Course:</span> {selectedLead.interstedCourse}</p>
+                            <p><span className="font-semibold text-white/80">Course Type:</span> {selectedLead.interstedCourseType}</p>
                             <p><span className="font-semibold text-white/80">Created By:</span> {selectedLead.createdBy}</p>
                             <p><span className="font-semibold text-white/80">Assigned Date:</span> {formateDate(selectedLead.assignDate)}</p>
                             <p><span className="font-semibold text-white/80">Follow-Up Date:</span> {selectedLead.followUpDate ? formateDate(selectedLead.followUpDate) : "N/A"}</p>
@@ -312,10 +326,10 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                     </div>}
 
                     {/*  Column 3: Actions */}
-                    <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-2 ">
                         <h3 className="text-lg font-semibold">Actions</h3>
 
-                        <div className="flex gap-2 justify-center ">
+                        <div className="flex mt-2 gap-2 justify-center ">
                             <div className="flex-1">
                                 <QR value={`tel:${formatBDNumber(selectedLead?.phone)}`} />
                             </div>
@@ -341,7 +355,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                             </div>
                         </div>
 
-                        <div className="relative w-full">
+                        <div className="relative mt-2 w-full">
                             <div className="dropdown   w-full">
                                 <label
                                     tabIndex={0}
@@ -370,8 +384,37 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                             </div>
                         </div>
 
+                        <div className="relative mt-2 w-full">
+                            <div className="dropdown   w-full">
+                                <label
+                                    tabIndex={0}
+                                    className="btn min-w-full border-gray-500 btn-outline capitalize"
+                                >
+                                    Intersted Seminar ({InterstedSeminarStatus})
+                                </label>
+                                <ul
+                                    tabIndex={0}
+                                    className="dropdown-content z-[999] !fixed    menu p-2 shadow bg-base-200 rounded-box w-76"
+                                >
+                                    {["Online", "Offline", "None"].map((s) => (
+                                        <li key={s}>
+                                            <button
+                                                onClick={() => {
+                                                    setInterstedSeminarStatus(s)
+                                                    document.activeElement.blur()
+                                                }}
+                                                className="capitalize"
+                                            >
+                                                {s}
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
 
-                        <div className="mt-3 relative">
+
+                        <div className="mt-2 relative">
                             <input
                                 type="text"
                                 value={searchInput}
@@ -431,7 +474,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                             onClick={handleSaveChanges}
                             title={selectedLead?.isLocked ? "Lead is Locked . Contact Admin to modify the leads " : ""}
                             disabled={saving || selectedLead?.isLocked}
-                            className="btn w-full -mt-1  btn-primary bg-blue-600  text-white hover:bg-[#333] border border-gray-600 "
+                            className="btn w-full   btn-primary bg-blue-600  text-white hover:bg-[#333] border border-gray-600 "
                         >
                             {saving ? "Saving..." : " Save Changes"}
                         </button>

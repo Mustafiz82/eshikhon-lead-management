@@ -99,7 +99,7 @@ const LeadTable = ({
                   <td className="max-w-[280px] whitespace-nowrap overflow-hidden text-ellipsis" title={lead.address} >{lead.address}</td>
                   <td>
                     <span className="badge badge-neutral badge-sm">
-                      {lead.seminarTopic}
+                      {lead.interstedCourse}
                     </span>
                   </td>
                   <td>

@@ -138,8 +138,10 @@ const Page = () => {
     const handleCompleteLeadCSVUpload = async (results, fileName) => {
         const rows = results.data;
         const headers = Object.keys(rows[0] || {});
-        const required = ["name", "email", "phone", "address", "seminarTopic", "seminarType"];
+        const required = ["name", "email", "phone", "address", "interstedCourse", "interstedCourseType"];
         const missing = required.filter((f) => !headers.includes(f));
+
+        console.log(headers)
 
         if (missing.length > 0) {
             setStatus(fileName, STATUS.ERROR);
@@ -148,18 +150,18 @@ const Page = () => {
         }
 
         const filtered = rows.filter(
-            (item) => item.name && item.email && item.phone && item.address && item.seminarTopic
+            (item) => item.name && item.email && item.phone && item.address && item.interstedCourse
         );
 
         const questionWiseData = filtered.map((item) => {
-            const { name, email, address, phone, seminarTopic, seminarType, leadSource, ...questions } = item;
+            const { name, email, address, phone, interstedCourse, interstedCourseType, leadSource, ...questions } = item;
             return {
                 name,
                 email,
                 address,
                 phone,
-                seminarTopic,
-                seminarType,
+                interstedCourse,
+                interstedCourseType,
                 questions,
                 sourceFileName: fileName,
                 createdBy: user?.email
@@ -212,12 +214,13 @@ const Page = () => {
     const transfromHeaderLead = (header) => {
         if (!header) return "";
         const normalized = header.trim().toLowerCase();
+        console.log(normalized)
         if (["full name", "name"].includes(normalized)) return "name";
         if (["email", "e-mail", "email address"].includes(normalized)) return "email";
         if (["phone", "phone number", "mobile"].includes(normalized)) return "phone";
         if (["address", "location"].includes(normalized)) return "address";
-        if (["seminar topic", "topic", "course"].includes(normalized)) return "seminarTopic";
-        if (["seminar type", "type", "course type"].includes(normalized)) return "seminarType";
+        if (["Intersted Course", "intersted course", "courses", "course"].includes(normalized)) return "interstedCourse";
+        if (["course type", "type", "course type"].includes(normalized)) return "interstedCourseType";
         if (["Lead Source", "lead source", "source"].includes(normalized)) return "leadSource";
         return header;
     }

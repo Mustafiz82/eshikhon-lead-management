@@ -17,8 +17,8 @@ const EditDrawer = ({showDrawer, setShowDrawer, editLead, course, setEditLead, r
             email: form.lead_email.value,
             phone: form.lead_phone.value,
             address: form.lead_Address.value,
-            seminarTopic: selectedCourse,
-            seminarType: selectedType
+            interstedCourse: selectedCourse,
+            interstedCourseType: selectedType
         };
         try {
             await axiosPublic.patch(`/leads/${editLead._id}`, payload);
@@ -34,11 +34,11 @@ const EditDrawer = ({showDrawer, setShowDrawer, editLead, course, setEditLead, r
 
 
     useEffect(() => {
-        if (editLead?.seminarTopic) {
-            setSelectedCourse(editLead.seminarTopic);
+        if (editLead?.interstedCourse) {
+            setSelectedCourse(editLead.interstedCourse);
         }
-        if (editLead?.seminarType) {
-            setSelectedType(editLead.seminarType);
+        if (editLead?.interstedCourseType) {
+            setSelectedType(editLead.interstedCourseType);
         }
     }, [editLead]);
 
@@ -103,7 +103,7 @@ const EditDrawer = ({showDrawer, setShowDrawer, editLead, course, setEditLead, r
                         />
 
                         <select
-                            name="seminarTopic"
+                            name="interstedCourse"
                             className="select focus:border-blue-600 bg-gray-900 focus:outline-0 select-bordered w-full"
                             value={selectedCourse}
                             onChange={(e) => setSelectedCourse(e.target.value)}
@@ -118,7 +118,7 @@ const EditDrawer = ({showDrawer, setShowDrawer, editLead, course, setEditLead, r
 
 
                         <select
-                            name="seminarTopic"
+                            name="interstedCourse"
 
                             className="select focus:border-blue-600 text-white bg-gray-900 focus:outline-0 select-bordered w-full"
                             value={selectedType}

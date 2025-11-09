@@ -33,6 +33,7 @@ const AgentAllLeads = () => {
     const [selectedSortMethod, setSelectedSortMethod] = useState("Default")
     const [selectedStage, setSelectedStage] = useState("All")
     const [selectedSource, setSelectedSource] = useState("All")
+    const [selectedInterstedSeminar, setselectedInterstedSeminar ] = useState("All")
 
 
     const [followUpActive, setFollowUpActive] = useState(false);
@@ -68,7 +69,7 @@ const AgentAllLeads = () => {
         showOnlyMissedFollowUps: missedFUActive,
         missedFollwUpDate: selectedMissedFollowedDate,
         leadSource: selectedSource,
-
+        interstedSeminar : selectedInterstedSeminar
 
     })
 
@@ -155,8 +156,8 @@ const AgentAllLeads = () => {
             case "email": return "Email Address";
             case "phone": return "Phone Number";
             case "address": return "Address";
-            case "seminarTopic": return "Seminar Topic";
-            case "seminarType": return "Seminar Type";
+            case "interstedCourse": return "Seminar Topic";
+            case "interstedCourseType": return "Seminar Type";
             case "leadSource": return "Lead Source";
             default: return key;
         }
@@ -164,73 +165,72 @@ const AgentAllLeads = () => {
 
 
 
-const handleLeadExport = (leads) => {
-  if (!Array.isArray(leads) || leads.length === 0) {
-    return showToast("No leads found to export", "warning");
-  }
+    const handleLeadExport = () => {
+        
+        if (!Array.isArray(leads) || leads.length === 0) {
+            return showToast("No leads found to export", "warning");
+        }
 
-  // Prepare only required fields
-  const exportData = leads.map((l) => {
-    // --- calculate discounted price ---
-    let discountedPrice = l.originalPrice || 0;
-    if (l.leadDiscount && l.leadDiscount > 0) {
-      if (l.discountUnit === "percent") {
-        discountedPrice = Math.round(l.originalPrice * (1 - l.leadDiscount / 100));
-      } else if (l.discountUnit === "flat") {
-        discountedPrice = Math.max(0, l.originalPrice - l.leadDiscount);
-      }
-    }
+        // Prepare only required fields
+        const exportData = leads.map((l) => {
+            // --- calculate discounted price ---
+            let discountedPrice = l.originalPrice || 0;
+            if (l.leadDiscount && l.leadDiscount > 0) {
+                if (l.discountUnit === "percent") {
+                    discountedPrice = Math.round(l.originalPrice * (1 - l.leadDiscount / 100));
+                } else if (l.discountUnit === "flat") {
+                    discountedPrice = Math.max(0, l.originalPrice - l.leadDiscount);
+                }
+            }
 
-    // --- format payment history ---
-    const historyText = (l.history || [])
-      .map((h) => `${new Date(h.date).toLocaleString()} → ${h.paidAmount}`)
-      .join(" | ");
+            // --- format payment history ---
+            const historyText = (l.history || [])
+                .map((h) => `${new Date(h.date).toLocaleString()} → ${h.paidAmount}`)
+                .join(" | ");
 
-    // --- format notes ---
-    const noteText = (l.note || [])
-      .map((n) => `${n.by || "unknown"}: ${n.text}`)
-      .join(" | ");
+            // --- format notes ---
+            const noteText = (l.note || [])
+                .map((n) => `${n.by || "unknown"}: ${n.text}`)
+                .join(" | ");
 
-    return {
-      "Full Name": l.name || "",
-      "Email Address": l.email || "",
-      "Phone Number": l.phone || "",
-      "Address": l.address || "",
-      "Seminar Topic": l.seminarTopic || "",
-      "Seminar Type": l.seminarType || "",
-      "Lead Source": l.leadSource || "",
-      "Lead Status": l.leadStatus || "",
-      "Original Price": l.originalPrice ?? 0,
-      "Discounted Price": discountedPrice,
-      "Total Paid": l.totalPaid ?? 0,
-      "Total Due": l.totalDue ?? 0,
-      "Last Payment Amount": l.lastPayment?.paidAmount ?? 0,
-      "Last Payment Date": l.lastPayment?.date
-        ? new Date(l.lastPayment.date).toLocaleString()
-        : "",
-      "Payment History": historyText,
-      "Notes": noteText,
-      "Created At": l.createdAt
-        ? new Date(l.createdAt).toLocaleString()
-        : "",
+            return {
+                "Full Name": l.name || "",
+                "Email Address": l.email || "",
+                "Phone Number": l.phone || "",
+                "Address": l.address || "",
+                "Seminar Topic": l.interstedCourse || "",
+                "Seminar Type": l.interstedCourseType || "",
+                "Lead Source": l.leadSource || "",
+                "Lead Status": l.leadStatus || "",
+                "Original Price": l.originalPrice ?? 0,
+                "Discounted Price": discountedPrice,
+                "Total Paid": l.totalPaid ?? 0,
+                "Total Due": l.totalDue ?? 0,
+                "Last Payment Amount": l.lastPayment?.paidAmount ?? 0,
+                "Last Payment Date": l.lastPayment?.date
+                    ? new Date(l.lastPayment.date).toLocaleString()
+                    : "",
+                "Payment History": historyText,
+                "Notes": noteText,
+                "Created At": l.createdAt
+                    ? new Date(l.createdAt).toLocaleString()
+                    : "",
+            };
+        });
+
+        // Convert to CSV
+        const csv = Papa.unparse(exportData);
+
+        // Trigger download
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `lead_export_${new Date().toISOString().slice(0, 10)}.csv`;
+        link.click();
+
+        showToast("Lead export completed", "success");
     };
-  });
-
-  // Convert to CSV
-  const csv = Papa.unparse(exportData);
-
-  // Trigger download
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `lead_export_${new Date().toISOString().slice(0, 10)}.csv`;
-  link.click();
-
-  showToast("Lead export completed", "success");
-};
-
-
 
 
 
@@ -329,9 +329,17 @@ const handleLeadExport = (leads) => {
                 <div className="grid grid-cols-2 md:flex w-full xl:w-auto  flex-wrap justify-between items-center gap-2 ">
 
 
-                    {/* filter by Seminar topic*/}
+                    {/* filter by intersted seminar*/}
 
-
+                     <Dropdown
+                            dropdownPosition="dropdown-end"
+                            selectedState={selectedInterstedSeminar}
+                            setSelectedState={setselectedInterstedSeminar}
+                            label="Intersted Seminar"
+                            options={["All" ,"Online", "Offline", "None"]}
+                            setCurrentPage={setCurrentPage}
+                 
+                        />
 
                     {/* Filter by Assigned Date  */}
                     <Dropdown
@@ -385,9 +393,11 @@ const handleLeadExport = (leads) => {
                         Missed FU
                     </button>
 
+
+
                     {/* Filter by Followed Date */}
 
-                    {missedFUActive && (
+                    {/* {missedFUActive && (
 
                         <Dropdown
                             dropdownPosition="dropdown-end"
@@ -399,7 +409,7 @@ const handleLeadExport = (leads) => {
                             showDatePicker
 
                         />
-                    )}
+                    )} */}
 
 
 

@@ -38,7 +38,7 @@ export default function ManageCoursePage() {
 
 
     useEffect(() => {
-        setSelectedCourse(editCourse?.seminarTopic || "");
+        setSelectedCourse(editCourse?.interstedCourse || "");
 
         // questions can be object or array — normalize to [{title,value}]
         if (editCourse?.questions) {
@@ -93,8 +93,8 @@ export default function ManageCoursePage() {
             phone: form.lead_phone.value.trim(),
             address: form.lead_Address.value.trim(),
             questions: formattedQuestions,
-            seminarTopic: selectedCourse,
-            seminarType: courseType,
+            interstedCourse: selectedCourse,
+            interstedCourseType: courseType,
             leadSource: "incoming",
             createdBy: user.email,
             assignTo: user.email,
@@ -126,7 +126,7 @@ export default function ManageCoursePage() {
 
     const courseConfig = {
         header: ["Name", "Email", "Phone", "Address", "Intersted Course", "Created At"],
-        body: ["name", "email", "phone", "address", "seminarTopic", actionsCell]
+        body: ["name", "email", "phone", "address", "interstedCourse", actionsCell]
     }
 
 
@@ -197,7 +197,7 @@ export default function ManageCoursePage() {
                                 />
 
                                 <select
-                                    name="seminarTopic"
+                                    name="interstedCourse"
                                     className="select focus:border-blue-600 bg-gray-900 focus:outline-0 select-bordered w-full"
                                     value={selectedCourse}
                                     onChange={(e) => setSelectedCourse(e.target.value)}

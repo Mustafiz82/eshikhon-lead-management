@@ -29,6 +29,7 @@ const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , follow
                         <th>Phone</th>
                         <th>Address</th>
                         <th>Intersted Course</th>
+                        <th>Intersted Seminar</th>
                         <th>Type</th>
                         <th>Lead Source</th>
                         <th>Status</th>
@@ -50,8 +51,9 @@ const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , follow
                             <td>{lead.email}</td>
                             <td>{lead.phone}</td>
                             <td className="max-w-[250px] whitespace-normal break-words">{lead.address}</td>
-                            <td>{lead.seminarTopic}</td>
-                            <td>{lead.seminarType}</td>
+                            <td>{lead.interstedCourse}</td>
+                            <td>{lead.interstedSeminar}</td>
+                            <td>{lead.interstedCourseType}</td>
                             <td>{lead.leadSource}</td>
                             <td>
                                 <span
