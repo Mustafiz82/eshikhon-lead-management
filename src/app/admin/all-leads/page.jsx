@@ -20,6 +20,9 @@ import { BiSolidLockAlt } from "react-icons/bi";
 import { BiSolidLockOpen } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import EditDrawer from "@/components/allLeads/EditDrawer";
+import DetailsModal from "@/components/allLeads/DetailsModal";
+import LeadModals from "@/components/agentLeads/LeadModals";
+import { statusOptions } from "@/shared/AgentAllLeads";
 
 
 const Page = () => {
@@ -28,6 +31,8 @@ const Page = () => {
     const [categoryFilter, setCategoryFilter] = useState("All");   // filter leads by category
     const [sortMethod, setSortMethod] = useState("Default");
     const [lockSTatus, setLockStatus] = useState("All");
+    const [selectedSource, setSelectedSource] = useState("All")
+    const [selectedAgent, setSelectedAgent] = useState("All")
 
     // 🔹 Search
     const [searchText, setSearchText] = useState("");              // text typed in search modal input
@@ -52,6 +57,8 @@ const Page = () => {
     const [editLead, setEditLead] = useState(null);
 
 
+    const [selectedLead, setSelectedLead] = useState(null);
+
 
 
 
@@ -62,22 +69,31 @@ const Page = () => {
         sort: sortMethod,
         limit: leadsPerPage,
         currentPage: currentPage,
-        fields: "table",
-        lock: lockSTatus
+        // fields: "table",
+        lock: lockSTatus,
+        leadSource: selectedSource,
+        assignTo : selectedAgent     
     }).toString()
 
 
     const { data: leads, loading, error, refetch } = useFetch(`/leads?${params}`)
     const { data: rawCourses } = useFetch("/course");
+    const { data: leadSource } = useFetch("/leads/source")
+    const { data: user } = useFetch("/user")
 
     console.log(rawCourses)
 
     // Remove duplicates
-    
+
 
     const course = Array.from(
         new Map(rawCourses?.map((item) => [item.name, item])).values()
     );
+
+    const userEmails = user.filter(item => item.role !== "admin").map(item => item.email)
+    
+
+
 
 
     console.log(course)
@@ -97,6 +113,7 @@ const Page = () => {
     };
 
     const handleCheckboxChange = (index, id, checked, shiftKey) => {
+
         setSelectedIds((prev) => {
             const newSet = new Set(prev);
 
@@ -396,7 +413,19 @@ const Page = () => {
                             {status}
                         </button>
                     ))}
+
+                    <Dropdown
+                        dropdownPosition=""
+                        selectedState={selectedAgent}
+                        setSelectedState={setSelectedAgent}
+                        label="Assigned Agent"
+                        options={["All", ...userEmails]}
+                        setCurrentPage={setCurrentPage}
+
+                    />
                 </div>
+
+
 
 
                 <div className="flex fixed lg:static top-7 right-[25%] items-center gap-2">
@@ -420,7 +449,16 @@ const Page = () => {
 
 
 
-                <div className="flex w-full lg:w-auto gap-2">
+                <div className="flex  w-full lg:w-auto gap-2">
+                    <Dropdown
+                        dropdownPosition=""
+                        selectedState={selectedSource}
+                        setSelectedState={setSelectedSource}
+                        label="source"
+                        options={["All", ...leadSource]}
+                        setCurrentPage={setCurrentPage}
+
+                    />
                     <Dropdown
                         dropdownPosition="dropdown-start"
                         selectedState={lockSTatus}
@@ -470,10 +508,13 @@ const Page = () => {
                     leadsPerPage={leadsPerPage}
                     selectedIds={selectedIds}
                     setSelectedIds={setSelectedIds}
+                    setSelectedLead={setSelectedLead}
+                    seletedLead={selectedLead}
                     onEdit={(lead) => {
                         setEditLead(lead);
                         setShowDrawer(true);
                     }}
+                    user={user}
 
                 />
 
@@ -610,6 +651,7 @@ const Page = () => {
             />
 
 
+
             {/* 🟦 Lead Edit Drawer */}
             <EditDrawer
                 showDrawer={showDrawer}
@@ -618,6 +660,17 @@ const Page = () => {
                 course={course}
                 setEditLead={setEditLead}
                 refetch={refetch}
+
+            />
+
+
+            <LeadModals
+                selectedLead={selectedLead}
+                setSelectedLead={setSelectedLead}
+                statusOptions={statusOptions}
+                refetch={refetch}
+                course={rawCourses}
+
 
             />
 

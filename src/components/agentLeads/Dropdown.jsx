@@ -20,7 +20,7 @@ const Dropdown = ({
 
 
     return (
-        <div className="flex z-[9999] flex-1 lg:flex-auto items-center gap-3">
+        <div className="flex   flex-1 lg:flex-auto items-center gap-3">
             <div className={`dropdown  text-xs bg-gray-800 flex-1 lg:flex-auto ${dropdownPosition}`}>
                 <button
                     type="button"
@@ -34,7 +34,7 @@ const Dropdown = ({
                 </button>
 
                 <ul
-                    className="dropdown-content  menu p-2 shadow bg-gray-800 rounded-box  !w-64 "
+                    className="dropdown-content z-[9990] menu p-2 shadow bg-gray-800 rounded-box  !w-64 "
                     // prevent closing when interacting inside
                     onMouseDown={(e) => e.stopPropagation()}
                     onClick={(e) => e.stopPropagation()}

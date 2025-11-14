@@ -3,6 +3,11 @@ import { formateDate } from "@/utils/date";
 import Link from "next/link";
 import { BiSolidLockAlt } from "react-icons/bi";
 import { FaEdit, FaRegEdit } from "react-icons/fa";
+import DetailsModal from "./DetailsModal";
+import { CgDetailsMore } from "react-icons/cg";
+import { useState } from "react";
+import { statusColors } from "../agentLeads/LeadTable";
+import useFetch from "@/hooks/useFetch";
 
 
 const LeadTable = ({
@@ -12,8 +17,22 @@ const LeadTable = ({
   currentPage,
   leadsPerPage,
   handleCheckboxChange,
+  setSelectedLead,
+  user,
   onEdit
 }) => {
+
+
+    
+    console.log(user)
+
+    const getUserName = (email) => {
+      const filteredUser = user.find(item => item.email == email)
+
+      console.log(filteredUser)
+      return filteredUser?.name
+    }
+
 
 
 
@@ -55,27 +74,38 @@ const LeadTable = ({
               <th className="sticky top-0 bg-base-300 z-10">Number</th>
               <th className="sticky top-0 bg-base-300 z-10">Address</th>
               <th className="sticky top-0 bg-base-300 z-10">Internsted Course </th>
-              <th className="sticky top-0 bg-base-300 z-10">Status</th>
+              <th className="sticky top-0 bg-base-300 z-10">Assign To</th>
+              <th className="sticky top-0 bg-base-300 z-10">Lead Status</th>
             </tr>
           </thead>
 
 
-          <tbody className="text-base-content/80 ">
+          <tbody className="text-base-content/80 "> 
 
             {leads.map((lead, index) => {
               const actualIndex =
                 (currentPage - 1) * leadsPerPage + index;
               return (
-                <tr key={actualIndex} className={`${selectedIds.has(lead._id) ? "!bg-blue-900/50" : ""}`}>
+                <tr
+                  onClick={() => { setSelectedLead(lead); }}
+                  key={actualIndex}
+                  className={`${selectedIds.has(lead._id) ? "!bg-blue-900/50" : ""}`}>
 
-                  <td className="flex items-center gap-2">
+                  <td onClick={(e) => e.stopPropagation()} className="flex items-center gap-2">
                     <input
                       type="checkbox"
                       className="checkbox checkbox-sm rounded-sm checkbox-primary border-blue-600 checked:bg-blue-600"
                       checked={selectedIds.has(lead._id)}
-                      onChange={(e) =>
-                        handleCheckboxChange(index, lead._id, e.target.checked, e.nativeEvent.shiftKey)
-                      }
+                      onChange={(e) => {
+
+                        handleCheckboxChange(
+                          index,
+                          lead._id,
+                          e.target.checked,
+                          e.nativeEvent.shiftKey
+                        );
+                      }}
+
                     />
 
                     <span className="text-xs opacity-60">
@@ -83,7 +113,7 @@ const LeadTable = ({
                     </span>
                   </td>
 
-                  <td>
+                  <td onClick={e => e.stopPropagation()}>
                     <button
                       onClick={() => onEdit(lead)}
                       className="hover:text-blue-500  cursor-pointer"
@@ -105,13 +135,22 @@ const LeadTable = ({
                   <td>
                     <span
                       className={`badge badge-sm ${lead.assignStatus
-                        ? "badge-success"
+                        ? "badge-success text-white"
                         : "badge-warning text-white text-nowrap"
                         }`}
                     >
-                      {lead.assignStatus ? "Assigned" : "Not Assigned"}
+                      {lead.assignStatus ? getUserName(lead?.assignTo ): "Not Assigned"}
                     </span>
                   </td>
+                  <td>
+                    <span
+                      className={`badge badge-sm text-white text-nowrap ${statusColors[lead.leadStatus] || "badge-neutral"
+                        }`}
+                    >
+                      {lead.leadStatus}
+                    </span>
+                  </td>
+
                 </tr>
               );
             })}
@@ -119,6 +158,8 @@ const LeadTable = ({
 
         </table>
       }
+
+
 
     </div>
   );

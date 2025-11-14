@@ -1,21 +1,21 @@
 import { formateDate } from "@/utils/date";
 import { BiSolidLockAlt } from "react-icons/bi";
 
+export const statusColors = {
+    "Enrolled": "badge-success",          // ✅ Green → positive, confirmed
+    "Will Join on Seminar": "badge-primary", // 🔵 Strong intent, upcoming
+    "Not Interested": "badge-error",      // 🔴 Rejected, negative
+    "Enrolled in Other Institute": "badge-secondary", // 🌸 Pink → sidelined/alternative
+    "Call declined": "badge-error",        // 🔴 Abrupt stop
+    "Call later": "badge-primary",        // 🔴 Abrupt stop
+    "Call Not Received": "badge-warning", // 🟨 Needs caution/attention
+    "Number Off or Busy": "badge-neutral", // ⚫ Inactive/unavailable
+    "Wrong Number": "badge-error",        // 🔴 Mistake
+    "Pending": "badge-info",              // 🟦 Neutral wait / requires follow-up
+};
 const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , followUpActive , missedFUActive}) => {
 
     
-    const statusColors = {
-        "Enrolled": "badge-success",          // ✅ Green → positive, confirmed
-        "Will Join on Seminar": "badge-primary", // 🔵 Strong intent, upcoming
-        "Not Interested": "badge-error",      // 🔴 Rejected, negative
-        "Enrolled in Other Institute": "badge-secondary", // 🌸 Pink → sidelined/alternative
-        "Call declined": "badge-error",        // 🔴 Abrupt stop
-        "Call later": "badge-primary",        // 🔴 Abrupt stop
-        "Call Not Received": "badge-warning", // 🟨 Needs caution/attention
-        "Number Off or Busy": "badge-neutral", // ⚫ Inactive/unavailable
-        "Wrong Number": "badge-error",        // 🔴 Mistake
-        "Pending": "badge-info",              // 🟦 Neutral wait / requires follow-up
-    };
 
 
     return <div>

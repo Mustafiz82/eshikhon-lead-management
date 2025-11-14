@@ -17,6 +17,21 @@ import Papa from "papaparse";
 import { showToast } from "@/utils/showToast";
 
 
+export const statusOptions = [
+    "All",
+    "Pending",
+    "Enrolled",
+    "Joined on seminar",
+    "Will Join on Seminar",
+    "Not Interested",
+    "Enrolled in Other Institute",
+    "Call declined",
+    "Call later",
+    "Call Not Received",
+    "Number Off or Busy",
+    "Wrong Number"
+]
+
 
 const AgentAllLeads = () => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -33,7 +48,7 @@ const AgentAllLeads = () => {
     const [selectedSortMethod, setSelectedSortMethod] = useState("Default")
     const [selectedStage, setSelectedStage] = useState("All")
     const [selectedSource, setSelectedSource] = useState("All")
-    const [selectedInterstedSeminar, setselectedInterstedSeminar ] = useState("All")
+    const [selectedInterstedSeminar, setselectedInterstedSeminar] = useState("All")
 
 
     const [followUpActive, setFollowUpActive] = useState(false);
@@ -69,7 +84,7 @@ const AgentAllLeads = () => {
         showOnlyMissedFollowUps: missedFUActive,
         missedFollwUpDate: selectedMissedFollowedDate,
         leadSource: selectedSource,
-        interstedSeminar : selectedInterstedSeminar
+        interstedSeminar: selectedInterstedSeminar
 
     })
 
@@ -81,20 +96,6 @@ const AgentAllLeads = () => {
 
 
 
-    const statusOptions = [
-        "All",
-        "Pending",
-        "Enrolled",
-        "Joined on seminar",
-        "Will Join on Seminar",
-        "Not Interested",
-        "Enrolled in Other Institute",
-        "Call declined",
-        "Call later",
-        "Call Not Received",
-        "Number Off or Busy",
-        "Wrong Number"
-    ]
 
 
     const assignedDateOptions = ["All", "Today", "This Week", "This Month", "This Year"]
@@ -166,7 +167,7 @@ const AgentAllLeads = () => {
 
 
     const handleLeadExport = () => {
-        
+
         if (!Array.isArray(leads) || leads.length === 0) {
             return showToast("No leads found to export", "warning");
         }
@@ -331,15 +332,15 @@ const AgentAllLeads = () => {
 
                     {/* filter by intersted seminar*/}
 
-                     <Dropdown
-                            dropdownPosition="dropdown-end"
-                            selectedState={selectedInterstedSeminar}
-                            setSelectedState={setselectedInterstedSeminar}
-                            label="Intersted Seminar"
-                            options={["All" ,"Online", "Offline", "None"]}
-                            setCurrentPage={setCurrentPage}
-                 
-                        />
+                    <Dropdown
+                        dropdownPosition="dropdown-end"
+                        selectedState={selectedInterstedSeminar}
+                        setSelectedState={setselectedInterstedSeminar}
+                        label="Intersted Seminar"
+                        options={["All", "Online", "Offline", "None"]}
+                        setCurrentPage={setCurrentPage}
+
+                    />
 
                     {/* Filter by Assigned Date  */}
                     <Dropdown
