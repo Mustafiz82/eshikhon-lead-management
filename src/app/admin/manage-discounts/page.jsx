@@ -45,14 +45,21 @@ export default function ManageDiscountPage() {
         );
     }, [editDiscount]);
 
-    const courseOptions = useMemo(
-        () =>
-            (courses ?? []).map((c) => ({
+    const courseOptions = useMemo(() => {
+        const seen = new Set();
+
+        return (courses ?? [])
+            .filter(c => {
+                if (seen.has(c.name)) return false;
+                seen.add(c.name);
+                return true;
+            })
+            .map(c => ({
                 label: c.name,
                 value: String(c._id ?? c.id),
-            })),
-        [courses]
-    );
+            }));
+    }, [courses]);
+
 
     const startDate = (row) => formateDate(row.startAt);
     const endDate = (row) => formateDate(row.expireAt);
@@ -155,7 +162,7 @@ export default function ManageDiscountPage() {
                 </p>
             ) : (
                 <>
-                    <Table data={discounts}  width={"1000px"} config={courseConfig} />
+                    <Table data={discounts} width={"1000px"} config={courseConfig} />
 
                     <div className={`h-full ${showModal ? "fixed lg:static top-0 left-0 w-full lg:w-auto z-[9999] block " : "hidden lg:block"}  w-[400px] bg-gray-800 shadow-lg p-6`}>
                         <form
@@ -188,7 +195,7 @@ export default function ManageDiscountPage() {
                                     defaultValue={editDiscount?.name || ""}
                                     className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                     disabled={isSubmitting}
-                                />  
+                                />
 
                                 <select
                                     name="authority"
@@ -351,14 +358,14 @@ export default function ManageDiscountPage() {
                                             ? "Update Discount"
                                             : "Create Discount"}
                                 </button>
-                              
+
                             </div>
                         </form>
                     </div>
                 </>
             )}
 
-                <button onClick={() => setShowModal(true)} type="submit" className="btn z-50  lg:hidden fixed bottom-2 bg-blue-600 btn-primary w-full" >
+            <button onClick={() => setShowModal(true)} type="submit" className="btn z-50  lg:hidden fixed bottom-2 bg-blue-600 btn-primary w-full" >
                 Create New Discount
             </button>
         </div>

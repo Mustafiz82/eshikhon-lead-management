@@ -53,6 +53,8 @@ const AgentAllLeads = () => {
 
     const [followUpActive, setFollowUpActive] = useState(false);
     const [selectedFollowedDate, setSelectedFollowedpDate] = useState("All")
+    
+    const [upcomingPaymentsDate, setUpcomingPaymentsDate] = useState("None")
 
     const [missedFUActive, setMissedFUActive] = useState(false);
     const [selectedMissedFollowedDate, setSelectedMissedFolllowUpDate] = useState("All")
@@ -82,9 +84,10 @@ const AgentAllLeads = () => {
         showOnlyFollowups: followUpActive,
         followUpDate: selectedFollowedDate,
         showOnlyMissedFollowUps: missedFUActive,
-        missedFollwUpDate: selectedMissedFollowedDate,
+        missedFollowUpDate: selectedMissedFollowedDate,
         leadSource: selectedSource,
-        interstedSeminar: selectedInterstedSeminar
+        interstedSeminar: selectedInterstedSeminar,
+        upcomingPaymentsDate : upcomingPaymentsDate
 
     })
 
@@ -99,7 +102,9 @@ const AgentAllLeads = () => {
 
 
     const assignedDateOptions = ["All", "Today", "This Week", "This Month", "This Year"]
-    const followedOptions = ["All", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
+    const followedOptions = ["All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
+    const upcOptions = ["None" , "All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
+    const missedFUOption = ["All", "Last 3 Days", "Last 7 Days", "Last 15 Days", "Last 30 Days"]
     const stageOptions = ["All", "Pending", "Contacted"];
     const totalPages = Math.round((leadsCount?.count / leadsPerPage)) || 1
 
@@ -359,6 +364,7 @@ const AgentAllLeads = () => {
                         className={`btn btn-sm text-[10px] 3xl:text-[12px] ${followUpActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
                         onClick={() => {
                             setFollowUpActive(!followUpActive);
+                            setMissedFUActive(false)
                             setSelectedFollowedpDate("All");
                             setCurrentPage(1);
                         }}
@@ -367,7 +373,7 @@ const AgentAllLeads = () => {
                     </button>
 
                     {/* Filter by Followed Date */}
-                    {followUpActive && (
+                    {followUpActive && !missedFUActive && (
 
                         <Dropdown
                             dropdownPosition="dropdown-end"
@@ -388,11 +394,25 @@ const AgentAllLeads = () => {
                         onClick={() => {
                             setMissedFUActive(!missedFUActive);
                             setSelectedMissedFolllowUpDate("All")
+                            setFollowUpActive(false)
                             setCurrentPage(1);
                         }}
                     >
                         Missed FU
                     </button>
+
+
+                    <Dropdown
+                        dropdownPosition="dropdown-end"
+                        selectedState={upcomingPaymentsDate}
+                        setSelectedState={setUpcomingPaymentsDate}
+                        label="UPC Payments"
+                        options={upcOptions}
+                        defaultOptions={"None"}
+                        setCurrentPage={setCurrentPage}
+                        showDatePicker
+
+                    />
 
 
 
@@ -405,7 +425,7 @@ const AgentAllLeads = () => {
                             selectedState={selectedMissedFollowedDate}
                             setSelectedState={setSelectedMissedFolllowUpDate}
                             label="Missed FU Date"
-                            options={assignedDateOptions}
+                            options={missedFUOption}
                             setCurrentPage={setCurrentPage}
                             showDatePicker
 

@@ -159,6 +159,12 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
     }
 
+
+    const handleDeleteUnsavedNote = (index) => {
+        setNotes(prev => prev.filter((_, i) => i !== index));
+    };
+
+
     const handleSearchSuggesionClick = (item) => {
         setSearchInput(item?.name); //  shows name in input
         setSelectedCourseId(item?._id); // but internally, we track by id
@@ -282,7 +288,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                     <div className="space-y-2 flex flex-col text-sm">
                         <h3 className="text-lg font-semibold mb-2">Previous Notes</h3>
                         <div className="space-y-2 h-[250px]   overflow-y-auto">
-                            {notes?.map((note, i) => (
+                            {/* {notes?.map((note, i) => (
                                 <div key={i} className="border border-base-300 mt-2 p-2 bg-base-200  rounded">
                                     <p className="text-xs opacity-70">
                                         {formateDate(note.date || note.createdAt)} • {note.by}
@@ -290,7 +296,32 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                     </p>
                                     <p>{note.text}</p>
                                 </div>
+                            ))} */}
+
+                            {notes?.map((note, i) => (
+                                <div key={i} className="border border-base-300 mt-2 p-2 bg-base-200 rounded relative">
+
+                                    {/* DELETE BUTTON ONLY FOR UNSAVED */}
+                                    {note.status === "unsaved" && (
+                                        <button
+                                            onClick={() => handleDeleteUnsavedNote(i)}
+                                            className="absolute cursor-pointer p-1 top-1 z-30 right-1  text-red-500 text-xs hover:text-red-300"
+                                            title="Delete this unsaved note"
+                                        >
+                                            ✕
+                                        </button>
+                                    )}
+
+                                    <p className="text-xs opacity-70">
+                                        {formateDate(note.date || note.createdAt)} • {note.by}
+                                        {note?.status == "unssaved" &&
+                                            <span className="ml-2 text-yellow-500 font-semibold">(Unsaved)</span>}
+                                    </p>
+
+                                    <p>{note.text}</p>
+                                </div>
                             ))}
+
                             {(notes?.length === 0) && (
                                 <p className="text-xs text-center mt-20  text-base-content/60">No notes yet.</p>
                             )}

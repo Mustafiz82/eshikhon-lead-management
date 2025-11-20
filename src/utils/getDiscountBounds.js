@@ -4,53 +4,62 @@ export function getDiscountBounds(selectedDiscountUnit, selectedDiscountObject, 
     let maxValue = 0;
 
     const price = selectedCourse?.price;
+    const ruleMin = parseFloat(selectedDiscountObject?.minValue);
+    const ruleMax = parseFloat(selectedDiscountObject?.maxValue);
+    const cap = parseFloat(selectedDiscountObject?.capAmount);
 
-    // If we do not have what we need, just return zeros safely
+    // If missing essential data → safe fallback
     if (!selectedDiscountObject || !price) {
         return { minValue, maxValue };
     }
 
+    // ---------------------------
+    // USER INPUT MODE: PERCENT %
+    // ---------------------------
     if (selectedDiscountUnit === "%") {
-        // The input box is in percent
-        if (selectedDiscountObject?.mode === "percent") {
-            // Rule is also percent → use given min/max (but respect capAmount for max)
-            minValue = parseInt(selectedDiscountObject?.minValue);
 
-            const initialMaxValuePercent = parseInt(selectedDiscountObject?.maxValue);
-            const initialMaxValueAmountAsPercent = Math.floor(
-                (parseInt(selectedDiscountObject?.maxValue) / price) * 100
-            );
+        if (selectedDiscountObject.mode === "percent") {
+            // Rule is also percent
 
-            if (initialMaxValueAmountAsPercent < selectedDiscountObject.capAmount) {
-                // capAmount is stricter when converted to percent
-                maxValue = Math.floor((parseInt(selectedDiscountObject?.capAmount) / price) * 100);
+            minValue = ruleMin;
+
+            // max discount in amount from rule percent
+            const ruleMaxAmount = (ruleMax / 100) * price;
+
+            // If capAmount is LOWER → cap wins
+            if (cap < ruleMaxAmount) {
+                maxValue = Math.floor((cap / price) * 100); // convert amount → percent
             } else {
-                maxValue = initialMaxValuePercent;
+                maxValue = ruleMax;
             }
+
         } else {
-            // Rule is amount but input is percent → convert amount min/max to percent
-            minValue = Math.floor((parseInt(selectedDiscountObject?.minValue) / price) * 100);
-            maxValue = Math.floor((parseInt(selectedDiscountObject?.maxValue) / price) * 100);
+            // Rule is in amount → convert to percent
+            minValue = Math.floor((ruleMin / price) * 100);
+            maxValue = Math.floor((ruleMax / price) * 100);
         }
+
     } else {
-        // The input box is in currency amount (৳)
-        if (selectedDiscountObject?.mode === "amount") {
-            // Rule is also amount → use given min/max
-            minValue = parseInt(selectedDiscountObject?.minValue);
-            maxValue = parseInt(selectedDiscountObject?.maxValue);
+        // ---------------------------
+        // USER INPUT MODE: AMOUNT ৳
+        // ---------------------------
+
+        if (selectedDiscountObject.mode === "amount") {
+            // Rule is also amount
+            minValue = ruleMin;
+
+            // max = smaller of (rule max amount, cap amount)
+            maxValue = Math.min(ruleMax, cap);
+
         } else {
-            // Rule is percent but input is amount → convert percent min/max to amount
-            minValue = Math.floor((parseInt(selectedDiscountObject?.minValue) / 100) * price);
+            // Rule is percent → convert rule to amount
+            const ruleMinAmount = (ruleMin / 100) * price;
+            const ruleMaxAmount = (ruleMax / 100) * price;
 
-            const initialMaxValueAsAmount = Math.floor(
-                (parseInt(selectedDiscountObject?.maxValue) / 100) * price
-            );
+            minValue = Math.floor(ruleMinAmount);
 
-            if (selectedDiscountObject?.capAmount < initialMaxValueAsAmount) {
-                maxValue = selectedDiscountObject?.capAmount;
-            } else {
-                maxValue = initialMaxValueAsAmount;
-            }
+            // If capAmount is LOWER → cap wins
+            maxValue = Math.min(ruleMaxAmount, cap);
         }
     }
 
