@@ -98,7 +98,8 @@ export default function ManageCoursePage() {
             leadSource: "incoming",
             createdBy: user.email,
             assignTo: user.email,
-            assignDate: Date.now()
+            assignDate: Date.now(),
+            assignStatus : true 
         };
         console.log(payload)
         await handleSave(payload, form, "/leads/single-lead")

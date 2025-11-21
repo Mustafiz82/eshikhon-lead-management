@@ -3,6 +3,7 @@ import useFetch from "@/hooks/useFetch";
 import CustomSelect from "@/utils/CustomSelect";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { TbCurrencyTaka } from "react-icons/tb";
 
 
 
@@ -71,6 +72,7 @@ const page = () => {
                                     <th>Enrolled</th>
                                     <th>Sales </th>
                                     <th>Target completion</th>
+                                    <th>Commission</th>
 
                                 </tr>
                             </thead>
@@ -80,13 +82,14 @@ const page = () => {
                                         <td>{user.name}</td>
                                         <td>{user.email}</td>
                                         <td className="pl-10">{user.leadCount ?? 0}</td>
-                                        <td className="pl-10">{user.connectedCallsToday ?? 0}</td>
+                                        <td className="pl-10">{user.connectedCallCountToday ?? 0}</td>
                                         <td className="pl-10">{(user.leadCount - user.pendingCount) || 0}</td>
                                         <td className="pl-10">{user.pendingCount ?? 0}</td>
                                         <td className="pl-10">{user.enrolledCount ?? 0}</td>
                                         <td className="pl-10">{user.totalPaidFromEnrolled}</td>
 
                                         <td className="pl-10">{user.targetCompletionRate ?? 0}%</td>
+                                        <td className="pl-10 flex items-center ">{user.commission ?? 0} <TbCurrencyTaka /></td>
 
 
                                     </tr>

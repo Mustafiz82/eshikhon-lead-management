@@ -43,7 +43,7 @@ const AgentsLeadsStatusPanel = ({ selectedFilter }) => {
     // 4. Daily effort → connected calls
     {
       label: "Connected Calls Today",
-      value: userData?.connectedCallCount,
+      value: userData?.connectedCallCountToday,
       unit: "",
       outOf: "/60",
       gradient: "from-orange-600 to-rose-400" // Orange = activity, energy
@@ -59,8 +59,8 @@ const AgentsLeadsStatusPanel = ({ selectedFilter }) => {
 
     // 6. Missed deadlines → overdue
     {
-      label: "Overdue Leads",
-      value: userData?.overdueCount,
+      label: "Total connected Call ",
+      value: userData?.totalConnectedCallCount,
       unit: "",
       gradient: "from-pink-700 to-rose-500" // Pink/red tone = warning
     },
