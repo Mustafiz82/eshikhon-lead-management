@@ -68,6 +68,7 @@ export default function ManageCoursePage() {
       name: form.course_name.value.trim(),
       type: courseType,
       price: form.price.value ? Number(form.price.value) : null,
+      code : form?.code?.value
     };
     console.log(payload)
     await handleSave(payload, form, "/course")
@@ -92,8 +93,8 @@ export default function ManageCoursePage() {
   )
 
   const courseConfig = {
-    header: ["Name", "Type", "Price", "Action"],
-    body: ["name", "type", "price", actionsCell]
+    header: ["Name", "Type", "Price", "Code" , "Action"],
+    body: ["name", "type", "price", "code" , actionsCell]
   }
 
 
@@ -240,6 +241,19 @@ export default function ManageCoursePage() {
                   name="price"
                   placeholder="Price (৳)"
                   defaultValue={editCourse?.price ?? ""}
+                  className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
+                  disabled={isSubmitting}
+                  min={0}
+                  step="1"
+                  required
+                />
+
+
+                <input
+                  type="text"
+                  name="code"
+                  placeholder="short code"
+                  defaultValue={editCourse?.code ?? ""}
                   className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                   disabled={isSubmitting}
                   min={0}
