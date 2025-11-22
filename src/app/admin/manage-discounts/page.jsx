@@ -49,14 +49,10 @@ export default function ManageDiscountPage() {
         const seen = new Set();
 
         return (courses ?? [])
-            .filter(c => {
-                if (seen.has(c.name)) return false;
-                seen.add(c.name);
-                return true;
-            })
             .map(c => ({
-                label: c.name,
+                label: c.name + "-" + c.type,
                 value: String(c._id ?? c.id),
+                type : c.type
             }));
     }, [courses]);
 
@@ -130,11 +126,13 @@ export default function ManageDiscountPage() {
             minValue: form.minValue?.value ? Number(form.minValue.value) : null,
             maxValue: form.maxValue?.value ? Number(form.maxValue.value) : null,
             capAmount: form.capAmount?.value ? Number(form.capAmount.value) : null,
-            startAt: form.startAt.value,
-            expireAt: form.expireAt.value,
+            startAt: form.startAt.value || undefined,
+            expireAt: form.expireAt.value || undefined,
             appliesTo,
             notes: form.notes?.value.trim() || "",
         };
+
+        console.log(payload)
 
         if (payload.authority === "committed") {
             payload.minValue = null;
@@ -295,9 +293,9 @@ export default function ManageDiscountPage() {
                                         defaultValue={editDiscount?.startAt?.slice(0, 10) || ""}
                                         className="input bg-gray-900  input-bordered w-full focus:outline-0 focus:border-blue-500"
                                         disabled={isSubmitting}
-                                        required
+                                        
                                     />
-                                </div>
+                                </div>  
 
                                 <div className="flex flex-col gap-1">
                                     <label className="text-xs text-white/80 mb-1">
@@ -310,7 +308,7 @@ export default function ManageDiscountPage() {
                                         defaultValue={editDiscount?.expireAt?.slice(0, 10) || ""}
                                         className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                         disabled={isSubmitting}
-                                        required
+                                    
                                     />
                                 </div>
 
