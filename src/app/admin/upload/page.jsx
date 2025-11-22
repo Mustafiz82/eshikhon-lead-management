@@ -138,7 +138,7 @@ const Page = () => {
     const handleCompleteLeadCSVUpload = async (results, fileName) => {
         const rows = results.data;
         const headers = Object.keys(rows[0] || {});
-        const required = ["name", "email", "phone", "address", "interstedCourse", "interstedCourseType"];
+        const required = ["phone", "interstedCourse",];
         const missing = required.filter((f) => !headers.includes(f));
 
         console.log(headers)
@@ -150,22 +150,23 @@ const Page = () => {
         }
 
         const filtered = rows.filter(
-            (item) => item.name && item.email && item.phone && item.address && item.interstedCourse
+            (item) => item.phone && item.interstedCourse
         );
 
         const questionWiseData = filtered.map((item) => {
             const { name, email, address, phone, interstedCourse, interstedCourseType, leadSource, ...questions } = item;
+
             return {
-                name,
-                email,
-                address,
-                phone,
-                interstedCourse,
-                leadSource,
-                interstedCourseType,
+                name: name || "",
+                email: email || "",
+                address: address || "",
+                phone: phone || "",
+                interstedCourse: interstedCourse || "",
+                leadSource: leadSource || "",
+                interstedCourseType: interstedCourseType || "Online",
                 questions,
                 sourceFileName: fileName,
-                createdBy: user?.email
+                createdBy: user?.email || ""
             };
         });
 
@@ -179,7 +180,7 @@ const Page = () => {
         setStatus(fileName, STATUS.SAVING);
 
         try {
-            const res =  await axiosPublic.post("/leads", questionWiseData);
+            const res = await axiosPublic.post("/leads", questionWiseData);
             console.log(res.data)
 
             // ✅ Only if lead  s save succeeds → save file in history
@@ -189,11 +190,11 @@ const Page = () => {
             setStatus(fileName, STATUS.COMPLETED);
             refetch(); // refresh server-side history list
 
-            if(res.data.ok == false){
-                showToast(res.data.message , "error")
+            if (res.data.ok == false) {
+                showToast(res.data.message, "error")
             }
-            else{
-                
+            else {
+
                 showToast(res.data.message, "success");
             }
 
@@ -214,7 +215,7 @@ const Page = () => {
 
     const transfromHeaderLead = (header) => {
         if (!header) return "";
-        const normalized = header.trim().toLowerCase();
+        const normalized =  header.trim().toLowerCase();
         console.log(normalized)
         if (["full name", "name"].includes(normalized)) return "name";
         if (["email", "e-mail", "email address"].includes(normalized)) return "email";

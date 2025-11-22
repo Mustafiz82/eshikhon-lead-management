@@ -604,7 +604,7 @@ const Page = () => {
                                     setCurrentPage(1);
                                 }}
                             >
-                                {[10, 25, 50, 100, 200].map((n) => (
+                                {[10, 25, 50, 100, 200 , 500].map((n) => (
                                     <option key={n} value={n}>
                                         {n}
                                     </option>
