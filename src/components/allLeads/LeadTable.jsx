@@ -123,10 +123,10 @@ const LeadTable = ({
                     </button>
                   </td>
                   <td className="!pl-5"> <span className="relative   ">{lead?.isLocked && <BiSolidLockAlt title="Agent will not be able modify these lease leads" className="text-[#F7BB07] absolute -left-4 top-1/2 -translate-y-1/2" />} {formateDate(lead?.createdAt)}</span> </td>
-                  <td>{lead.name}</td>
-                  <td>{lead.email}</td>
-                  <td > <span className="text-nowrap">{lead.phone}</span></td>
-                  <td className="max-w-[280px] whitespace-nowrap overflow-hidden text-ellipsis" title={lead.address} >{lead.address}</td>
+                  <td title={lead.name} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.name}</td>
+                  <td title={lead.email} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.email}</td>
+                  <td title={lead.phone} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis" > <span className="text-nowrap">{lead.phone}</span></td>
+                  <td title={lead.address} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis" >{lead.address}</td>
                   <td>
                     <span className="badge badge-neutral badge-sm">
                       {lead.interstedCourse}
