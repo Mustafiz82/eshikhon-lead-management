@@ -2,11 +2,13 @@ import axiosPublic from '@/api/axios';
 import { showAlert } from '@/utils/swal';
 import React, { useEffect, useState } from 'react';
 
-const EditDrawer = ({showDrawer, setShowDrawer, editLead, course, setEditLead, refetch }) => {
+const EditDrawer = ({ showDrawer, setShowDrawer, editLead, course, setEditLead, refetch }) => {
 
 
     const [selectedCourse, setSelectedCourse] = useState("");
     const [selectedType, setSelectedType] = useState("");
+    const [assignDate, setAssignDate] = useState(editLead?.assignDate || Date.now())
+
 
 
     const handleSubmit = async (e) => {
@@ -18,7 +20,8 @@ const EditDrawer = ({showDrawer, setShowDrawer, editLead, course, setEditLead, r
             phone: form.lead_phone.value,
             address: form.lead_Address.value,
             interstedCourse: selectedCourse,
-            interstedCourseType: selectedType
+            interstedCourseType: selectedType,
+            assignDate: assignDate,
         };
         try {
             await axiosPublic.patch(`/leads/${editLead._id}`, payload);
@@ -31,7 +34,7 @@ const EditDrawer = ({showDrawer, setShowDrawer, editLead, course, setEditLead, r
         }
     }
 
-
+   
 
     useEffect(() => {
         if (editLead?.interstedCourse) {
@@ -39,6 +42,10 @@ const EditDrawer = ({showDrawer, setShowDrawer, editLead, course, setEditLead, r
         }
         if (editLead?.interstedCourseType) {
             setSelectedType(editLead.interstedCourseType);
+        }
+
+        if(editLead?.assignDate){
+            setAssignDate(editLead.assignDate)
         }
     }, [editLead]);
 
@@ -131,6 +138,25 @@ const EditDrawer = ({showDrawer, setShowDrawer, editLead, course, setEditLead, r
                                 </option>
                             ))}
                         </select>
+
+
+                        <label  className=" flex-1  text-sm  text-nowrap  text-white/80 ">
+                            Custom Assingn Date :
+                        </label>
+                        <input
+                            type="date"
+                            name="startAt"
+                            // CHANGE THIS: Convert string "YYYY-MM-DD" back to Timestamp Number
+                            onChange={(e) => setAssignDate(new Date(e.target.value).getTime())}
+
+                            onClick={(e) => e.target.showPicker && e.target.showPicker()}
+
+                            // CHANGE THIS: Convert Timestamp Number to "YYYY-MM-DD"
+                            value={new Date(assignDate).toISOString().split('T')[0]}
+
+                            className="input py-2 bg-gray-900 flex-1 input-bordered w-full focus:outline-0 focus:border-blue-500"
+                            required
+                        />
                     </div>
 
                     <div className="mt-auto pt-4">

@@ -2,20 +2,36 @@ import { formateDate } from "@/utils/date";
 import { BiSolidLockAlt } from "react-icons/bi";
 
 export const statusColors = {
-    "Enrolled": "badge-success",          // ✅ Green → positive, confirmed
-    "Will Join on Seminar": "badge-primary", // 🔵 Strong intent, upcoming
-    "Not Interested": "badge-error",      // 🔴 Rejected, negative
-    "Enrolled in Other Institute": "badge-secondary", // 🌸 Pink → sidelined/alternative
-    "Call declined": "badge-error",        // 🔴 Abrupt stop
-    "Call later": "badge-primary",        // 🔴 Abrupt stop
-    "Call Not Received": "badge-warning", // 🟨 Needs caution/attention
-    "Number Off or Busy": "badge-neutral", // ⚫ Inactive/unavailable
-    "Wrong Number": "badge-error",        // 🔴 Mistake
-    "Pending": "badge-info",              // 🟦 Neutral wait / requires follow-up
-};
-const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , followUpActive , missedFUActive}) => {
+    // ✅ Success (Green) - Final Positive States
+    "Enrolled": "badge-success",
+    "Already Enrolled": "badge-success",
 
-    
+    // 💠 Hot Lead (Teal) - Very High Intent / Almost Closed
+    "Will Register": "badge-accent",
+
+    // 💜 Action Required (Purple) - Needs Active Follow-up
+    "Call later": "badge-primary",
+
+    // 🌸 Alternative (Pink) - Valid student, just not yours
+    "Enrolled in Other Institute": "badge-secondary",
+
+    // ⚠️ Caution/Paused (Yellow) - Needs attention or retry
+    "Call Not Received": "badge-warning",
+    "On hold": "badge-warning",
+
+    // ℹ️ Waiting (Blue) - Standard neutral wait
+    "Pending": "badge-info",
+
+    // 🌑 Unavailable (Black/Dark Grey) - Technical dead ends
+    "Number Off or Busy": "badge-neutral",
+
+    // ❌ Negative (Red) - Rejections or bad data
+    "Not Interested": "badge-error",
+    "Wrong Number": "badge-error"
+};
+const LeadTable = ({ leads, setSelectedLead, currentPage, leadsPerPage, followUpActive, missedFUActive }) => {
+
+
 
 
     return <div>
@@ -33,7 +49,7 @@ const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , follow
                         <th>Type</th>
                         <th>Lead Source</th>
                         <th>Status</th>
-                        <th>{followUpActive ||  missedFUActive  ? "Follow Up Date" : "Assigned At" }</th>
+                        <th>{followUpActive || missedFUActive ? "Follow Up Date" : "Assigned At"}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,7 +63,7 @@ const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , follow
                             className="cursor-pointer hover:bg-base-300/40 transition"
                         >
                             <td>{(currentPage - 1) * leadsPerPage + index + 1}</td>
-                            <td> <span className="relative ">{lead?.isLocked && <BiSolidLockAlt title="Lead is Locked . Contact Admin to modify the leads" className="text-[#F7BB07] absolute -left-5 top-1/2 -translate-y-1/2"/>  } {lead.name}</span> </td>
+                            <td> <span className="relative ">{lead?.isLocked && <BiSolidLockAlt title="Lead is Locked . Contact Admin to modify the leads" className="text-[#F7BB07] absolute -left-5 top-1/2 -translate-y-1/2" />} {lead.name}</span> </td>
                             <td>{lead.email}</td>
                             <td>{lead.phone}</td>
                             <td className="max-w-[250px] whitespace-normal break-words">{lead.address}</td>
@@ -58,14 +74,14 @@ const LeadTable = ({ leads, setSelectedLead, currentPage , leadsPerPage , follow
                             <td>
                                 <span
                                     className={`badge badge-sm text-white text-nowrap ${statusColors[lead.leadStatus] || "badge-neutral"
-                                        }`  }
+                                        }`}
                                 >
                                     {lead.leadStatus}
                                 </span>
                             </td>
 
 
-                            <td>{formateDate(followUpActive ||  missedFUActive  ? lead?.followUpDate : lead?.assignDate)}</td>
+                            <td>{formateDate(followUpActive || missedFUActive ? lead?.followUpDate : lead?.assignDate)}</td>
                         </tr>
                     ))}
                 </tbody>

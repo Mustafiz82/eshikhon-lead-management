@@ -52,7 +52,7 @@ export const leads = [
     name: "Tanjina Akter",
     email: "tanjina@example.com",
     number: "01815633016",
-    address: "Savar, Dhaka",
+    address: "Savar, Dhaka", 
     interstedCourse: "Web Development",
     status: "Not Assigned",
     date: "2025-07-30T10:02:00.000Z",

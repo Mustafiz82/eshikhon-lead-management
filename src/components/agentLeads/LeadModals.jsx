@@ -6,6 +6,7 @@ import { formateDate } from "@/utils/date";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import QR from "./QR";
+import { FaEdit } from "react-icons/fa";
 
 const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, course }) => {
 
@@ -22,6 +23,19 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     const [error, setError] = useState("")
     const [notes, setNotes] = useState(selectedLead?.note)
     const { user } = useContext(AuthContext)
+    const [leadSource, setLeadSource] = useState(selectedLead?.leadSource || "");
+
+    const sourceOptions = [
+        "Counseling Form", "FB Page(1st)", "FB Page(2nd)", "Tiktok", "Instagram",
+        "Youtube", "Others Social Media", "FB Paid Campaign", "Google Paid Campaign",
+        "Onhold Order", "Office Visit", "Seminar", "Outdoor Event", "Free Course",
+        "Associate Refer", "WhatsApp", "IMO", "Robi58", "Banglalink58", "GP39",
+        "3CX Incoming"
+    ];
+
+
+    const [isSourceMenuOpen, setIsSourceMenuOpen] = useState(false);
+    const [sourceMenuPosition, setSourceMenuPosition] = useState({ top: 0, left: 0 });
 
 
 
@@ -82,6 +96,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             interstedCourse: (searchInput ?? "").trim(),
             interstedSeminar: InterstedSeminarStatus,
             discountSource,
+            leadSource: leadSource,
             leadDiscount,
             discountUnit: discountUnit == "%" ? "percent" : "flat",
             originalPrice,
@@ -127,6 +142,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             setNotes(selectedLead?.note)
             setSearchInput(selectedLead?.interstedCourse ?? selectedLead?.interstedCourse ?? "");
             setSelectedCourseType(selectedLead.interstedCourseType ?? selectedLead?.interstedCourse ?? "")
+            setLeadSource(selectedLead.leadSource || "")
             setError("")
 
             const selectedCourse = course.find(courseItem => ((courseItem.name === selectedLead?.interstedCourse) && (courseItem.type === selectedLead?.interstedCourseType)))
@@ -251,52 +267,113 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                         </button>
                     </div>
                     {/*  Column 1: Lead Details */}
-                    <div className="bg-base-200 max-h-[470px] overflow-y-auto border border-base-300 rounded p-4 pt-0 w-full  shadow-md space-y-2 text-sm">
-                        <h3 className="text-lg font-bold mb-3 border-b border-base-300 pb-2">Lead Info</h3>
+                {/*  Column 1: Lead Details */}
+<div className="bg-base-200 w-full max-h-[470px] overflow-y-auto border border-base-300 rounded p-4 pt-0 shadow-md space-y-2 text-sm relative">
+    <h3 className="text-lg font-bold mb-3 border-b border-base-300 pb-2 sticky top-0 bg-base-200 pt-4 z-10">Lead Info</h3>
 
-                        <div className="space-y-2">
-                            <p><span className="font-semibold text-white/80">Name:</span> {selectedLead.name}</p>
-                            <p><span className="font-semibold text-white/80">Email:</span> {selectedLead.email}</p>
-                            <p><span className="font-semibold text-white/80">Phone:</span> {selectedLead.phone}</p>
-                            <p><span className="font-semibold text-white/80">Address:</span> {selectedLead.address}</p>
-                            <p><span className="font-semibold text-white/80">Internsted Course:</span> {selectedLead.interstedCourse}</p>
-                            <p><span className="font-semibold text-white/80">Course Type:</span> {selectedLead.interstedCourseType}</p>
-                            <p><span className="font-semibold text-white/80">Created By:</span> {selectedLead.createdBy}</p>
-                            <p><span className="font-semibold text-white/80">Assigned Date:</span> {formateDate(selectedLead.assignDate)}</p>
-                            <p><span className="font-semibold text-white/80">Follow-Up Date:</span> {selectedLead.followUpDate ? formateDate(selectedLead.followUpDate) : "N/A"}</p>
-                            <p><span className="font-semibold text-white/80">Last Contacted:</span> {selectedLead.lastContacted ? formateDate(selectedLead.lastContacted) : "N/A"}</p>
-                        </div>
+    <div className="space-y-2">
+        <p><span className="font-semibold text-white/80">Name:</span> {selectedLead.name}</p>
+        <p><span className="font-semibold text-white/80">Email:</span> {selectedLead.email}</p>
+        <p><span className="font-semibold text-white/80">Phone:</span> {selectedLead.phone}</p>
+        <p><span className="font-semibold text-white/80">Address:</span> {selectedLead.address}</p>
+        <p><span className="font-semibold text-white/80">Internsted Course:</span> {selectedLead.interstedCourse}</p>
+        
+        {/* --- MODIFIED LEAD SOURCE SECTION --- */}
+        <div className="flex justify-between items-center relative">
+            <p>
+                <span className="font-semibold text-white/80">Lead Source: </span>
+                {leadSource || "N/A"}
+                {leadSource !== (selectedLead?.leadSource || "") && (
+                    <span className="ml-2 text-yellow-500 font-semibold text-xs">(Unsaved)</span>
+                )}
+            </p>
 
-                        {selectedLead?.questions && Object.keys(selectedLead.questions).length > 0 && (
-                            <div className="space-y-2">
-                                <h4 className="font-semibold mb-1 mt-4 border-b pb-2">Questions</h4>
-                                <ul className=" mt-2 text-xs space-y-3">
-                                    {Object.entries(selectedLead.questions).map(([q, a], i) => (
-                                        <li key={i}>
-                                            <span className="font-semibold text-white/80">{q}</span><br className="mt-2" /><span className="text-white "> {a}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
+            {/* Edit Button */}
+            <div 
+                className="cursor-pointer text-blue-400 hover:text-white p-1"
+                onClick={(e) => {
+                    // Calculate position dynamically based on click
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    // Position menu slightly below and to the left of the icon
+                    setSourceMenuPosition({ top: rect.bottom + 5, left: rect.left - 200 }); 
+                    setIsSourceMenuOpen(!isSourceMenuOpen);
+                }}
+            >
+                <FaEdit title="Edit Lead Source" />
+            </div>
 
+            {/* Fixed Position Dropdown (Escapes the scroll container) */}
+            {isSourceMenuOpen && (
+                <>
+                    {/* Invisible backdrop to close menu when clicking outside */}
+                    <div 
+                        className="fixed inset-0 z-[9998] cursor-default" 
+                        onClick={() => setIsSourceMenuOpen(false)}
+                    ></div>
 
+                    {/* The Menu List */}
+                    <ul 
+                        style={{ 
+                            top: `${sourceMenuPosition.top}px`, 
+                            left: `${sourceMenuPosition.left}px`,
+                            position: 'fixed' // This creates the escape magic
+                        }}
+                        className="menu p-2 shadow-xl bg-base-300 rounded-box  max-h-[300px] overflow-y-auto border border-gray-600 z-[9999]"
+                    >
+                        {sourceOptions.map((source, idx) => (
+                            <li key={idx}>
+                                <button
+                                    onClick={() => {
+                                        setLeadSource(source);
+                                        setIsSourceMenuOpen(false); // Close on select
+                                    }}
+                                    className={leadSource === source ? "bg-primary text-white" : ""}
+                                >
+                                    {source}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </>
+            )}
+        </div>
+        {/* --- END MODIFIED SECTION --- */}
 
-                    </div>
+        <p><span className="font-semibold text-white/80">Course Type:</span> {selectedLead.interstedCourseType}</p>
+        <p><span className="font-semibold text-white/80">Created By:</span> {selectedLead.createdBy}</p>
+        <p><span className="font-semibold text-white/80">Assigned Date:</span> {formateDate(selectedLead.assignDate)}</p>
+        <p><span className="font-semibold text-white/80">Follow-Up Date:</span> {selectedLead.followUpDate ? formateDate(selectedLead.followUpDate) : "N/A"}</p>
+        <p><span className="font-semibold text-white/80">Last Contacted:</span> {selectedLead.lastContacted ? formateDate(selectedLead.lastContacted) : "N/A"}</p>
+    </div>
+
+    {/* Questions Section... (Keep as is) */}
+    {selectedLead?.questions && Object.keys(selectedLead.questions).length > 0 && (
+        <div className="space-y-2">
+            <h4 className="font-semibold mb-1 mt-4 border-b pb-2">Questions</h4>
+            <ul className="mt-2 text-xs space-y-3">
+                {Object.entries(selectedLead.questions).map(([q, a], i) => (
+                    <li key={i}>
+                        <span className="font-semibold text-white/80">{q}</span><br className="mt-2" /><span className="text-white"> {a}</span>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    )}
+</div>
 
                     {/*  Column 2: Notes */}
                     <div className="space-y-2 flex flex-col text-sm">
                         <h3 className="text-lg font-semibold mb-2">Previous Notes</h3>
                         <div className="space-y-2 h-[250px]   overflow-y-auto">
                             {/* {notes?.map((note, i) => (
-                                <div key={i} className="border border-base-300 mt-2 p-2 bg-base-200  rounded">
-                                    <p className="text-xs opacity-70">
-                                        {formateDate(note.date || note.createdAt)} • {note.by}
-                                        {note?.status == "unsaved" && <span title="Click Save Change Button to save the note" className="ml-2 text-yellow-500 font-semibold">(Unsaved)</span>}
-                                    </p>
-                                    <p>{note.text}</p>
-                                </div>
-                            ))} */}
+                                    <div key={i} className="border border-base-300 mt-2 p-2 bg-base-200  rounded">
+                                        <p className="text-xs opacity-70">
+                                            {formateDate(note.date || note.createdAt)} • {note.by}
+                                            {note?.status == "unsaved" && <span title="Click Save Change Button to save the note" className="ml-2 text-yellow-500 font-semibold">(Unsaved)</span>}
+                                        </p>
+                                        <p>{note.text}</p>
+                                    </div>
+                                ))} */}
 
                             {notes?.map((note, i) => (
                                 <div key={i} className="border border-base-300 mt-2 p-2 bg-base-200 rounded relative">
@@ -392,7 +469,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                     tabIndex={0}
                                     className="btn min-w-full border-gray-500 btn-outline capitalize"
                                 >
-                                    Status ({modelStatus})
+                                    Lead Status ({modelStatus})
                                 </label>
                                 <ul
                                     tabIndex={0}
@@ -421,13 +498,13 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                     tabIndex={0}
                                     className="btn min-w-full border-gray-500 btn-outline capitalize"
                                 >
-                                    Intersted Seminar ({InterstedSeminarStatus})
+                                    Seminar Status ({InterstedSeminarStatus})
                                 </label>
                                 <ul
                                     tabIndex={0}
                                     className="dropdown-content z-[999] !fixed    menu p-2 shadow bg-base-200 rounded-box w-76"
                                 >
-                                    {["Online", "Offline", "None"].map((s) => (
+                                    {["Joined", "Online", "Offline", "None"].map((s) => (
                                         <li key={s}>
                                             <button
                                                 onClick={() => {
@@ -485,18 +562,18 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                         </div>
 
                         {/* {modelStatus == "Enrolled" && <div className="flex flex-col mt-2 gap-3">
-                            <label className="text-sm ">Next Estimate payment Date</label>
+                                <label className="text-sm ">Next Estimate payment Date</label>
 
-                            <input
-                                type="datetime-local"
-                                onClick={(e) => e.target.showPicker && e.target.showPicker()}
-                                className="input input-bordered bg- border border-gray-600 text-white rounded-md w-full focus:outline-none  focus:border-blue-600"
-                                value={estemitePaymentDate}
-                                onChange={(e) => setEstimatePaymentDate(e.target.value)}
-                            />
+                                <input
+                                    type="datetime-local"
+                                    onClick={(e) => e.target.showPicker && e.target.showPicker()}
+                                    className="input input-bordered bg- border border-gray-600 text-white rounded-md w-full focus:outline-none  focus:border-blue-600"
+                                    value={estemitePaymentDate}
+                                    onChange={(e) => setEstimatePaymentDate(e.target.value)}
+                                />
 
-                        </div>
-                        } */}
+                            </div>
+                            } */}
 
                         <p className="text-red-500 font-semibold">{error}</p>
 

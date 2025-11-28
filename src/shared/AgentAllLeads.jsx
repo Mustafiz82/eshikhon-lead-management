@@ -21,15 +21,16 @@ export const statusOptions = [
     "All",
     "Pending",
     "Enrolled",
-    "Joined on seminar",
-    "Will Join on Seminar",
+    "Will Register",
+    "On hold",
+    "Already Enrolled",
     "Not Interested",
     "Enrolled in Other Institute",
-    "Call declined",
     "Call later",
     "Call Not Received",
     "Number Off or Busy",
-    "Wrong Number"
+    "Wrong Number",
+
 ]
 
 
@@ -53,7 +54,7 @@ const AgentAllLeads = () => {
 
     const [followUpActive, setFollowUpActive] = useState(false);
     const [selectedFollowedDate, setSelectedFollowedpDate] = useState("All")
-    
+
     const [upcomingPaymentsDate, setUpcomingPaymentsDate] = useState("None")
 
     const [missedFUActive, setMissedFUActive] = useState(false);
@@ -87,7 +88,7 @@ const AgentAllLeads = () => {
         missedFollowUpDate: selectedMissedFollowedDate,
         leadSource: selectedSource,
         interstedSeminar: selectedInterstedSeminar,
-        upcomingPaymentsDate : upcomingPaymentsDate
+        upcomingPaymentsDate: upcomingPaymentsDate
 
     })
 
@@ -103,7 +104,7 @@ const AgentAllLeads = () => {
 
     const assignedDateOptions = ["All", "Today", "This Week", "This Month", "This Year"]
     const followedOptions = ["All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
-    const upcOptions = ["None" , "All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
+    const upcOptions = ["None", "All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
     const missedFUOption = ["All", "Last 3 Days", "Last 7 Days", "Last 15 Days", "Last 30 Days"]
     const stageOptions = ["All", "Pending", "Contacted"];
     const totalPages = Math.round((leadsCount?.count / leadsPerPage)) || 1
@@ -341,8 +342,8 @@ const AgentAllLeads = () => {
                         dropdownPosition="dropdown-end"
                         selectedState={selectedInterstedSeminar}
                         setSelectedState={setselectedInterstedSeminar}
-                        label="Intersted Seminar"
-                        options={["All", "Online", "Offline", "None"]}
+                        label="Seminar Status" 
+                        options={["All", "Online", "Offline", "None" , "Joined"]}
                         setCurrentPage={setCurrentPage}
 
                     />
