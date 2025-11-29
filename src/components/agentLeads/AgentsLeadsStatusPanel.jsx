@@ -60,7 +60,7 @@ const AgentsLeadsStatusPanel = ({ selectedFilter }) => {
     // 6. Missed deadlines → overdue
     {
       label: "Total connected Call ",
-      value: userData?.totalConnectedCallCount,
+      value: userData?.totalConnectedCall,
       unit: "",
       gradient: "from-pink-700 to-rose-500" // Pink/red tone = warning
     },
@@ -68,7 +68,7 @@ const AgentsLeadsStatusPanel = ({ selectedFilter }) => {
     // 7. Progress milestone → attended seminar
     {
       label: "Joined on Seminar",
-      value: userData?.joinedOnSeminarCount,
+      value: userData?.joinedOnSeminarCount ,
       unit: "",
       gradient: "from-indigo-600 to-blue-500" // Indigo/blue = learning, step forward
     },
@@ -76,7 +76,7 @@ const AgentsLeadsStatusPanel = ({ selectedFilter }) => {
     // 8. Success milestone → enrollment
     {
       label: "Total Enrolled",
-      value: userData?.enrolledCount,
+      value: userData?.totalEnrolled,
       unit: "",
       gradient: "from-green-700 to-emerald-400" // Green = growth, success
     },
@@ -84,7 +84,7 @@ const AgentsLeadsStatusPanel = ({ selectedFilter }) => {
     // 9. Achievement → sales
     {
       label: "Total Sales",
-      value: userData?.totalPaidFromEnrolled,
+      value: userData?.totalSales,
       unit: "Tk",
       gradient: "from-teal-700 to-lime-400" // Teal/lime = money, prosperity
     },
@@ -111,6 +111,12 @@ const AgentsLeadsStatusPanel = ({ selectedFilter }) => {
       value: userData?.commission,
       unit: "Tk",
       gradient: "from-purple-700 to-violet-500" // Purple = reward, luxury
+    },  
+    {
+      label: "Total Due",
+      value: userData?.totalDue,
+      unit: "Tk",
+      gradient: "from-purple-700 to-violet-500" // Purple = reward, luxury
     }
   ];
 
@@ -119,11 +125,11 @@ const AgentsLeadsStatusPanel = ({ selectedFilter }) => {
 
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-6 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-7  gap-4">
       {stats.map((item, index) => (
         <div
           key={index}
-          className={`rounded-md p-4 text-white shadow-sm bg-gradient-to-r ${item.gradient}`}
+          className={`rounded-md p-4 text-white shadow-sm bg-gradient-to-r ${item.gradient} ${item.label == "Total Due" ? "col-span-2" : "col-span-1"}`}
         >
           <p className="text-sm line-clamp-1 font-medium mb-1">
             {item.label} {item?.unit && <span>({item.unit})</span>}

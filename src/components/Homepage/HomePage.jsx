@@ -18,9 +18,6 @@ export default function HomePage() {
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
 
-  
-
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true)

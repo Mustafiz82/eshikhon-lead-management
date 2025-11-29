@@ -64,12 +64,12 @@ const LeadTable = ({ leads, setSelectedLead, currentPage, leadsPerPage, followUp
                         >
                             <td>{(currentPage - 1) * leadsPerPage + index + 1}</td>
                             <td> <span className="relative ">{lead?.isLocked && <BiSolidLockAlt title="Lead is Locked . Contact Admin to modify the leads" className="text-[#F7BB07] absolute -left-5 top-1/2 -translate-y-1/2" />} {lead.name}</span> </td>
-                            <td>{lead.email}</td>
-                            <td>{lead.phone}</td>
+                            <td className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.email}</td>
+                            <td className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.phone}</td>
                             <td className="max-w-[250px] whitespace-normal break-words">{lead.address}</td>
-                            <td>{lead.interstedCourse}</td>
-                            <td>{lead.interstedSeminar}</td>
-                            <td>{lead.interstedCourseType}</td>
+                            <td className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.interstedCourse}</td>
+                            <td className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.interstedSeminar}</td>
+                            <td className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.interstedCourseType}</td>
                             <td>{lead.leadSource}</td>
                             <td>
                                 <span
