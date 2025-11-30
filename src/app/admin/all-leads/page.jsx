@@ -78,6 +78,7 @@ const Page = () => {
 
     const { data: leads, loading, error, refetch } = useFetch(`/leads?${params}`)
     const { data: rawCourses } = useFetch("/course");
+    const { data: courseOption } = useFetch("/leads/intersted-course");
     const { data: leadSource } = useFetch("/leads/source")
     const { data: user } = useFetch("/user")
 
@@ -86,8 +87,11 @@ const Page = () => {
     // Remove duplicates
 
 
+    console.log(courseOption)
+
+
     const course = Array.from(
-        new Map(rawCourses?.map((item) => [item.name, item])).values()
+        new Map(courseOption?.map((item) => [item.name, item])).values()
     );
 
     const userEmails = user.filter(item => item.role !== "admin").map(item => item.email)
@@ -471,13 +475,14 @@ const Page = () => {
                     />
                     <Dropdown
                         dropdownPosition="lg:dropdown-end"
+                        showSearch
                         selectedState={categoryFilter}
                         setSelectedState={setCategoryFilter}
                         label="Select Course"
-                        options={["All", ...course
+                        options={["All", ...courseOption
                             .slice() // clone to avoid mutating original
-                            .sort((a, b) => a?.name?.localeCompare(b.name)) // ✅ sort alphabetically
-                            .map(item => item.name)
+                            .sort((a, b) => a?.localeCompare(b)) // ✅ sort alphabetically
+                            .map(item => item)
                         ]}
                         setCurrentPage={setCurrentPage}
                     />

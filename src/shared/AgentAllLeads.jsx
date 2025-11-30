@@ -98,6 +98,7 @@ const AgentAllLeads = () => {
     const { data: leads, loading, refetch } = useFetch(`/leads?${params}`)
     const { data: course } = useFetch("/course")
     const { data: leadSource } = useFetch("/leads/source")
+     const { data: courseOption } = useFetch("/leads/intersted-course");
 
 
 
@@ -280,9 +281,14 @@ const AgentAllLeads = () => {
                     <Dropdown
                         dropdownPosition="dropdown-end"
                         selectedState={selectedSeminar}
+                        showSearch
                         setSelectedState={setSelectedSeminar}
                         label="Course"
-                        options={["All", ...course.map(item => item.name)]}
+                        options={["All", ...courseOption
+                            .slice() // clone to avoid mutating original
+                            .sort((a, b) => a?.localeCompare(b)) // ✅ sort alphabetically
+                            .map(item => item)
+                        ]}
                         setCurrentPage={setCurrentPage}
 
                     />
@@ -343,8 +349,8 @@ const AgentAllLeads = () => {
                         dropdownPosition="dropdown-end"
                         selectedState={selectedInterstedSeminar}
                         setSelectedState={setselectedInterstedSeminar}
-                        label="Seminar Status" 
-                        options={["All", "Online", "Offline", "None" , "Joined"]}
+                        label="Seminar Status"
+                        options={["All", "Online", "Offline", "None", "Joined"]}
                         setCurrentPage={setCurrentPage}
 
                     />
