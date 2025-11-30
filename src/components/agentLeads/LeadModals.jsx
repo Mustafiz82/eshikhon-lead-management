@@ -14,6 +14,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     const [InterstedSeminarStatus, setInterstedSeminarStatus] = useState(selectedLead?.interstedSeminar || "None")
 
     const [followUpDate, setFollowUpDate] = useState("")
+    const [refundAmount, setRefundAmount] = useState(0)
     const [courseInput, setCourseInput] = useState({})
     const [searchInput, setSearchInput] = useState("")
     const [selectedCourseId, setSelectedCourseId] = useState(null);
@@ -24,6 +25,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     const [notes, setNotes] = useState(selectedLead?.note)
     const { user } = useContext(AuthContext)
     const [leadSource, setLeadSource] = useState(selectedLead?.leadSource || "");
+    
 
     const sourceOptions = [
         "Counseling Form", "FB Page(1st)", "FB Page(2nd)", "Tiktok", "Instagram",
@@ -100,6 +102,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             leadDiscount,
             discountUnit: discountUnit == "%" ? "percent" : "flat",
             originalPrice,
+            refundAmount,
             paidAmount: lastPaid,
             totalDue,
             followUpDate: followUpDate,
@@ -154,6 +157,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                     ? new Date(selectedLead.followUpDate).toISOString().slice(0, 16)
                     : ""
             );
+            setRefundAmount(selectedLead.refundAmount)
         }
     }, [selectedLead]);
 
@@ -255,7 +259,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     return (
         selectedLead && <div className="fixed inset-0 z-[9999] bg-black/40 flex items-center justify-center">
             <div>
-                <div className={`bg-base-100 w-full   rounded-lg shadow-lg p-6 relative grid grid-cols-1 ${modelStatus == "Enrolled" ? "md:grid-cols-2 lg:grid-cols-4 max-w-7xl" : "md:grid-cols-3 lg:grid-cols-3 max-w-5xl"} gap-6 max-h-[90vh] overflow-y-auto`}>
+                <div className={`bg-base-100 w-full   rounded-lg shadow-lg p-6 relative grid grid-cols-1 ${(modelStatus == "Enrolled" || modelStatus == "Refunded") ? "md:grid-cols-2 lg:grid-cols-4 max-w-7xl" : "md:grid-cols-3 lg:grid-cols-3 max-w-5xl"} gap-6 max-h-[90vh] overflow-y-auto`}>
 
                     {/* Top bar with lead info */}
                     <div className="sticky md:absolute ml-auto   top-3 right-3">
@@ -267,99 +271,99 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                         </button>
                     </div>
                     {/*  Column 1: Lead Details */}
-                {/*  Column 1: Lead Details */}
-<div className="bg-base-200 w-full max-h-[470px] overflow-y-auto border border-base-300 rounded p-4 pt-0 shadow-md space-y-2 text-sm relative">
-    <h3 className="text-lg font-bold mb-3 border-b border-base-300 pb-2 sticky top-0 bg-base-200 pt-4 z-10">Lead Info</h3>
+                    {/*  Column 1: Lead Details */}
+                    <div className="bg-base-200 w-full max-h-[470px] overflow-y-auto border border-base-300 rounded p-4 pt-0 shadow-md space-y-2 text-sm relative">
+                        <h3 className="text-lg font-bold mb-3 border-b border-base-300 pb-2 sticky top-0 bg-base-200 pt-4 z-10">Lead Info</h3>
 
-    <div className="space-y-2">
-        <p><span className="font-semibold text-white/80">Name:</span> {selectedLead.name}</p>
-        <p><span className="font-semibold text-white/80">Email:</span> {selectedLead.email}</p>
-        <p><span className="font-semibold text-white/80">Phone:</span> {selectedLead.phone}</p>
-        <p><span className="font-semibold text-white/80">Address:</span> {selectedLead.address}</p>
-        <p><span className="font-semibold text-white/80">Internsted Course:</span> {selectedLead.interstedCourse}</p>
-        
-        {/* --- MODIFIED LEAD SOURCE SECTION --- */}
-        <div className="flex justify-between items-center relative">
-            <p>
-                <span className="font-semibold text-white/80">Lead Source: </span>
-                {leadSource || "N/A"}
-                {leadSource !== (selectedLead?.leadSource || "") && (
-                    <span className="ml-2 text-yellow-500 font-semibold text-xs">(Unsaved)</span>
-                )}
-            </p>
+                        <div className="space-y-2">
+                            <p><span className="font-semibold text-white/80">Name:</span> {selectedLead.name}</p>
+                            <p><span className="font-semibold text-white/80">Email:</span> {selectedLead.email}</p>
+                            <p><span className="font-semibold text-white/80">Phone:</span> {selectedLead.phone}</p>
+                            <p><span className="font-semibold text-white/80">Address:</span> {selectedLead.address}</p>
+                            <p><span className="font-semibold text-white/80">Internsted Course:</span> {selectedLead.interstedCourse}</p>
 
-            {/* Edit Button */}
-            <div 
-                className="cursor-pointer text-blue-400 hover:text-white p-1"
-                onClick={(e) => {
-                    // Calculate position dynamically based on click
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    // Position menu slightly below and to the left of the icon
-                    setSourceMenuPosition({ top: rect.bottom + 5, left: rect.left - 200 }); 
-                    setIsSourceMenuOpen(!isSourceMenuOpen);
-                }}
-            >
-                <FaEdit title="Edit Lead Source" />
-            </div>
+                            {/* --- MODIFIED LEAD SOURCE SECTION --- */}
+                            <div className="flex justify-between items-center relative">
+                                <p>
+                                    <span className="font-semibold text-white/80">Lead Source: </span>
+                                    {leadSource || "N/A"}
+                                    {leadSource !== (selectedLead?.leadSource || "") && (
+                                        <span className="ml-2 text-yellow-500 font-semibold text-xs">(Unsaved)</span>
+                                    )}
+                                </p>
 
-            {/* Fixed Position Dropdown (Escapes the scroll container) */}
-            {isSourceMenuOpen && (
-                <>
-                    {/* Invisible backdrop to close menu when clicking outside */}
-                    <div 
-                        className="fixed inset-0 z-[9998] cursor-default" 
-                        onClick={() => setIsSourceMenuOpen(false)}
-                    ></div>
-
-                    {/* The Menu List */}
-                    <ul 
-                        style={{ 
-                            top: `${sourceMenuPosition.top}px`, 
-                            left: `${sourceMenuPosition.left}px`,
-                            position: 'fixed' // This creates the escape magic
-                        }}
-                        className="menu p-2 shadow-xl bg-base-300 rounded-box  max-h-[300px] overflow-y-auto border border-gray-600 z-[9999]"
-                    >
-                        {sourceOptions.map((source, idx) => (
-                            <li key={idx}>
-                                <button
-                                    onClick={() => {
-                                        setLeadSource(source);
-                                        setIsSourceMenuOpen(false); // Close on select
+                                {/* Edit Button */}
+                                <div
+                                    className="cursor-pointer text-blue-400 hover:text-white p-1"
+                                    onClick={(e) => {
+                                        // Calculate position dynamically based on click
+                                        const rect = e.currentTarget.getBoundingClientRect();
+                                        // Position menu slightly below and to the left of the icon
+                                        setSourceMenuPosition({ top: rect.bottom + 5, left: rect.left - 200 });
+                                        setIsSourceMenuOpen(!isSourceMenuOpen);
                                     }}
-                                    className={leadSource === source ? "bg-primary text-white" : ""}
                                 >
-                                    {source}
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                </>
-            )}
-        </div>
-        {/* --- END MODIFIED SECTION --- */}
+                                    <FaEdit title="Edit Lead Source" />
+                                </div>
 
-        <p><span className="font-semibold text-white/80">Course Type:</span> {selectedLead.interstedCourseType}</p>
-        <p><span className="font-semibold text-white/80">Created By:</span> {selectedLead.createdBy}</p>
-        <p><span className="font-semibold text-white/80">Assigned Date:</span> {formateDate(selectedLead.assignDate)}</p>
-        <p><span className="font-semibold text-white/80">Follow-Up Date:</span> {selectedLead.followUpDate ? formateDate(selectedLead.followUpDate) : "N/A"}</p>
-        <p><span className="font-semibold text-white/80">Last Contacted:</span> {selectedLead.lastContacted ? formateDate(selectedLead.lastContacted) : "N/A"}</p>
-    </div>
+                                {/* Fixed Position Dropdown (Escapes the scroll container) */}
+                                {isSourceMenuOpen && (
+                                    <>
+                                        {/* Invisible backdrop to close menu when clicking outside */}
+                                        <div
+                                            className="fixed inset-0 z-[9998] cursor-default"
+                                            onClick={() => setIsSourceMenuOpen(false)}
+                                        ></div>
 
-    {/* Questions Section... (Keep as is) */}
-    {selectedLead?.questions && Object.keys(selectedLead.questions).length > 0 && (
-        <div className="space-y-2">
-            <h4 className="font-semibold mb-1 mt-4 border-b pb-2">Questions</h4>
-            <ul className="mt-2 text-xs space-y-3">
-                {Object.entries(selectedLead.questions).map(([q, a], i) => (
-                    <li key={i}>
-                        <span className="font-semibold text-white/80">{q}</span><br className="mt-2" /><span className="text-white"> {a}</span>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    )}
-</div>
+                                        {/* The Menu List */}
+                                        <ul
+                                            style={{
+                                                top: `${sourceMenuPosition.top}px`,
+                                                left: `${sourceMenuPosition.left}px`,
+                                                position: 'fixed' // This creates the escape magic
+                                            }}
+                                            className="menu p-2 shadow-xl bg-base-300 rounded-box  max-h-[300px] overflow-y-auto border border-gray-600 z-[9999]"
+                                        >
+                                            {sourceOptions.map((source, idx) => (
+                                                <li key={idx}>
+                                                    <button
+                                                        onClick={() => {
+                                                            setLeadSource(source);
+                                                            setIsSourceMenuOpen(false); // Close on select
+                                                        }}
+                                                        className={leadSource === source ? "bg-primary text-white" : ""}
+                                                    >
+                                                        {source}
+                                                    </button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </>
+                                )}
+                            </div>
+                            {/* --- END MODIFIED SECTION --- */}
+
+                            <p><span className="font-semibold text-white/80">Course Type:</span> {selectedLead.interstedCourseType}</p>
+                            <p><span className="font-semibold text-white/80">Created By:</span> {selectedLead.createdBy}</p>
+                            <p><span className="font-semibold text-white/80">Assigned Date:</span> {formateDate(selectedLead.assignDate)}</p>
+                            <p><span className="font-semibold text-white/80">Follow-Up Date:</span> {selectedLead.followUpDate ? formateDate(selectedLead.followUpDate) : "N/A"}</p>
+                            <p><span className="font-semibold text-white/80">Last Contacted:</span> {selectedLead.lastContacted ? formateDate(selectedLead.lastContacted) : "N/A"}</p>
+                        </div>
+
+                        {/* Questions Section... (Keep as is) */}
+                        {selectedLead?.questions && Object.keys(selectedLead.questions).length > 0 && (
+                            <div className="space-y-2">
+                                <h4 className="font-semibold mb-1 mt-4 border-b pb-2">Questions</h4>
+                                <ul className="mt-2 text-xs space-y-3">
+                                    {Object.entries(selectedLead.questions).map(([q, a], i) => (
+                                        <li key={i}>
+                                            <span className="font-semibold text-white/80">{q}</span><br className="mt-2" /><span className="text-white"> {a}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
 
                     {/*  Column 2: Notes */}
                     <div className="space-y-2 flex flex-col text-sm">
@@ -418,7 +422,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                         </form>
                     </div>
 
-                    {modelStatus == "Enrolled" && <div className="space-y-2  flex flex-col text-sm">
+                    {(modelStatus == "Enrolled" || modelStatus == "Refunded") && <div className="space-y-2  flex flex-col text-sm">
                         <h3 className="text-lg font-semibold mb-2">Payment Details</h3>
 
                         <CourseInput
@@ -475,14 +479,14 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                     tabIndex={0}
                                     className="dropdown-content z-[999] !fixed    menu p-2 shadow bg-base-200 rounded-box w-76"
                                 >
-                                    {statusOptions.filter(item => item != "All").map((s) => (
+                                    {statusOptions.filter(item =>   item != "All").map((s) => (
                                         <li key={s}>
                                             <button
                                                 onClick={() => {
                                                     setModelStatus(s)
                                                     document.activeElement.blur()
                                                 }}
-                                                className="capitalize"
+                                                className={`capitalize ${user.role == "user" && s == "Refunded"  && "hidden" }`}
                                             >
                                                 {s}
                                             </button>
@@ -546,20 +550,37 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                             }
                         </div>
 
+                        {
+                            modelStatus == "Refunded" ?
+                                <div className=" mt-auto gap-3">
+                                    <label className="block mb-1 text-white/80 text-sm">
+                                        Refunded Amount
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={refundAmount}
+                                        onChange={e => setRefundAmount(e.target.value)}
+                                        placeholder="Enter Refunded Amount"
+                                        className="input input-bordered w-full focus:outline-0 focus:border-blue-600"
+
+                                    />
+                                </div> :
 
 
-                        <div className="flex flex-col mt-auto gap-3">
-                            <label className="text-sm ">Next Follow-Up Date</label>
+                                <div className="flex flex-col mt-auto gap-3">
+                                    <label className="text-sm ">Next Follow-Up Date</label>
 
-                            <input
-                                type="datetime-local"
-                                onClick={(e) => e.target.showPicker && e.target.showPicker()}
-                                className="input input-bordered bg- border border-gray-600 text-white rounded-md w-full focus:outline-none  focus:border-blue-600"
-                                value={followUpDate}
-                                onChange={(e) => setFollowUpDate(e.target.value)}
-                            />
+                                    <input
+                                        type="datetime-local"
+                                        onClick={(e) => e.target.showPicker && e.target.showPicker()}
+                                        className="input input-bordered bg- border border-gray-600 text-white rounded-md w-full focus:outline-none  focus:border-blue-600"
+                                        value={followUpDate}
+                                        onChange={(e) => setFollowUpDate(e.target.value)}
+                                    />
 
-                        </div>
+                                </div>
+
+                        }
 
                         {/* {modelStatus == "Enrolled" && <div className="flex flex-col mt-2 gap-3">
                                 <label className="text-sm ">Next Estimate payment Date</label>

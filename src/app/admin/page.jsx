@@ -10,10 +10,10 @@ import React, { useContext, useEffect, useState } from "react";
 
 const page = () => {
 
-
+    const {user} = useContext(AuthContext)
     const currentMonth = new Date().getMonth() + 1;
     const [selectedFilter, setSelectedFilter] = useState(String(currentMonth));
-    const { user } = useContext(AuthContext)
+    
 
     const { data: leaderboard, loading, refetch } = useFetch(
         `/dashboard/leaderboards?month=${selectedFilter}&year=2025`

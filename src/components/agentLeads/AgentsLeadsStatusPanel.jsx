@@ -13,7 +13,7 @@ const AgentsLeadsStatusPanel = ({ selectedFilter }) => {
   const { data: userData, refetch, loading } = useFetch(`/dashboard/agent?month=${selectedFilter}&year=2025&email=${user.email}`);
 
 
-  
+
 
   const stats = [
     // 1. Start → Awareness / total pool
@@ -68,7 +68,7 @@ const AgentsLeadsStatusPanel = ({ selectedFilter }) => {
     // 7. Progress milestone → attended seminar
     {
       label: "Joined on Seminar",
-      value: userData?.joinedOnSeminarCount ,
+      value: userData?.joinedOnSeminarCount,
       unit: "",
       gradient: "from-indigo-600 to-blue-500" // Indigo/blue = learning, step forward
     },
@@ -111,10 +111,17 @@ const AgentsLeadsStatusPanel = ({ selectedFilter }) => {
       value: userData?.commission,
       unit: "Tk",
       gradient: "from-purple-700 to-violet-500" // Purple = reward, luxury
-    },  
+    },
     {
       label: "Total Due",
       value: userData?.totalDue,
+      unit: "Tk",
+      gradient: "from-purple-700 to-violet-500" // Purple = reward, luxury
+    },
+    {
+      label: "Total Refunds",
+      value: (userData?.totalRefunds),
+      count : userData.refundedCount,
       unit: "Tk",
       gradient: "from-purple-700 to-violet-500" // Purple = reward, luxury
     }
@@ -129,15 +136,25 @@ const AgentsLeadsStatusPanel = ({ selectedFilter }) => {
       {stats.map((item, index) => (
         <div
           key={index}
-          className={`rounded-md p-4 text-white shadow-sm bg-gradient-to-r ${item.gradient} ${item.label == "Total Due" ? "col-span-2" : "col-span-1"}`}
+          className={`rounded-md p-4 text-white shadow-sm bg-gradient-to-r ${item.gradient} ${item.label == "Total Due" ? "col-span-1" : "col-span-1"}`}
         >
           <p className="text-sm line-clamp-1 font-medium mb-1">
             {item.label} {item?.unit && <span>({item.unit})</span>}
           </p>
           {
-            loading ? <p className='animate-pulse py-2'> counting... </p> : <p className="text-3xl font-bold">
-              <CountUp end={item.value || 0} duration={1.5} separator="," />
-            </p>
+            loading ? <p className='animate-pulse py-2'> counting... </p> : <div className="text-3xl font-bold flex items-center gap-2">
+              {/* The Main Value (Amount) */}
+              <span>
+                <CountUp end={item.value || 0} duration={1.5} separator="," />
+              </span>
+
+              {/* The Secondary Count (inside parentheses) */}
+              {item.count !== undefined && (
+                <span title='Refund Count' className="text-lg font-semibold opacity-90">
+                  (<CountUp end={item.count || 0} duration={1.5} separator="," />)
+                </span>
+              )}
+            </div>
           }
         </div>
       ))}

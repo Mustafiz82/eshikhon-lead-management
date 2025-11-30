@@ -20,6 +20,7 @@ import { showToast } from "@/utils/showToast";
 export const statusOptions = [
     "All",
     "Pending",
+    "Refunded",
     "Enrolled",
     "Will Register",
     "On hold",
