@@ -71,12 +71,13 @@ const page = () => {
                                     <th>Pending</th>
                                     <th>Enrolled</th>
                                     <th>Sales </th>
+                                    <th className="text-center">Refunds </th>
                                     <th>Target completion</th>
                                     <th>Commission</th>
 
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="">
                                 {agents.map(user => (
                                     <tr className="cursor-pointer" onClick={() => { router.push(`/admin/agents/${user.email}`) }} key={user.id}>
                                         <td>{user.name}</td>
@@ -85,8 +86,9 @@ const page = () => {
                                         <td className="pl-10">{user.connectedCallCountToday ?? 0}</td>
                                         <td className="pl-10">{(user.leadCount - user.pendingCount) || 0}</td>
                                         <td className="pl-10">{user.pendingCount ?? 0}</td>
-                                        <td className="pl-10">{user.enrolledCount ?? 0}</td>
-                                        <td className="pl-10">{user.totalPaidFromEnrolled}</td>
+                                        <td className="pl-10">{user.totalEnrolled ?? 0}</td>
+                                        <td className="pl- text-center">{user.totalSales}</td>
+                                        <td className="pl- text-center">{user.totalRefunds}</td>
 
                                         <td className="pl-10">{user.targetCompletionRate ?? 0}%</td>
                                         <td className="pl-10 flex items-center ">{user.commission ?? 0} <TbCurrencyTaka /></td>
