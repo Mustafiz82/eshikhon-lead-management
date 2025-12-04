@@ -138,7 +138,7 @@ const Page = () => {
     const handleCompleteLeadCSVUpload = async (results, fileName) => {
         const rows = results.data;
         const headers = Object.keys(rows[0] || {});
-        const required = ["phone", "interstedCourse",];
+        const required = [];
         const missing = required.filter((f) => !headers.includes(f));
 
         console.log(headers)
@@ -149,11 +149,10 @@ const Page = () => {
             return;
         }
 
-        const filtered = rows.filter(
-            (item) => item.phone && item.interstedCourse
-        );
 
-        const questionWiseData = filtered.map((item) => {
+
+
+        const questionWiseData = rows.map((item) => {
             const { name, email, address, phone, interstedCourse, interstedCourseType, leadSource, ...questions } = item;
 
             return {
@@ -170,11 +169,6 @@ const Page = () => {
             };
         });
 
-        if (rows?.length > filtered?.length) {
-            showToast(
-                `${rows.length - filtered.length} of ${rows.length} rows skipped due to missing required fields`, "warning"
-            );
-        }
 
         // ---- Save leads first ----
         setStatus(fileName, STATUS.SAVING);
