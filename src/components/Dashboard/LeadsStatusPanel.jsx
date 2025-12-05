@@ -9,10 +9,10 @@ import CountUp from 'react-countup';
 
 
 
-const LeadsStatusPanel = ({ selectedFilter }) => {
+const LeadsStatusPanel = ({ selectedFilter , state , setState}) => {
 
   const { user } = useContext(AuthContext)
-  const { data: userData, loading } = useFetch(`/dashboard/admin?month=${selectedFilter}&year=2025&email=${user.email}`);
+  const { data: userData, loading } = useFetch(`/dashboard/admin?month=${selectedFilter}&year=2025&email=${user.email}&startDate=${state[0].startDate}&endDate=${state[0].endDate}`);
 
 
   console.log(userData)

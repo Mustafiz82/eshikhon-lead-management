@@ -78,7 +78,7 @@
   border: #2563eb !important;
 }
 
-.p-multiselect-panel .p-multiselect-items .p-multiselect-item:not(.p-highlight):not(.p-disabled).p-focus{
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item:not(.p-highlight):not(.p-disabled).p-focus {
   background-color: #1E2939 !important;
 }
 
@@ -223,12 +223,140 @@
 
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-  filter: invert(1); /* makes it white */
+  filter: invert(1);
+  /* makes it white */
 }
 
 
 
-.stasticsSelect > option:hover {
-    /* box-shadow: 0 0 10px 100px #000 inset; */
-    background-color: red !important;
+.stasticsSelect>option:hover {
+  /* box-shadow: 0 0 10px 100px #000 inset; */
+  background-color: red !important;
+}
+
+
+
+
+
+
+
+
+
+.rdrStaticRangeSelected {
+  background-color: black !important;
+}
+
+.rdrDefinedRangesWrapper,
+.rdrStaticRange {
+  background-color: #242424 !important;
+  border-bottom-color: #63666b !important;
+  border-right-color: #63666b !important;
+}
+
+
+.rdrStaticRange:hover {
+  color: rgb(0, 0, 0) !important;
+  /* opacity: 0.5; */
+}
+
+.rdrDayNumber span {
+  color: rgb(255, 255, 255) !important;
+}
+
+.rdrInputRangeInput {
+  border-color: #2563eb !important;
+  color: white !important;
+}
+
+.rdrCalendarWrapper,
+.rdrDateRangeWrapper {
+  background-color: #2D2D2F !important;
+}
+
+.rdrDateDisplayWrapper {
+  background-color: #242424 !important;
+}
+
+.rdrDateDisplayItem {
+  background-color: #2D2D2F !important;
+}
+
+.rdrDateDisplayItemActive {
+  background-color: #235BA5;
+}
+
+.rdrNextPrevButton {
+  background-color: #3C3B3C !important;
+}
+
+.rdrPprevButton i {
+  border-right-color: white !important;
+}
+
+
+.rdrNextButton i {
+  border-left-color: white !important;
+}
+
+.rdrDateDisplayItemActive input {
+  color: white !important;
+}
+
+.rdrDateDisplayItem input {
+  color: white !important;
+
+}
+
+.rdrDateDisplayItemActive input {
+  color: white !important;
+}
+
+.rdrMonthAndYearPickers select,
+.rdrMonthName {
+  color: #d5d6d7 !important;
+
+}
+
+.rdrMonthAndYearPickers select {
+  background: url("data:image/svg+xml;utf8,<svg width='9' height='6' viewBox='0 0 9 6' xmlns='http://www.w3.org/2000/svg'><path d='M1 1l3.5 4L8 1' fill='%23ffffff'/></svg>") !important;
+  background-repeat: no-repeat !important;
+  
+
+}
+
+.rdrMonthPicker select{
+  background-position: right 20px center !important;
+}
+
+.rdrYearPicker select{
+  background-position: right 10px center !important;
+}
+
+.rdrMonthAndYearPickers option {
+   background-color: #1e1e1e !important;
+}
+
+
+.rdrDayPassive .rdrDayNumber span {
+  color: rgb(168, 168, 168) !important;
+}
+
+/* Dark scrollbar for dropdowns */
+select::-webkit-scrollbar {
+  width: 4px;
+}
+
+select::-webkit-scrollbar-track {
+  background: #1a1a1a;    /* track color */
+  border-radius: 4px;
+}
+
+select::-webkit-scrollbar-thumb {
+  background: #444;        /* scrollbar color */
+  border-radius: 4px;
+  width: 2px;
+}
+
+select::-webkit-scrollbar-thumb:hover {
+  background: #666;
 }

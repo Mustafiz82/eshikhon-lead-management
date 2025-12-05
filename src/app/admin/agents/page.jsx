@@ -3,18 +3,32 @@ import useFetch from "@/hooks/useFetch";
 import CustomSelect from "@/utils/CustomSelect";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { Calendar, DateRangePicker } from "react-date-range";
 import { TbCurrencyTaka } from "react-icons/tb";
 
-
+import 'react-date-range/dist/styles.css'; // main style file
+import 'react-date-range/dist/theme/default.css'; // theme css file
+import DateRange from "@/utils/DateRange";
 
 const page = () => {
     const router = useRouter()
     const currentMonth = new Date().getMonth() + 1;
     console.log(currentMonth)
     const [selectedFilter, setSelectedFilter] = useState(String(currentMonth));
-    const { data: user, loading } = useFetch(`/dashboard/agent?month=${selectedFilter}&year=2025`)
+    
+    
+    const now = new Date();
+    
+    const [state, setState] = useState([
+        {
+            startDate: new Date(now.getFullYear(), now.getMonth(), 1),
+            endDate: new Date(now.getFullYear(), now.getMonth() + 1, 0),
+            key: "selection",
+        },
+    ]);
+    
+    const { data: user, loading } = useFetch(`/dashboard/agent?month=${selectedFilter}&year=2025&startDate=${state[0].startDate}&endDate=${state[0].endDate}`)
     const agents = user.filter(user => user.role == "user")
-
 
     const options = [
         { value: "all", label: "All Time" },
@@ -33,6 +47,11 @@ const page = () => {
     ];
 
 
+    const handleChange = (e) => {
+        console.log(e)
+    }
+
+
 
 
     return (
@@ -49,6 +68,13 @@ const page = () => {
                         setSelected={setSelectedFilter}
                         options={options}
 
+
+                    />
+
+                    <DateRange
+
+                        state={state}
+                        setState={setState}
                     />
                 </div>
             </div>
@@ -103,7 +129,7 @@ const page = () => {
 
                     ) : (
                         <div className="w-full h-[300px] flex justify-center items-center  text-center py-6 text-gray-400">
-                            No users found. 
+                            No users found.
                         </div>
                     )}
                 </div>

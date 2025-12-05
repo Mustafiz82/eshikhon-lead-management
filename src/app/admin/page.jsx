@@ -6,56 +6,70 @@ import { AuthContext } from "@/context/AuthContext";
 import useFetch from "@/hooks/useFetch";
 import Leaderboard from "@/shared/Leaderboard";
 import CustomSelect from "@/utils/CustomSelect";
+import DateRangeComponent from "@/utils/DateRange";
 import React, { useContext, useEffect, useState } from "react";
 
 const page = () => {
 
-    const {user} = useContext(AuthContext)
+    const { user } = useContext(AuthContext)
     const currentMonth = new Date().getMonth() + 1;
     const [selectedFilter, setSelectedFilter] = useState(String(currentMonth));
-    
+
+    const now = new Date();
+    const [state, setState] = useState([
+        {
+            startDate: new Date(now.getFullYear(), now.getMonth(), 1),
+            endDate: new Date(now.getFullYear(), now.getMonth() + 1, 0),
+            key: "selection",
+        },
+    ]);
+
+
 
     const { data: leaderboard, loading, refetch } = useFetch(
-        `/dashboard/leaderboards?month=${selectedFilter}&year=2025`
+        `/dashboard/leaderboards?month=${selectedFilter}&year=2025&startDate=${state[0].startDate}&endDate=${state[0].endDate}`
     );
 
     console.log(selectedFilter)
 
- 
+
 
     const options = [
-            { value: "all", label: "All Time" },
-            { value: "1", label: "January" },
-            { value: "2", label: "February" },
-            { value: "3", label: "March" },
-            { value: "4", label: "April" },
-            { value: "5", label: "May" },
-            { value: "6", label: "June" },
-            { value: "7", label: "July" },
-            { value: "8", label: "August" },
-            { value: "9", label: "September" },
-            { value: "10", label: "October" },
-            { value: "11", label: "November" },
-            { value: "12", label: "December" },
-        ];
-    
+        { value: "all", label: "All Time" },
+        { value: "1", label: "January" },
+        { value: "2", label: "February" },
+        { value: "3", label: "March" },
+        { value: "4", label: "April" },
+        { value: "5", label: "May" },
+        { value: "6", label: "June" },
+        { value: "7", label: "July" },
+        { value: "8", label: "August" },
+        { value: "9", label: "September" },
+        { value: "10", label: "October" },
+        { value: "11", label: "November" },
+        { value: "12", label: "December" },
+    ];
+
     return <div className="">
         <div className="flex p-6 sticky top-0 bg-slate-900 justify-between mb-4">
             <h2 className="text-white text-xl font-semibold capitalize">{user.name} Dashboard</h2>
             <div className="flex gap-2 items-center">
                 <p className="whitespace-nowrap  hidden lg:bl  text-gray-300">View Statistics for:</p>
 
-                <CustomSelect
+                {/* <CustomSelect
                     selected={selectedFilter}
                     setSelected={setSelectedFilter}
                     options={options}
-         
-                />
+
+                /> */}
+
+
+                <DateRangeComponent state={state} setState={setState} />
             </div>
         </div>
 
         <div className="p-6 pt-0">
-            <LeadsStatusPanel selectedFilter={selectedFilter} />
+            <LeadsStatusPanel state={state} selectedFilter={selectedFilter} />
             <LeadsGrowthChart />
             <CallCountTable />
             {/* <SeminarPieChart/> */}
