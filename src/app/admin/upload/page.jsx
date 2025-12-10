@@ -93,7 +93,6 @@ const Page = () => {
         Papa.parse(file, {
             header: true,
             skipEmptyLines: true,
-            dynamicTyping: true,
             transformHeader: uploadMode == "lead" ? transfromHeaderLead : transfromHeaderAttendence,
             complete: (results) => uploadMode == "lead" ? handleCompleteLeadCSVUpload(results, fileName) : handleCompleteAttendenceCSVUpload(results, fileName),
 

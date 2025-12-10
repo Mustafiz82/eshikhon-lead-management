@@ -25,7 +25,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     const [notes, setNotes] = useState(selectedLead?.note)
     const { user } = useContext(AuthContext)
     const [leadSource, setLeadSource] = useState(selectedLead?.leadSource || "");
-    
+
 
     const sourceOptions = [
         "Counseling Form", "FB Page(1st)", "FB Page(2nd)", "Tiktok", "Instagram",
@@ -109,7 +109,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             leadStatus: modelStatus,
             nextEstimatedPaymentDate: estemitePaymentDate,
             note: notes.filter(item => item?.status == "unsaved").map(({ text, by }) => ({ text, by })),
-            lastContacted: Date.now()
+            lastModifiedBy: user?.name
         }
 
         console.log(obj)
@@ -164,7 +164,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
     const handleAddNote = (e) => {
         e.preventDefault()
-        setNotes([...notes, { text: e.target.note?.value, status: "unsaved", by: user?.name, date: formateDate(Date.now()) }])
+        setNotes([...notes, { text: e.target.note?.value, status: "unsaved", by: user?.name?.name, date: formateDate(Date.now()) }])
         e.target.reset()
     }
 
@@ -395,7 +395,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
                                     <p className="text-xs opacity-70">
                                         {formateDate(note.date || note.createdAt)} • {note.by}
-                                        {note?.status == "unssaved" &&
+                                        {note?.status == "unsaved" &&
                                             <span className="ml-2 text-yellow-500 font-semibold">(Unsaved)</span>}
                                     </p>
 
@@ -479,14 +479,14 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                     tabIndex={0}
                                     className="dropdown-content z-[999] !fixed    menu p-2 shadow bg-base-200 rounded-box w-76"
                                 >
-                                    {statusOptions.filter(item =>   item != "All").map((s) => (
+                                    {statusOptions.filter(item => item != "All").map((s) => (
                                         <li key={s}>
                                             <button
                                                 onClick={() => {
                                                     setModelStatus(s)
                                                     document.activeElement.blur()
                                                 }}
-                                                className={`capitalize ${user.role == "user" && s == "Refunded"  && "hidden" }`}
+                                                className={`capitalize ${user.role == "user" && s == "Refunded" && "hidden"}`}
                                             >
                                                 {s}
                                             </button>

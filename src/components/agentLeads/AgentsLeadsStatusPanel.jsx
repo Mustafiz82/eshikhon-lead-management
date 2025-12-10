@@ -1,13 +1,13 @@
 
 import { AuthContext } from '@/context/AuthContext';
 import useFetch from '@/hooks/useFetch';
-import { useContext, useEffect } from 'react';
+import { Children, useContext, useEffect } from 'react';
 import CountUp from 'react-countup';
 
 
 
 
-const AgentsLeadsStatusPanel = ({ selectedFilter , state , setState}) => {
+const AgentsLeadsStatusPanel = ({ selectedFilter, state, setState }) => {
 
   const { user } = useContext(AuthContext)
   const { data: userData, refetch, loading } = useFetch(`/dashboard/agent?month=${selectedFilter}&year=2025&email=${user.email}&startDate=${state[0].startDate}&endDate=${state[0].endDate}`);
@@ -83,27 +83,60 @@ const AgentsLeadsStatusPanel = ({ selectedFilter , state , setState}) => {
 
     // 9. Achievement → sales
     {
-      label: "Total Sales",
+      label: "Total Sales / Target Amount",
       value: userData?.totalSales,
       unit: "Tk",
-      gradient: "from-teal-700 to-lime-400" // Teal/lime = money, prosperity
+      gradient: "from-teal-700 to-lime-600",// Teal/lime = money, prosperity
+      children: (() => {
+        // 1. Calculate Values cleanly
+        const currentSales = userData?.totalSales || 0;
+        const target = userData?.targetAmount || 0; // Prevent divide by zero
+        const percentage = Math.min(100, Math.round((currentSales / target) * 100));
+
+        return (
+          <div className="flex flex-col    mt-2 h-full">
+            {/* Top: Numbers with Hierarchy */}
+            <div className="flex items-end justify-between mb-2">
+              <div className="flex flex-col">
+                <span className="text-3xl font-bold tracking-tight">
+                  <CountUp end={currentSales} separator="," duration={1.5} />
+                  <span className="text-lg font-normal opacity-80 ml-1">Tk</span>
+                </span>
+              </div>
+              <div className="text-right text-sm font-medium opacity-95 mb-1.5">
+                Target: <CountUp end={target} separator="," />
+              </div>
+            </div>
+
+       
+
+
+            <div className="flex w-full h-4 bg-black/20 rounded-full overflow-hidden " role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+              <div className="flex flex-col justify-center rounded-full overflow-hidden bg-white text-xs text-black text-center whitespace-nowrap transition duration-500" style={{ width: `${userData?.targetCompletionRate}%` }}>{userData?.targetCompletionRate}%</div>
+            </div>
+
+            {/* Bottom: Percentage Label */}
+           
+          </div>
+        );
+      })()
     },
 
-    // 10. Target set
-    {
-      label: "Target Amount",
-      value: userData?.targetAmount,
-      unit: "Tk",
-      gradient: "from-blue-700 to-cyan-500" // Blue = trust, planning
-    },
+    // // 10. Target set
+    // {
+    //   label: "Target Amount",
+    //   value: userData?.targetAmount,
+    //   unit: "Tk",
+    //   gradient: "from-blue-700 to-cyan-500" // Blue = trust, planning
+    // },
 
-    // 11. Target progress
-    {
-      label: "Target Completion Rate",
-      value: userData?.targetCompletionRate,
-      unit: "%",
-      gradient: "from-amber-700 to-yellow-500" // Gold = progress, achievement
-    },
+    // // 11. Target progress
+    // {
+    //   label: "Target Completion Rate",
+    //   value: userData?.targetCompletionRate,
+    //   unit: "%",
+    //   gradient: "from-amber-700 to-yellow-500" // Gold = progress, achievement
+    // },
 
     // 12. Final reward → commission
     {
@@ -121,7 +154,7 @@ const AgentsLeadsStatusPanel = ({ selectedFilter , state , setState}) => {
     {
       label: "Total Refunds",
       value: (userData?.totalRefunds),
-      count : userData.refundedCount,
+      count: userData.refundedCount,
       unit: "Tk",
       gradient: "from-purple-700 to-violet-500" // Purple = reward, luxury
     }
@@ -132,7 +165,7 @@ const AgentsLeadsStatusPanel = ({ selectedFilter , state , setState}) => {
 
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-7  gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-6  gap-4">
       {stats.map((item, index) => (
         <div
           key={index}
@@ -142,7 +175,7 @@ const AgentsLeadsStatusPanel = ({ selectedFilter , state , setState}) => {
             {item.label} {item?.unit && <span>({item.unit})</span>}
           </p>
           {
-            loading ? <p className='animate-pulse py-2'> counting... </p> : <div className="text-3xl font-bold flex items-center gap-2">
+            loading ? <p className='animate-pulse py-2'> counting... </p> : item.children ? item.children : <div className="text-3xl font-bold flex items-center gap-2">
               {/* The Main Value (Amount) */}
               <span>
                 <CountUp end={item.value || 0} duration={1.5} separator="," />
@@ -154,6 +187,7 @@ const AgentsLeadsStatusPanel = ({ selectedFilter , state , setState}) => {
                   (<CountUp end={item.count || 0} duration={1.5} separator="," />)
                 </span>
               )}
+
             </div>
           }
         </div>

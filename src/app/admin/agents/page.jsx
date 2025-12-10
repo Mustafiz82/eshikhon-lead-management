@@ -63,13 +63,13 @@ const page = () => {
                 <div className="flex gap-2 items-center">
                     <p className="whitespace-nowrap    text-gray-300 hidden lg:block">View Statistics for:</p>
 
-                    <CustomSelect
+                    {/* <CustomSelect
                         selected={selectedFilter}
                         setSelected={setSelectedFilter}
                         options={options}
 
 
-                    />
+                    /> */}
 
                     <DateRange
 
