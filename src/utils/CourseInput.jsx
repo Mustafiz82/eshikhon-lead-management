@@ -183,7 +183,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
       <select
         onChange={(e) => setSelectedDiscount(e.target.value)}
         value={selectedDiscount}
-        className="select focus:border-blue-600 focus:outline-0 select-bordered w-full"
+        className="select focus:border-blue-600 px-2 focus:outline-0 select-bordered w-full"
       >
         <option>Select Discount</option>
         {discount

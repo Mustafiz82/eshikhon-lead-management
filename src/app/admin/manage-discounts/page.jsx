@@ -145,7 +145,12 @@ export default function ManageDiscountPage() {
             payload.capAmount = null;
         }
 
-        await handleSave(payload, form, "/discount");
+        await handleSave(payload,  form, "/discount");
+
+        setAuthority("")
+        setMode("")
+
+
     };
 
     return (
@@ -197,7 +202,7 @@ export default function ManageDiscountPage() {
 
                                 <select
                                     name="authority"
-                                    className="select bg-gray-900 w-full focus:outline-0 focus:border-blue-500"
+                                    className="select px-2 bg-gray-900 w-full focus:outline-0 focus:border-blue-500"
                                     value={authority}          // <-- controlled
                                     onChange={(e) => setAuthority(e.target.value)}
                                     disabled={isSubmitting}
@@ -213,7 +218,7 @@ export default function ManageDiscountPage() {
 
                                 <select
                                     name="mode"
-                                    className="select bg-gray-900 w-full focus:outline-0 focus:border-blue-500"
+                                    className="select px-2 bg-gray-900 w-full focus:outline-0 focus:border-blue-500"
                                     value={mode}               // <-- controlled
                                     onChange={(e) => setMode(e.target.value)}
                                     disabled={isSubmitting}

@@ -6,7 +6,9 @@ import { formateDate } from "@/utils/date";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import QR from "./QR";
-import { FaEdit } from "react-icons/fa";
+import { FaCopy, FaEdit } from "react-icons/fa";
+import { IoCheckmarkDoneSharp, IoCopyOutline } from "react-icons/io5";
+import { MdContentCopy } from "react-icons/md";
 
 const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, course }) => {
 
@@ -25,6 +27,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     const [notes, setNotes] = useState(selectedLead?.note)
     const { user } = useContext(AuthContext)
     const [leadSource, setLeadSource] = useState(selectedLead?.leadSource || "");
+    const [copied, setCopied] = useState(false);
 
 
     const sourceOptions = [
@@ -259,7 +262,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     return (
         selectedLead && <div className="fixed inset-0 z-[9999] bg-black/40 flex items-center justify-center">
             <div>
-                <div className={`bg-base-100 w-full   rounded-lg shadow-lg p-6 relative grid grid-cols-1 ${(modelStatus == "Enrolled" || modelStatus == "Refunded") ? "md:grid-cols-2 lg:grid-cols-4 max-w-7xl" : "md:grid-cols-3 lg:grid-cols-3 max-w-5xl"} gap-6 max-h-[90vh] overflow-y-auto`}>
+                <div className={`bg-base-100 w-full   rounded-lg shadow-lg p-6 relative grid grid-cols-1 ${(modelStatus == "Enrolled" || modelStatus == "Refunded") ? "md:grid-cols-2 lg:grid-cols-4 max-w-7xl" : "md:grid-cols-3 lg:grid-cols-3 max-w-5xl"} gap-4 max-h-[90vh] overflow-y-auto`}>
 
                     {/* Top bar with lead info */}
                     <div className="sticky md:absolute ml-auto   top-3 right-3">
@@ -272,98 +275,126 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                     </div>
                     {/*  Column 1: Lead Details */}
                     {/*  Column 1: Lead Details */}
-                    <div className="bg-base-200 w-full max-h-[470px] overflow-y-auto border border-base-300 rounded p-4 pt-0 shadow-md space-y-2 text-sm relative">
-                        <h3 className="text-lg font-bold mb-3 border-b border-base-300 pb-2 sticky top-0 bg-base-200 pt-4 z-10">Lead Info</h3>
+                    <div className="space-y-6 max-h-[450px] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]  overflow-y-scroll">
 
-                        <div className="space-y-2">
-                            <p><span className="font-semibold text-white/80">Name:</span> {selectedLead.name}</p>
-                            <p><span className="font-semibold text-white/80">Email:</span> {selectedLead.email}</p>
-                            <p><span className="font-semibold text-white/80">Phone:</span> {selectedLead.phone}</p>
-                            <p><span className="font-semibold text-white/80">Address:</span> {selectedLead.address}</p>
-                            <p><span className="font-semibold text-white/80">Internsted Course:</span> {selectedLead.interstedCourse}</p>
+                        {/* SECTION: BASIC INFO */}
+                        <div className="">
+                            <h3 className="text-lg font-semibold mb-2">Lead Info</h3>
+                            <div className="grid  grid-cols-[130px_1fr] gap-y-1 text-sm">
+                                <div className="text-white/50">Name</div>
+                                <div className="font-medium">{selectedLead.name}</div>
 
-                            {/* --- MODIFIED LEAD SOURCE SECTION --- */}
-                            <div className="flex justify-between items-center relative">
-                                <p>
-                                    <span className="font-semibold text-white/80">Lead Source: </span>
+                                <div className="text-white/50">Email</div>
+                                <div className="font-medium flex justify-between items-center gap-2">
+                                    <span title={selectedLead.email} className="truncate max-w-[140px]">
+                                        {selectedLead.email}
+                                    </span>
+
+                                 {selectedLead.email &&    <button
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(selectedLead.email);
+                                            setCopied(true);
+                                            setTimeout(() => setCopied(false), 1500);
+                                        }}
+                                        className="text-blue-400 cursor-pointer hover:text-white text-xs flex items-center"
+                                        title="Copy Email"
+                                    >
+                                        {copied ? (
+                                            <IoCheckmarkDoneSharp className="text-green-400 text-lg" />
+                                        ) : (
+                                            <MdContentCopy className="text-blue-400 text-lg" />
+                                        )}
+                                    </button> }
+                                </div>
+
+                                <div className="text-white/50">Phone</div>
+                                <div className="font-medium">{selectedLead.phone}</div>
+
+                                <div className="text-white/50">Address</div>
+                                <div className="font-medium">{selectedLead.address}</div>
+
+                                {/* ✅ MISSING FIELD: CREATED BY */}
+                                {/* <div className="text-white/50">Created By</div>
+                                <div className="font-medium">{selectedLead.createdBy}</div> */}
+                            </div>
+                        </div>
+
+                        {/* SECTION: COURSE INFO */}
+                        <div>
+                            <h4 className="text-xs font-semibold text-white/60 mb-1">Course Info</h4>
+                            <div className="grid grid-cols-[130px_1fr] gap-y-1 text-sm">
+
+                                <div className="text-white/50">Interested Course</div>
+                                <div title={selectedLead.interstedCourse} className="font-medium line-clamp-1 ">{selectedLead.interstedCourse}</div>
+
+                                <div className="text-white/50">Course Type</div>
+                                <div className="font-medium">{selectedLead.interstedCourseType}</div>
+
+                                {/* LEAD SOURCE WITH EDIT BUTTON */}
+                                <div className="text-white/50 flex items-center">Lead Source</div>
+                                <div className="flex items-center justify-between font-medium">
                                     {leadSource || "N/A"}
+
                                     {leadSource !== (selectedLead?.leadSource || "") && (
                                         <span className="ml-2 text-yellow-500 font-semibold text-xs">(Unsaved)</span>
                                     )}
-                                </p>
 
-                                {/* Edit Button */}
-                                <div
-                                    className="cursor-pointer text-blue-400 hover:text-white p-1"
-                                    onClick={(e) => {
-                                        // Calculate position dynamically based on click
-                                        const rect = e.currentTarget.getBoundingClientRect();
-                                        // Position menu slightly below and to the left of the icon
-                                        setSourceMenuPosition({ top: rect.bottom + 5, left: rect.left - 200 });
-                                        setIsSourceMenuOpen(!isSourceMenuOpen);
-                                    }}
-                                >
-                                    <FaEdit title="Edit Lead Source" />
+                                    <div
+                                        className="cursor-pointer text-blue-400 hover:text-white ml-2"
+                                        onClick={(e) => {
+                                            const rect = e.currentTarget.getBoundingClientRect();
+                                            setSourceMenuPosition({ top: rect.bottom + 5, left: rect.left - 200 });
+                                            setIsSourceMenuOpen(!isSourceMenuOpen);
+                                        }}
+                                    >
+                                        <FaEdit />
+                                    </div>
                                 </div>
-
-                                {/* Fixed Position Dropdown (Escapes the scroll container) */}
-                                {isSourceMenuOpen && (
-                                    <>
-                                        {/* Invisible backdrop to close menu when clicking outside */}
-                                        <div
-                                            className="fixed inset-0 z-[9998] cursor-default"
-                                            onClick={() => setIsSourceMenuOpen(false)}
-                                        ></div>
-
-                                        {/* The Menu List */}
-                                        <ul
-                                            style={{
-                                                top: `${sourceMenuPosition.top}px`,
-                                                left: `${sourceMenuPosition.left}px`,
-                                                position: 'fixed' // This creates the escape magic
-                                            }}
-                                            className="menu p-2 shadow-xl bg-base-300 rounded-box  max-h-[300px] overflow-y-auto border border-gray-600 z-[9999]"
-                                        >
-                                            {sourceOptions.map((source, idx) => (
-                                                <li key={idx}>
-                                                    <button
-                                                        onClick={() => {
-                                                            setLeadSource(source);
-                                                            setIsSourceMenuOpen(false); // Close on select
-                                                        }}
-                                                        className={leadSource === source ? "bg-primary text-white" : ""}
-                                                    >
-                                                        {source}
-                                                    </button>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </>
-                                )}
                             </div>
-                            {/* --- END MODIFIED SECTION --- */}
-
-                            <p><span className="font-semibold text-white/80">Course Type:</span> {selectedLead.interstedCourseType}</p>
-                            <p><span className="font-semibold text-white/80">Created By:</span> {selectedLead.createdBy}</p>
-                            <p><span className="font-semibold text-white/80">Assigned Date:</span> {formateDate(selectedLead.assignDate)}</p>
-                            <p><span className="font-semibold text-white/80">Follow-Up Date:</span> {selectedLead.followUpDate ? formateDate(selectedLead.followUpDate) : "N/A"}</p>
-                            <p><span className="font-semibold text-white/80">Last Contacted:</span> {selectedLead.lastContacted ? formateDate(selectedLead.lastContacted) : "N/A"}</p>
                         </div>
 
-                        {/* Questions Section... (Keep as is) */}
+                        {/* SECTION: TIMELINE */}
+                        <div>
+                            <h4 className="text-xs font-semibold text-white/60 mb-1">Timeline</h4>
+                            <div className="grid grid-cols-[130px_1fr] gap-y-1 text-sm">
+                                <div className="text-white/50">Assigned Date</div>
+                                <div className="font-medium">{formateDate(selectedLead.assignDate)}</div>
+
+                                <div className="text-white/50">Follow-Up Date</div>
+                                <div className="font-medium">
+                                    {selectedLead.followUpDate ? formateDate(selectedLead.followUpDate) : "N/A"}
+                                </div>
+
+                                <div className="text-white/50">Next Payment Date</div>
+                                <div className="font-medium">
+                                    {selectedLead.nextEstimatedPaymentDate ? formateDate(selectedLead.nextEstimatedPaymentDate) : "N/A"}
+                                </div>
+
+                                <div className="text-white/50">Last Contacted</div>
+                                <div className="font-medium">
+                                    {selectedLead.lastContacted ? formateDate(selectedLead.lastContacted) : "N/A"}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* ✅ MISSING SECTION: QUESTIONS */}
                         {selectedLead?.questions && Object.keys(selectedLead.questions).length > 0 && (
-                            <div className="space-y-2">
-                                <h4 className="font-semibold mb-1 mt-4 border-b pb-2">Questions</h4>
-                                <ul className="mt-2 text-xs space-y-3">
+                            <div>
+                                <h4 className="text-xs font-semibold text-white/60 mb-1">Questions</h4>
+
+                                <div className="space-y-3 text-sm mt-1">
                                     {Object.entries(selectedLead.questions).map(([q, a], i) => (
-                                        <li key={i}>
-                                            <span className="font-semibold text-white/80">{q}</span><br className="mt-2" /><span className="text-white"> {a}</span>
-                                        </li>
+                                        <div key={i} className="border-b border-white/10 pb-2">
+                                            <div className="text-white/50">{q}</div>
+                                            <div className="font-medium text-white mt-1">{a}</div>
+                                        </div>
                                     ))}
-                                </ul>
+                                </div>
                             </div>
                         )}
+
                     </div>
+
 
                     {/*  Column 2: Notes */}
                     <div className="space-y-2 flex flex-col text-sm">
@@ -393,13 +424,13 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                         </button>
                                     )}
 
-                                    <p className="text-xs opacity-70">
+                                    <p className="text-xs mb-2 opacity-70">
                                         {formateDate(note.date || note.createdAt)} • {note.by}
                                         {note?.status == "unsaved" &&
                                             <span className="ml-2 text-yellow-500 font-semibold">(Unsaved)</span>}
                                     </p>
 
-                                    <p>{note.text}</p>
+                                    <pre className="text-wrap">{note.text}</pre>
                                 </div>
                             ))}
 
