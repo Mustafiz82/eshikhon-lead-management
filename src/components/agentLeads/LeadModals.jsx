@@ -290,7 +290,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                         {selectedLead.email}
                                     </span>
 
-                                 {selectedLead.email &&    <button
+                                    {selectedLead.email && <button
                                         onClick={() => {
                                             navigator.clipboard.writeText(selectedLead.email);
                                             setCopied(true);
@@ -304,7 +304,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                         ) : (
                                             <MdContentCopy className="text-blue-400 text-lg" />
                                         )}
-                                    </button> }
+                                    </button>}
                                 </div>
 
                                 <div className="text-white/50">Phone</div>
@@ -349,6 +349,40 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                     >
                                         <FaEdit />
                                     </div>
+
+                                    {isSourceMenuOpen && (
+                                        <>
+                                            {/* Invisible backdrop to close menu when clicking outside */}
+                                            <div
+                                                className="fixed inset-0 z-[9998] cursor-default"
+                                                onClick={() => setIsSourceMenuOpen(false)}
+                                            ></div>
+
+                                            {/* The Menu List */}
+                                            <ul
+                                                style={{
+                                                    top: `${sourceMenuPosition.top}px`,
+                                                    left: `${sourceMenuPosition.left}px`,
+                                                    position: 'fixed' // This creates the escape magic
+                                                }}
+                                                className="menu p-2 shadow-xl bg-base-300 rounded-box  max-h-[300px] overflow-y-auto border border-gray-600 z-[9999]"
+                                            >
+                                                {sourceOptions.map((source, idx) => (
+                                                    <li key={idx}>
+                                                        <button
+                                                            onClick={() => {
+                                                                setLeadSource(source);
+                                                                setIsSourceMenuOpen(false); // Close on select
+                                                            }}
+                                                            className={leadSource === source ? "bg-primary text-white" : ""}
+                                                        >
+                                                            {source}
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>
