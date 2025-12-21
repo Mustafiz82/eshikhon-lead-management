@@ -38,11 +38,11 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
 
     setCourseInput({
       // enrolledTo: (searchInput ?? "").trim(),
-      estemitePaymentDate : estemitePaymentDate ?? null , 
+      estemitePaymentDate: estemitePaymentDate ?? null,
       discountSource: selectedDiscount ?? "",
       leadDiscount: finalLeadDiscount,
       discountUnit: finalUnit,
-      originalPrice: selectedCourse?.price ?? 0,
+      originalPrice: selectedLead?.leadStatus === "Enrolled" ? selectedLead?.originalPrice : (selectedCourse?.price ?? 0),
       lastPaid: lastPaid ?? 0,
       totalDue: calcTotalDue(),
       minValue, maxValue
@@ -80,16 +80,28 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
   //   setSearchSuggesion("");
   // };
 
+  const isEnrolled = selectedLead?.leadStatus === "Enrolled";
+
+  const courseForDiscountBounds = {
+    price: isEnrolled
+      ? selectedLead?.originalPrice ?? 0
+      : selectedCourse?.price ?? 0
+  };
 
   const { minValue, maxValue } = getDiscountBounds(
     selectedDiscountUnit,
     selectedDiscountObject,
-    selectedCourse
+    courseForDiscountBounds
   );
 
   // Use one single source of truth for due calculation
   function calcTotalDue() {
-    const price = selectedCourse?.price ?? 0;
+    const isEnrolled = selectedLead?.leadStatus === "Enrolled";
+
+    const price = isEnrolled
+      ? (selectedLead?.originalPrice ?? 0)
+      : (selectedCourse?.price ?? 0);
+
     const alreadyPaid = selectedLead?.totalPaid ?? 0;
     const last = lastPaid ?? 0;
 
@@ -210,7 +222,10 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
           </label>
           <input
             type="number"
-            value={selectedCourse?.price || ""}
+            // value={selectedCourse?.price || ""}
+            value={selectedLead?.leadStatus === "Enrolled"
+              ? selectedLead?.originalPrice ?? ""
+              : selectedCourse?.price ?? ""}
             placeholder="Auto-filled"
             className="input input-bordered w-full disabled:bg-transparent disabled:border disabled:border-gray-600"
             disabled
@@ -284,18 +299,18 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
         </div>
       </div>
 
-        <div className="flex flex-col mt-2 gap-3">
-          <label className="text-sm ">Next Estimate payment Date</label>
+      <div className="flex flex-col mt-2 gap-3">
+        <label className="text-sm ">Next Estimate payment Date</label>
 
-          <input
-            type="datetime-local"
-            onClick={(e) => e.target.showPicker && e.target.showPicker()}
-            className="input input-bordered bg- border border-gray-600 text-white rounded-md w-full focus:outline-none  focus:border-blue-600"
-            value={estemitePaymentDate}
-            onChange={(e) => setEstimatePaymentDate(e.target.value)}
-          />
+        <input
+          type="datetime-local"
+          onClick={(e) => e.target.showPicker && e.target.showPicker()}
+          className="input input-bordered bg- border border-gray-600 text-white rounded-md w-full focus:outline-none  focus:border-blue-600"
+          value={estemitePaymentDate}
+          onChange={(e) => setEstimatePaymentDate(e.target.value)}
+        />
 
-        </div>
+      </div>
 
       {/* History */}
       <div>

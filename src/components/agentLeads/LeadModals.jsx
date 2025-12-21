@@ -99,6 +99,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
         const obj = {
             interstedCourse: (searchInput ?? "").trim(),
+            interstedCourseType : selectedCourseType,
             interstedSeminar: InterstedSeminarStatus,
             discountSource,
             leadSource: leadSource,

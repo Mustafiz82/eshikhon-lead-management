@@ -28,7 +28,7 @@ const CustomSelect = ({ selected, setSelected , options , bgColor }) => {
     console.log(selected)
 
     return (
-        <div className="relative !z-[9999] w-full" ref={selectRef}>
+        <div className="relative  w-full" ref={selectRef}>
             <div
                 className={` ${bgColor ? "py-5 bg-gray-900": "bg-gray-800 py-2" } select  stasticsSelect min-w-[150px] lg:min-w-xs cursor-pointer input-bordered w-full focus:outline-0 hover:border-blue-600 select-sm  text-gray-200 border border-gray-700 rounded-md flex items-center justify-between px-3 `}
                 onClick={() => setIsOpen(!isOpen)}
@@ -57,7 +57,7 @@ const CustomSelect = ({ selected, setSelected , options , bgColor }) => {
                         <li
                             key={option.value}
                             className={`p-2  cursor-pointer hover:bg-blue-600/50 ${
-                                selected === option.value ? "bg-blue-600" : ""
+                                selected === option.value ? "bg-blue-600" : "bg-gray-800"
                             }`}
                             onClick={() => handleSelect(option.value)}
                         >

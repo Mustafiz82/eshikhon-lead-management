@@ -28,7 +28,7 @@ export default function Page() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formError, setFormError] = useState("");
     const [role, setRole] = useState("user")
-    const [designation, setDesignation] = useState(editUser?.designation || "Junior Executive")
+    const [designation, setDesignation] = useState(editUser?.designation || null)
     const [fetchError, setFetchError] = useState("")
     const [showPassword, setShowPassword] = useState(false);
 
