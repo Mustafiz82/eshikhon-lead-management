@@ -27,7 +27,7 @@ import { statusOptions } from "@/shared/AgentAllLeads";
 
 const Page = () => {
     // 🔹 Filters
-    const [statusFilter, setStatusFilter] = useState("All");       // filter leads by status
+    const [statusFilter, setStatusFilter] = useState("All");       // filter leads by assign status
     const [categoryFilter, setCategoryFilter] = useState("All");   // filter leads by category
     const [sortMethod, setSortMethod] = useState("Default");
     const [lockSTatus, setLockStatus] = useState("All");
@@ -42,7 +42,7 @@ const Page = () => {
     const [selectedIds, setSelectedIds] = useState(new Set());     // selected lead IDs
     const [lastSelectedIndex, setLastSelectedIndex] = useState(null); // last row index for shift+select
     const [customSelectCount, setCustomSelectCount] = useState(""); // quick select custom number
-
+    const [selectedStatus, setSelectedStatus] = useState("All"); // filter by lead status
     // 🔹 Pagination
     const [currentPage, setCurrentPage] = useState(1);             // current page number
     const [leadsPerPage, setLeadsPerPage] = useState(50);          // leads shown per page
@@ -72,7 +72,8 @@ const Page = () => {
         // fields: "table",
         lock: lockSTatus,
         leadSource: selectedSource,
-        assignTo : selectedAgent     
+        assignTo: selectedAgent,
+        leadStatus: selectedStatus,
     }).toString()
 
 
@@ -81,6 +82,7 @@ const Page = () => {
     const { data: courseOption } = useFetch("/leads/intersted-course");
     const { data: leadSource } = useFetch("/leads/source")
     const { data: user } = useFetch("/user")
+
 
     console.log(rawCourses)
 
@@ -95,7 +97,7 @@ const Page = () => {
     );
 
     const userEmails = user.filter(item => item.role !== "admin").map(item => item.email)
-    
+
 
 
 
@@ -385,7 +387,7 @@ const Page = () => {
         findAssignStatus();
     }, [selectedIds]);
 
-    
+
 
 
 
@@ -425,6 +427,16 @@ const Page = () => {
                         setSelectedState={setSelectedAgent}
                         label="Assigned Agent"
                         options={["All", ...userEmails]}
+                        setCurrentPage={setCurrentPage}
+
+                    />
+
+                    <Dropdown
+                        dropdownPosition=""
+                        selectedState={selectedStatus}
+                        setSelectedState={setSelectedStatus}
+                        label="Status"
+                        options={statusOptions}
                         setCurrentPage={setCurrentPage}
 
                     />
@@ -495,6 +507,8 @@ const Page = () => {
                         setCurrentPage={setCurrentPage}
                         defaultOptions={"Default"}
                     />
+
+
                 </div>
             </div>
 
@@ -609,7 +623,7 @@ const Page = () => {
                                     setCurrentPage(1);
                                 }}
                             >
-                                {[10, 25, 50, 100, 200 , 500].map((n) => (
+                                {[10, 25, 50, 100, 200, 500].map((n) => (
                                     <option key={n} value={n}>
                                         {n}
                                     </option>

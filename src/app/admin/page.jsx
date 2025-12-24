@@ -3,6 +3,7 @@ import CallCountTable from "@/components/Dashboard/CallCountTable";
 import LeadsGrowthChart from "@/components/Dashboard/LeadsGrowthChart";
 import LeadsStatusPanel from "@/components/Dashboard/LeadsStatusPanel";
 import { AuthContext } from "@/context/AuthContext";
+import { DateRangeContext } from "@/context/DateRangeContext";
 import useFetch from "@/hooks/useFetch";
 import Leaderboard from "@/shared/Leaderboard";
 import CustomSelect from "@/utils/CustomSelect";
@@ -15,14 +16,17 @@ const page = () => {
     const currentMonth = new Date().getMonth() + 1;
     const [selectedFilter, setSelectedFilter] = useState(String(currentMonth));
 
-    const now = new Date();
-    const [state, setState] = useState([
-        {
-            startDate: new Date(now.getFullYear(), now.getMonth(), 1),
-            endDate: new Date(now.getFullYear(), now.getMonth() + 1, 0),
-            key: "selection",
-        },
-    ]);
+    // const now = new Date();
+    // const [state, setState] = useState([
+    //     {
+    //         startDate: new Date(now.getFullYear(), now.getMonth(), 1),
+    //         endDate: new Date(now.getFullYear(), now.getMonth() + 1, 0),
+    //         key: "selection",
+    //     },
+    // ]);
+
+
+    const { dateRange:state, setDateRange:setState  } = useContext(DateRangeContext)
 
 
 

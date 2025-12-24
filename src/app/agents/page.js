@@ -1,6 +1,7 @@
 "use client"
 import AgentsLeadsStatusPanel from "@/components/agentLeads/AgentsLeadsStatusPanel";
 import { AuthContext } from "@/context/AuthContext";
+import { DateRangeContext } from "@/context/DateRangeContext";
 import useFetch from "@/hooks/useFetch";
 import Leaderboard from "@/shared/Leaderboard";
 import CustomSelect from "@/utils/CustomSelect";
@@ -13,14 +14,17 @@ const Page = () => {
   const [selectedFilter, setSelectedFilter] = useState(String(currentMonth));
 
   const now = new Date();
-  const [state, setState] = useState([
-    {
-      startDate: new Date(now.getFullYear(), now.getMonth(), 1),
-      endDate: new Date(now.getFullYear(), now.getMonth() + 1, 0),
-      key: "selection",
-    },
-  ]);
+  // const [state, setState] = useState([
+  //   {
+  //     startDate: new Date(now.getFullYear(), now.getMonth(), 1),
+  //     endDate: new Date(now.getFullYear(), now.getMonth() + 1, 0),
+  //     key: "selection",
+  //   },
+  // ]);
 
+  const { dateRange:state, setDateRange:setState } = useContext(DateRangeContext)
+
+  console.log(state )
 
 
   const { data: leaderboard, loading, refetch } = useFetch(
@@ -28,8 +32,6 @@ const Page = () => {
   );
 
   
-
-
 
   // if (loading) return <p className="text-white">Loading...</p>;
 
@@ -69,7 +71,7 @@ const Page = () => {
 
 
 
-          <DateRangeComponent setState={setState} state={state} />
+          <DateRangeComponent  state={state} setState={setState} />
 
 
 

@@ -8,6 +8,9 @@ export default function DateRangeComponent({state, setState}) {
     const [showDateRange, setShowDateRange] = useState(false);
 
 
+    console.log(state)
+
+
     const dateRangeRef = useRef(null);   // dropdown container
     const buttonRef = useRef(null);      // button element
 
