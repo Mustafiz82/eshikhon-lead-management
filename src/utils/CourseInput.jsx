@@ -1,9 +1,10 @@
 "use client";
 import useFetch from "@/hooks/useFetch";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { FaBangladeshiTakaSign } from "react-icons/fa6";
 import { formateDate } from "./date";
 import { getDiscountBounds } from "./getDiscountBounds";
+import { AuthContext } from "@/context/AuthContext";
 
 export default function CourseInput({ courseInput, setCourseInput, selectedLead, selectedCourseId }) {
 
@@ -11,7 +12,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
   const [searchSuggesion, setSearchSuggesion] = useState("")
 
   const [estemitePaymentDate, setEstimatePaymentDate] = useState(null)
-  const [selectedDiscount, setSelectedDiscount] = useState("")
+  const [selectedDiscount, setSelectedDiscount] = useState("")     // discount source 
   const [selectedDiscountinput, setSelectedDiscountInput] = useState("")
   const [selectedDiscountUnit, setSelectedDiscountUnit] = useState("%")
   const [lastPaid, setlastPaid] = useState()
@@ -19,6 +20,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
 
   const { data: course } = useFetch("/course")
   const { data: discount } = useFetch("/discount")
+  const {user:loggedUser} = useContext(AuthContext)
 
 
   const selectedDiscountObject = discount.find(item => (item.name == selectedDiscount) || (item.name == selectedLead?.discountSource))
@@ -136,6 +138,9 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
 
   useEffect(() => {
     // setSearchInput(selectedLead?.enrolledTo ?? selectedLead?.interstedCourse ?? "");
+    
+
+
     setSelectedDiscount(selectedLead?.discountSource ?? "");
     setSelectedDiscountInput(selectedLead?.leadDiscount ?? "");
     setSelectedDiscountUnit(selectedLead?.discountUnit == "percent" ? "%" : "৳");
@@ -193,6 +198,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
 
       {/* Discount Type */}
       <select
+        disabled={loggedUser.role == "user" &&  selectedLead?.leadDiscount}
         onChange={(e) => setSelectedDiscount(e.target.value)}
         value={selectedDiscount}
         className="select focus:border-blue-600 px-2 focus:outline-0 select-bordered w-full"
@@ -222,6 +228,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
           </label>
           <input
             type="number"
+
             // value={selectedCourse?.price || ""}
             value={selectedLead?.leadStatus === "Enrolled"
               ? selectedLead?.originalPrice ?? ""
@@ -237,7 +244,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
           <label className="block mb-1 text-white/80 text-sm">Discount {(minValue && maxValue) ? `( ${minValue + selectedDiscountUnit} - ${maxValue + selectedDiscountUnit})` : null}</label>
           <div className="join grid grid-cols-3 w-full">
             <input
-              disabled={isCommited}
+              disabled={(loggedUser.role == "user" && selectedLead?.leadDiscount) || isCommited}
               value={isCommited ? (selectedDiscountObject?.value ?? "") : (selectedDiscountinput ?? "")}
               onChange={(e) => setSelectedDiscountInput(e.target.value)}
               onBlur={(e) => {
@@ -251,6 +258,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
               className="input col-span-2 input-bordered join-item w-full focus:outline-0 focus:border-blue-600"
             />
             <select
+            
               onChange={(e) => {
                 const newUnit = e.target.value;
                 setSelectedDiscountUnit(newUnit);
@@ -259,7 +267,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
                 setSelectedDiscountInput((prev) => clampDiscount(prev, newUnit));
               }}
               value={isCommited ? (selectedDiscountObject?.mode === "amount" ? "৳" : "%") : selectedDiscountUnit}
-              disabled={isCommited}
+             disabled={(loggedUser.role == "user" && selectedLead?.leadDiscount) || isCommited}
               className="select select-bordered join-item focus:outline-0 focus:border-blue-600"
             >
               <option>%</option>

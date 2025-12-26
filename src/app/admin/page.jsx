@@ -26,7 +26,7 @@ const page = () => {
     // ]);
 
 
-    const { dateRange:state, setDateRange:setState  } = useContext(DateRangeContext)
+    const { dateRange: state, setDateRange: setState } = useContext(DateRangeContext)
 
 
 
@@ -110,6 +110,12 @@ const page = () => {
                     loading={loading}
                 />
             </div>
+
+
+            {/* Top selling Course */}
+
+            
+
 
         </div>
     </div>

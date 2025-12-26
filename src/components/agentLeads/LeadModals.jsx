@@ -51,9 +51,9 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         const {
             // enrolledTo,
             estemitePaymentDate,
-            discountSource,
-            leadDiscount,
-            discountUnit,
+            discountSource,     
+            leadDiscount,      //actual duiscount value when discount is set 
+            discountUnit,      // selected discount unit 
             originalPrice,
             lastPaid,
             totalDue, minValue, maxValue } = courseInput
@@ -595,6 +595,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                         <div className="mt-2 relative">
                             <input
                                 type="text"
+                                disabled={user.role == "user" && selectedLead.interstedCourse && selectedLead.leadStatus == "Enrolled"}
                                 value={searchInput}
                                 onChange={handleSearch}
                                 placeholder="Course Name"

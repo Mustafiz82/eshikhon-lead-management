@@ -1,5 +1,6 @@
 "use client"
 import AgentsLeadsStatusPanel from "@/components/agentLeads/AgentsLeadsStatusPanel";
+import TopSellingCourse from "@/components/Dashboard/TopSellingCourse";
 import { AuthContext } from "@/context/AuthContext";
 import { DateRangeContext } from "@/context/DateRangeContext";
 import useFetch from "@/hooks/useFetch";
@@ -113,6 +114,20 @@ const Page = () => {
           metricLabel=" Target (%)"
           loading={loading}
         />
+
+      </div>
+
+
+
+
+
+
+      {/* Top Selling Course */}
+
+
+      <div className="grid gap-5 grid-cols-2">
+
+      <TopSellingCourse></TopSellingCourse>
 
       </div>
     </div>

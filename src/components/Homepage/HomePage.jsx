@@ -18,6 +18,7 @@ export default function HomePage() {
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
 
+  
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true)
@@ -38,6 +39,7 @@ export default function HomePage() {
     }
 
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200 px-4">

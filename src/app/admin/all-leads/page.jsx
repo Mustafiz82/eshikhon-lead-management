@@ -14,7 +14,7 @@ import Pagination from "@/shared/Pagination";
 import { formateDate } from "@/utils/date";
 import { showAlert, showConfirm } from "@/utils/swal";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import { BiSolidLockAlt } from "react-icons/bi";
 import { BiSolidLockOpen } from "react-icons/bi";
@@ -23,6 +23,7 @@ import EditDrawer from "@/components/allLeads/EditDrawer";
 import DetailsModal from "@/components/allLeads/DetailsModal";
 import LeadModals from "@/components/agentLeads/LeadModals";
 import { statusOptions } from "@/shared/AgentAllLeads";
+import { AuthContext } from "@/context/AuthContext";
 
 
 const Page = () => {
@@ -58,6 +59,8 @@ const Page = () => {
 
 
     const [selectedLead, setSelectedLead] = useState(null);
+    const { loogeduser } = useContext(AuthContext)
+
 
 
 
