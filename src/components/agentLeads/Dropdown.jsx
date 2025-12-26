@@ -43,7 +43,7 @@ const Dropdown = ({
                 </button>
 
                 <ul
-                    className="dropdown-content z-[9990] menu p-2 shadow bg-gray-800 rounded-box !w-64"
+                    className="dropdown-content z-9990! menu p-2 shadow bg-gray-800 rounded-box w-64!"
                     // prevent closing when interacting inside
                     onMouseDown={(e) => e.stopPropagation()}
                     onClick={(e) => e.stopPropagation()}

@@ -18,7 +18,7 @@ export default function HomePage() {
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
 
-  
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true)
@@ -83,7 +83,7 @@ export default function HomePage() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 cursor-pointer top-[12px] text-gray-500 z-10"
+              className="absolute right-3 cursor-pointer top-3 text-gray-500 z-10"
               tabIndex={-1}
             >
               {showPassword ? <BsEyeFill className="text-blue-600" /> : <BsEyeSlashFill />}

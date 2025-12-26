@@ -246,7 +246,7 @@ const AgentAllLeads = () => {
     return (
         <div className="p-6 overflow-hidden mx-auto min-h-[calc(100vh-100px)]  xl:min-h-screen">
             {/* Filters */}
-            <div className={`flex ${dropdownOpen ? "h-64 md:h-42" : "h-10"} bg-gray-900 -mt-2  fixed xl:static z-[9999] w-full left-0 px-5 xl:px-0 duration-300 flex-wrap justify-between  gap-4 mb-4`}>
+            <div className={`flex ${dropdownOpen ? "h-64 md:h-42" : "h-10"} bg-gray-900 -mt-2  fixed xl:static z-9999 w-full left-0 px-5 xl:px-0 duration-300 flex-wrap justify-between  gap-4 mb-4`}>
 
                 <div onClick={() => setDropDownOpen(!dropdownOpen)} className="flex xl:hidden justify-between items-center w-full  px-0">
                     <h2 className="text-lg ">Open filter </h2>
@@ -316,7 +316,7 @@ const AgentAllLeads = () => {
                 </div>
 
                 {/* Search */}
-                <div className="flex fixed xl:static top-7 z-[999] right-[25%] md:right-24 items-center gap-2">
+                <div className="flex fixed xl:static top-7 z-999 right-[25%] md:right-24 items-center gap-2">
                     <button
                         onClick={() => setSearchModalOpen(true)}
                         className="flex cursor-pointer items-center gap-2"

@@ -37,7 +37,7 @@ export default function Layout({ children }) {
 
 
                     <div className="drawer-content h-full">
-                        <div className="flex bg-gray-900 fixed z-[999] w-full  2xl:hidden p-5 top-0 h-fit justify-between items-center">
+                        <div className="flex bg-gray-900 fixed z-9999 w-full  2xl:hidden p-5 top-0 h-fit justify-between items-center">
                             <a href="https://eshikhon.com/" target="blank"> <img className="h-10" src={"/logo/eshikhon.svg"} /></a>
                             <label htmlFor="my-drawer" className="btn btn-primary bg-blue-600 text-xl drawer-button"><LuMenu /></label>
                         </div>
@@ -45,9 +45,9 @@ export default function Layout({ children }) {
                             {children}
                         </div>
                     </div>
-                    <div className="drawer-side !z-[9999] p-0">
+                    <div className="drawer-side z-9999! p-0">
                         <label htmlFor="my-drawer" className="drawer-overlay" />
-                        <ul className="menu  p-0 pt-8 !z-[9999] relative bg-gray-800 gap-3  text-gray-100 min-h-full w-80 transition-colors">
+                        <ul className="menu  p-0 pt-8 z-9999! relative bg-gray-800 gap-3  text-gray-100 min-h-full w-80 transition-colors">
                             {menuItems.map((item) => (
                                 <Link key={item.href} href={item.href}>
                                     <li

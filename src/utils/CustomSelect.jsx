@@ -52,7 +52,7 @@ const CustomSelect = ({ selected, setSelected , options , bgColor }) => {
                 </svg>
             </div>
             {isOpen && (
-                <ul className="absolute text-xs !z-[9999] w-full mt-1 bg-gray-800 border border-gray-700 rounded-md shadow-lg">
+                <ul className="absolute text-xs z-9999! w-full mt-1 bg-gray-800 border border-gray-700 rounded-md shadow-lg">
                     {options?.map((option) => (
                         <li
                             key={option.value}

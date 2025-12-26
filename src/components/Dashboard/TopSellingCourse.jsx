@@ -24,7 +24,7 @@ const TopSellingCourse = () => {
                 </div>
 
                 {/* Header */}
-                <div className="grid px-6 grid-cols-5 mt-10 text-sm text-gray-300 font-medium px-4 py-2 border-b border-gray-700">
+                <div className="grid px-6 grid-cols-5 mt-10 text-sm text-gray-300 font-medium  py-2 border-b border-gray-700">
                     <div className='col-span-4'>Course Name</div>
                     <div className="text-center">Enrolled / Assigned</div>
                     <div className="text-right text-nowrap"></div>

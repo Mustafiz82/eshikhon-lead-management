@@ -60,7 +60,7 @@ const EditDrawer = ({ showDrawer, setShowDrawer, editLead, course, setEditLead, 
             )}
 
             <div
-                className={`fixed top-0 right-0 h-full w-full lg:w-[400px] bg-gray-800 shadow-xl z-[9999] transform transition-transform duration-300 ${showDrawer ? "translate-x-0" : "translate-x-full"
+                className={`fixed top-0 right-0 h-full w-full lg:w-[400px] bg-gray-800 shadow-xl z-9999 transform transition-transform duration-300 ${showDrawer ? "translate-x-0" : "translate-x-full"
                     }`}
             >
                 <form

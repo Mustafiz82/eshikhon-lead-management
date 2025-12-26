@@ -573,7 +573,7 @@ const Page = () => {
                                 <input
                                     type="number"
                                     min="1"
-                                    className="input input-xs focus:outline-none border-white pl-2 !rounded-none input-bordered w-16"
+                                    className="input input-xs focus:outline-none border-white pl-2 rounded-none! input-bordered w-16"
                                     value={customSelectCount}
                                     onChange={(e) => setCustomSelectCount(e.target.value)}
                                     placeholder="Custom"

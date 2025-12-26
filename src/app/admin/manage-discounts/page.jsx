@@ -167,7 +167,7 @@ export default function ManageDiscountPage() {
                 <>
                     <Table data={discounts} width={"1000px"} config={courseConfig} />
 
-                    <div className={`h-full ${showModal ? "fixed lg:static top-0 left-0 w-full lg:w-auto z-[9999] block " : "hidden lg:block"}  w-[400px] bg-gray-800 shadow-lg p-6`}>
+                    <div className={`h-full ${showModal ? "fixed lg:static top-0 left-0 w-full lg:w-auto z-9999 block " : "hidden lg:block"}  w-[400px] bg-gray-800 shadow-lg p-6`}>
                         <form
                             autoComplete="off"
                             onSubmit={handleSubmit}

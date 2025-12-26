@@ -2,12 +2,8 @@
 import { formateDate } from "@/utils/date";
 import Link from "next/link";
 import { BiSolidLockAlt } from "react-icons/bi";
-import { FaEdit, FaRegEdit } from "react-icons/fa";
-import DetailsModal from "./DetailsModal";
-import { CgDetailsMore } from "react-icons/cg";
-import { useState } from "react";
+import { FaEdit } from "react-icons/fa";
 import { statusColors } from "../agentLeads/LeadTable";
-import useFetch from "@/hooks/useFetch";
 
 
 const LeadTable = ({
@@ -68,7 +64,7 @@ const LeadTable = ({
 
 
               <th className="sticky top-0 bg-base-300 z-10"></th>
-              <th className="sticky top-0 bg-base-300 !pl-5 z-10">Date</th>
+              <th className="sticky top-0 bg-base-300 pl-5! z-10">Date</th>
               <th className="sticky top-0 bg-base-300 z-10">Name</th>
               <th className="sticky top-0 bg-base-300 z-10">Email</th>
               <th className="sticky top-0 bg-base-300 z-10">Number</th>
@@ -89,7 +85,7 @@ const LeadTable = ({
                 <tr
                   onClick={() => { setSelectedLead(lead); }}
                   key={actualIndex}
-                  className={`${selectedIds.has(lead._id) ? "!bg-blue-900/50" : ""}`}>
+                  className={`${selectedIds.has(lead._id) ? "bg-blue-900/50!" : ""}`}>
 
                   <td onClick={(e) => e.stopPropagation()} className="flex items-center gap-2">
                     <input
@@ -119,10 +115,10 @@ const LeadTable = ({
                       className="hover:text-blue-500  cursor-pointer"
                       title="Edit Lead"
                     >
-                      <FaEdit className="text-md !-ml-2 font-semibold" />
+                      <FaEdit className="text-md -ml-2! font-semibold" />
                     </button>
                   </td>
-                  <td className="!pl-5"> <span className="relative   ">{lead?.isLocked && <BiSolidLockAlt title="Agent will not be able modify these lease leads" className="text-[#F7BB07] absolute -left-4 top-1/2 -translate-y-1/2" />} {formateDate(lead?.createdAt)}</span> </td>
+                  <td className="pl-5!"> <span className="relative   ">{lead?.isLocked && <BiSolidLockAlt title="Agent will not be able modify these lease leads" className="text-[#F7BB07] absolute -left-4 top-1/2 -translate-y-1/2" />} {formateDate(lead?.createdAt)}</span> </td>
                   <td title={lead.name} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.name}</td>
                   <td title={lead.email} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.email}</td>
                   <td title={lead.phone} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis" > <span className="text-nowrap">{lead.phone}</span></td>

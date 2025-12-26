@@ -23,7 +23,7 @@ export default function Layout({ children }) {
                 <div className="drawer  bg-gray-900 text-gray-100 transition-colors">
                     <input id="my-drawer" type="checkbox" className="drawer-toggle" />
                     <div className="drawer-content h-full">
-                        <div className="flex bg-gray-900 fixed z-[999] w-full  xl:hidden p-5 top-0 h-fit justify-between items-center">
+                        <div className="flex bg-gray-900 fixed z-9999 w-full  xl:hidden p-5 top-0 h-fit justify-between items-center">
                             <a href="https://eshikhon.com/" target="blank"><img className="h-10" src={"/logo/eshikhon.svg"} /></a>
                             <label htmlFor="my-drawer" className="btn btn-primary bg-blue-600 text-xl drawer-button"><LuMenu /></label>
                         </div>
@@ -31,7 +31,7 @@ export default function Layout({ children }) {
                             {children}
                         </div>
                     </div>
-                    <div className={`${isSmall && "drawer-side"}  z-[8999] p-0`}>
+                    <div className={`${isSmall && "drawer-side"}  z-8999! p-0`}>
 
                         <label htmlFor="my-drawer" className="drawer-overlay" />
                         <ul className="menu flex-nowrap shrink-0 p-0 pt-8  bg-gray-800 gap-3 w-80   text-gray-100 min-h-full overflow-hidden xl:w-12 fixed 2xl:static hover:w-80 duration-300  ">

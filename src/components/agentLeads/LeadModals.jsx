@@ -261,7 +261,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
 
     return (
-        selectedLead && <div className="fixed inset-0 z-[9999] bg-black/40 flex items-center justify-center">
+        selectedLead && <div className="fixed inset-0 z-9999 bg-black/40 flex items-center justify-center">
             <div>
                 <div className={`bg-base-100 w-full   rounded-lg shadow-lg p-6 relative grid grid-cols-1 ${(modelStatus == "Enrolled" || modelStatus == "Refunded") ? "md:grid-cols-2 lg:grid-cols-4 max-w-7xl" : "md:grid-cols-3 lg:grid-cols-3 max-w-5xl"} gap-4 max-h-[90vh] overflow-y-auto`}>
 
@@ -355,7 +355,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                         <>
                                             {/* Invisible backdrop to close menu when clicking outside */}
                                             <div
-                                                className="fixed inset-0 z-[9998] cursor-default"
+                                                className="fixed inset-0 z-9998 cursor-default"
                                                 onClick={() => setIsSourceMenuOpen(false)}
                                             ></div>
 
@@ -366,7 +366,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                                     left: `${sourceMenuPosition.left}px`,
                                                     position: 'fixed' // This creates the escape magic
                                                 }}
-                                                className="menu p-2 shadow-xl bg-base-300 rounded-box  max-h-[300px] overflow-y-auto border border-gray-600 z-[9999]"
+                                                className="menu p-2 shadow-xl bg-base-300 rounded-box  max-h-[300px] overflow-y-auto border border-gray-600 z-9999"
                                             >
                                                 {sourceOptions.map((source, idx) => (
                                                     <li key={idx}>
@@ -517,7 +517,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                     // href={`tel:017429500624`}
                                     href={`tel:${formatBDNumber(selectedLead?.phone)}`}
                                     // href="http://192.168.10.10/webclient/#/call/017429500624"
-                                    className=" flex gap-2 !py-3 w-full bg-[#373737] border border-[#373737] btn  "
+                                    className=" flex gap-2 py-3! w-full bg-[#373737] border border-[#373737] btn  "
                                 >
                                     Call on <Image alt="3CX" src={"/logo/3cx.png"} className="w-auto h-5 " width={1000} height={1000} />
                                 </a>
@@ -526,7 +526,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                     href={`https://wa.me/${formatForWhatsApp(selectedLead?.phone)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className=" flex gap-2 !py-3 w-full bg-[#34DA51] border border-[#34DA51] btn "
+                                    className=" flex gap-2 py-3! w-full bg-[#34DA51] border border-[#34DA51] btn "
                                 >
                                     <Image alt="wsp" src={"/logo/whatsapp.png"} className="w-auto h-5 " width={1000} height={1000} />  Call on Whatsapp
                                 </a>
@@ -543,7 +543,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                 </label>
                                 <ul
                                     tabIndex={0}
-                                    className="dropdown-content z-[999] !fixed    menu p-2 shadow bg-base-200 rounded-box w-76"
+                                    className="dropdown-content z-9999 fixed!    menu p-2 shadow bg-base-200 rounded-box w-76"
                                 >
                                     {statusOptions.filter(item => item != "All").map((s) => (
                                         <li key={s}>
@@ -572,7 +572,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                 </label>
                                 <ul
                                     tabIndex={0}
-                                    className="dropdown-content z-[999] !fixed    menu p-2 shadow bg-base-200 rounded-box w-76"
+                                    className="dropdown-content z-9999 fixed!    menu p-2 shadow bg-base-200 rounded-box w-76"
                                 >
                                     {["Joined", "Online", "Offline", "None"].map((s) => (
                                         <li key={s}>
