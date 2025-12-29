@@ -31,7 +31,7 @@ const TopSellingCourse = () => {
                 </div>
 
                 {/* Body */}
-                <div className='mt-5 px-6  overflow-y-auto max-h-[280px] wrapper'>
+                <div className='mt-5 px-6  overflow-y-auto max-h-[318px] wrapper'>
                     {data?.length > 0 ? (
                         data.map((item, index) => (
                             <div

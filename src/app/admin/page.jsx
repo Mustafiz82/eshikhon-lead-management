@@ -1,5 +1,6 @@
 "use client"
 import CallCountTable from "@/components/Dashboard/CallCountTable";
+import CourseSellingSummary from "@/components/Dashboard/CourseSellingSummary";
 import LeadsGrowthChart from "@/components/Dashboard/LeadsGrowthChart";
 import LeadsStatusPanel from "@/components/Dashboard/LeadsStatusPanel";
 import { AuthContext } from "@/context/AuthContext";
@@ -114,7 +115,7 @@ const page = () => {
 
             {/* Top selling Course */}
 
-            
+            <CourseSellingSummary state={state} setState={setState}/>
 
 
         </div>

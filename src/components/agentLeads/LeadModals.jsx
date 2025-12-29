@@ -49,25 +49,24 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         console.log(followUpDate)
         setSaving(true)
         const {
-            // enrolledTo,
             estemitePaymentDate,
-            discountSource,     
+            discountSource,
             leadDiscount,      //actual duiscount value when discount is set 
             discountUnit,      // selected discount unit 
             originalPrice,
             lastPaid,
-            totalDue, minValue, maxValue } = courseInput
+            totalDue,
+            minValue,
+            maxValue } = courseInput
 
-        // console.log(totalDue)
-
-        // console.log(searchInput)
 
         if (!searchInput) {
             setSaving(false)
             return setError("Please input Course Name")
         }
+
         let filteredCourse = course.filter(item => (item.name == searchInput))
-        // console.log(filteredCourse)
+      
 
         if (filteredCourse?.length == 0) {
             setSaving(false)
@@ -86,20 +85,12 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             }
         }
 
-        // console.log(minValue, maxValue, leadDiscount)
-        // if (
-        //     leadDiscount &&
-        //     (leadDiscount < minValue || leadDiscount > maxValue)
-        // ) {
-        //     return;
-        // }
-
 
         setError("")
 
         const obj = {
             interstedCourse: (searchInput ?? "").trim(),
-            interstedCourseType : selectedCourseType,
+            interstedCourseType: selectedCourseType,
             interstedSeminar: InterstedSeminarStatus,
             discountSource,
             leadSource: leadSource,

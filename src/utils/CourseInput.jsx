@@ -25,7 +25,6 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
 
   const selectedDiscountObject = discount.find(item => (item.name == selectedDiscount) || (item.name == selectedLead?.discountSource))
   const isCommited = selectedDiscountObject?.authority === "committed"
-  // const selectedCourse = course.find(item => (item.name.toLowerCase() == searchInput.toLocaleLowerCase()) || (item.name.toLowerCase() == selectedLead?.enrolledTo?.toLocaleLowerCase()))
   const selectedCourse = course.find(item => item._id === selectedCourseId);
 
 
@@ -39,7 +38,6 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
       : (selectedDiscountinput ?? 0);
 
     setCourseInput({
-      // enrolledTo: (searchInput ?? "").trim(),
       estemitePaymentDate: estemitePaymentDate ?? null,
       discountSource: selectedDiscount ?? "",
       leadDiscount: finalLeadDiscount,
@@ -63,24 +61,9 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
   ]);
 
 
+  console.log(courseInput)
 
 
-  // const handleSearch = (e) => {
-  //   const searchText = e.target.value
-  //   setSearchInput(searchText)
-  //   const Suggesion = course.filter(item => item.name.toLowerCase().includes(searchText.toLowerCase()))
-  //   if (searchText.length > 0) {
-  //     setSearchSuggesion(Suggesion)
-  //   }
-
-  // }
-
-
-  // const handleSearchSuggesionClick = (item) => {
-  //   setSearchInput(item?.name); //  shows name in input
-  //   setSelectedCourseId(item?._id); // but internally, we track by id
-  //   setSearchSuggesion("");
-  // };
 
   const isEnrolled = selectedLead?.leadStatus === "Enrolled";
 

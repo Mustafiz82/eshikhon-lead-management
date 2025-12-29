@@ -146,12 +146,13 @@ const Page = () => {
 
     const totalPages = Math.round((leadsCount?.count / leadsPerPage)) || 1
 
-    console.log(totalPages)
-
-
     const goToPage = (page) => {
         if (page >= 1 && page <= totalPages) setCurrentPage(page);
     };
+
+
+
+    
 
 
     useEffect(() => {
@@ -365,7 +366,7 @@ const Page = () => {
 
         if (result.isConfirmed) {
             try {
-                const payload = { ids, update: { assignTo: "", assignStatus: false } };
+                const payload = { ids, update: { assignTo: "", assignStatus: false , assignDate : null} };
                 const res = await axiosPublic.patch("/leads", payload);
 
                 showAlert("Unassigned", `${res.data.modified || ids.length} lead(s) unassigned successfully.`, "success");

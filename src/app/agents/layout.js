@@ -31,7 +31,7 @@ export default function Layout({ children }) {
                             {children}
                         </div>
                     </div>
-                    <div className={`${isSmall && "drawer-side"}  z-8999! p-0`}>
+                    <div className={`${isSmall && "drawer-side"} max-h-screen sticky top-0  z-8999! p-0`}>
 
                         <label htmlFor="my-drawer" className="drawer-overlay" />
                         <ul className="menu flex-nowrap shrink-0 p-0 pt-8  bg-gray-800 gap-3 w-80   text-gray-100 min-h-full overflow-hidden xl:w-12 fixed 2xl:static hover:w-80 duration-300  ">

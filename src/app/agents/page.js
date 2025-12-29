@@ -1,5 +1,6 @@
 "use client"
 import AgentsLeadsStatusPanel from "@/components/agentLeads/AgentsLeadsStatusPanel";
+import CourseSellingSummary from "@/components/Dashboard/CourseSellingSummary";
 import TopSellingCourse from "@/components/Dashboard/TopSellingCourse";
 import { AuthContext } from "@/context/AuthContext";
 import { DateRangeContext } from "@/context/DateRangeContext";
@@ -55,8 +56,8 @@ const Page = () => {
   ];
 
   return (
-    <div className="p-6  min-h-screen">
-      <div className="flex justify-between mb-4">
+    <div className=" min-h-screen">
+      <div className="flex py-4 p-6 justify-between sticky top-0 bg-slate-900 ">
         <h2 className="text-white text-xl font-semibold capitalize">{user.name} Dashboard</h2>
         <div className="flex gap-2 items-center">
           <p className="whitespace-nowrap hidden lg:block text-gray-300">View Statistics for:</p>
@@ -80,7 +81,8 @@ const Page = () => {
         </div>
       </div>
 
-      <AgentsLeadsStatusPanel state={state} setState={setState} selectedFilter={selectedFilter} />
+      <div className="p-6">
+          <AgentsLeadsStatusPanel state={state} setState={setState} selectedFilter={selectedFilter} />
 
       <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-5">
         <Leaderboard
@@ -125,10 +127,12 @@ const Page = () => {
       {/* Top Selling Course */}
 
 
-      <div className="grid gap-5 grid-cols-2">
+      <div className="">
 
-      <TopSellingCourse></TopSellingCourse>
+      {/* <TopSellingCourse/> */}
+      <CourseSellingSummary state={state}/>
 
+      </div>
       </div>
     </div>
   );
