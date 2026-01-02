@@ -138,9 +138,9 @@ const CourseSellingSummary = ({ state }) => {
                             onChange={e => setSearchText(e.target.value)}
 
                             placeholder="🔍︎ Search by course name"
-                            className="input -z-1! input-bordered rounded-none focus:outline-0  focus:border-blue-600  mb-4"
+                            className="input static  input-bordered rounded-none focus:outline-0  focus:border-blue-600  mb-4"
                         />
-                        <select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)} defaultValue="Pick a color" className="select focus-within:ring-0 focus-within:outline-0 focus-within:border-blue-600 -z-1! pl-5  ">
+                        <select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)} defaultValue="Pick a color" className="select static! focus-within:ring-0 focus-within:outline-0 focus-within:border-blue-600 pl-5  ">
 
                             <option value={"count"}>By Highest Enrollment</option>
                             <option value={"rate"}>By Highest Conversion Rate     </option>
@@ -310,7 +310,7 @@ const ProgressBar = ({ assigned, enrolled }) => {
 
 
     return (
-        <div className="flex relative flex-col mt-2 h-full">
+        <div className="flex flex-col mt-2 h-full">
             {/* The background bar now contains the text */}
             <div className="relative flex w-full h-4 bg-black/20 rounded-full overflow-hidden" role="progressbar">
 
