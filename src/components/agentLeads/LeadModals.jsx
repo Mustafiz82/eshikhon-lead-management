@@ -65,8 +65,32 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             return setError("Please input Course Name")
         }
 
+        if (discountSource) {
+
+            // discount must be a number
+            if (leadDiscount === null || leadDiscount === undefined || leadDiscount === "") {
+                setSaving(false);
+                return setError("Please input discount value");
+            }
+
+            const discountValue = Number(leadDiscount);
+
+            // below minimum
+            if (discountValue < minValue) {
+                setSaving(false);
+                return setError(`Discount cannot be less than ${minValue}`);
+            }
+
+            // above maximum
+            if (discountValue > maxValue) {
+                setSaving(false);
+                return setError(`Discount cannot be greater than ${maxValue}`);
+            }
+        }
+
+
         let filteredCourse = course.filter(item => (item.name == searchInput))
-      
+
 
         if (filteredCourse?.length == 0) {
             setSaving(false)

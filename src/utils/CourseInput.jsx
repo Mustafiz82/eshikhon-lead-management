@@ -1,203 +1,109 @@
 "use client";
-import useFetch from "@/hooks/useFetch";
 import { useContext, useEffect, useState } from "react";
 import { FaBangladeshiTakaSign } from "react-icons/fa6";
 import { formateDate } from "./date";
-import { getDiscountBounds } from "./getDiscountBounds";
 import { AuthContext } from "@/context/AuthContext";
+import useDiscountCalculation from "@/hooks/useDiscountCalculation";
+import useDueCalculation from "@/hooks/useDueCalculation";
 
-export default function CourseInput({ courseInput, setCourseInput, selectedLead, selectedCourseId }) {
-
-  const [searchInput, setSearchInput] = useState("")
-  const [searchSuggesion, setSearchSuggesion] = useState("")
-
-  const [estemitePaymentDate, setEstimatePaymentDate] = useState(null)
-  const [selectedDiscount, setSelectedDiscount] = useState("")     // discount source 
-  const [selectedDiscountinput, setSelectedDiscountInput] = useState("")
-  const [selectedDiscountUnit, setSelectedDiscountUnit] = useState("%")
-  const [lastPaid, setlastPaid] = useState()
+export default function CourseInput({ setCourseInput, selectedLead, selectedCourseId }) {
 
 
-  const { data: course } = useFetch("/course")
-  const { data: discount } = useFetch("/discount")
-  const {user:loggedUser} = useContext(AuthContext)
+  const { user: loggedUser } = useContext(AuthContext)     // get user role 
+  const [lastPaid, setLastPaid] = useState(0)              // handle input payment amount
+  const [estimatedPaymentDate, setEstimatedPaymentDate] = useState(null)  // next payment date
 
 
-  const selectedDiscountObject = discount.find(item => (item.name == selectedDiscount) || (item.name == selectedLead?.discountSource))
-  const isCommited = selectedDiscountObject?.authority === "committed"
-  const selectedCourse = course.find(item => item._id === selectedCourseId);
+
+  // get discount related result , option , course price from hook . 
+  const {
+    originalPrice,
+    applicableDiscountOptions,
+    selectedDiscount,
+    selectedDiscountID,
+    setSelectedDiscountID,
+    inputDiscountAmount,
+    setInputDiscountAmount,
+    isDiscountDisabled,
+    setIsDiscountDisabled,
+    inputDiscountUnit,
+    setInputDiscountUnit,
+    minValue,
+    maxValue,
+  } = useDiscountCalculation(selectedCourseId, selectedLead)
 
 
+  // Calculate Due 
+  const dueAmount = useDueCalculation(
+    originalPrice,
+    lastPaid,
+    inputDiscountAmount,
+    selectedLead,
+    inputDiscountUnit,
+  )
+
+
+  //  send course input data and states to lead modal 
   useEffect(() => {
-    const finalUnit = isCommited
-      ? (selectedDiscountObject?.mode === "amount" ? "flat" : "percent")
-      : selectedDiscountUnit;
-
-    const finalLeadDiscount = isCommited
-      ? (selectedDiscountObject?.value ?? 0)
-      : (selectedDiscountinput ?? 0);
-
     setCourseInput({
-      estemitePaymentDate: estemitePaymentDate ?? null,
-      discountSource: selectedDiscount ?? "",
-      leadDiscount: finalLeadDiscount,
-      discountUnit: finalUnit,
-      originalPrice: selectedLead?.leadStatus === "Enrolled" ? selectedLead?.originalPrice : (selectedCourse?.price ?? 0),
+      estemitePaymentDate: estimatedPaymentDate ?? null,
+      discountSource: selectedDiscount?.name ?? "",
+      leadDiscount: inputDiscountAmount,
+      discountUnit: inputDiscountUnit,
+      originalPrice: originalPrice,
       lastPaid: lastPaid ?? 0,
-      totalDue: calcTotalDue(),
+      totalDue: dueAmount,
       minValue, maxValue
     });
   }, [
-    // searchInput,
+    estimatedPaymentDate,
     selectedDiscount,
-    selectedDiscountinput,
-    selectedDiscountUnit,
-    selectedCourse,
+    inputDiscountUnit,
+    inputDiscountAmount,
+    originalPrice,
     lastPaid,
-    isCommited,
-    selectedDiscountObject,
-    selectedLead?.totalPaid,
-    estemitePaymentDate
+    dueAmount,
   ]);
 
 
-  console.log(courseInput)
+  // initialize the state with previous value from backend
+  useEffect(() => {
 
-
-
-  const isEnrolled = selectedLead?.leadStatus === "Enrolled";
-
-  const courseForDiscountBounds = {
-    price: isEnrolled
-      ? selectedLead?.originalPrice ?? 0
-      : selectedCourse?.price ?? 0
-  };
-
-  const { minValue, maxValue } = getDiscountBounds(
-    selectedDiscountUnit,
-    selectedDiscountObject,
-    courseForDiscountBounds
-  );
-
-  // Use one single source of truth for due calculation
-  function calcTotalDue() {
-    const isEnrolled = selectedLead?.leadStatus === "Enrolled";
-
-    const price = isEnrolled
-      ? (selectedLead?.originalPrice ?? 0)
-      : (selectedCourse?.price ?? 0);
-
-    const alreadyPaid = selectedLead?.totalPaid ?? 0;
-    const last = lastPaid ?? 0;
-
-    let discountAmount = 0;
-
-    if (selectedDiscountObject) {
-      if (isCommited) {
-        // committed discount comes from backend rule
-        if (selectedDiscountObject.mode === "amount") {
-          discountAmount = selectedDiscountObject.value ?? 0;
-        } else {
-          const percent = (selectedDiscountObject.value ?? 0) / 100;
-          discountAmount = price * percent;
-        }
-      } else {
-        // user-entered discount
-        if (selectedDiscountUnit === "৳") {
-          const entered = selectedDiscountinput ? parseFloat(selectedDiscountinput) : 0;
-          discountAmount = entered;
-        } else {
-          const percent = (selectedDiscountinput ? parseFloat(selectedDiscountinput) : 0) / 100;
-          discountAmount = price * percent;
-        }
-      }
+    if (selectedLead?.nextEstimatedPaymentDate) {
+      let nextPaymentDate = new Date(selectedLead?.nextEstimatedPaymentDate).toISOString().slice(0, 16)
+      setEstimatedPaymentDate(nextPaymentDate)
     }
 
-    const due = Math.round(price - alreadyPaid - last - discountAmount);
-    return due < 0 ? 0 : due; // never negative
-  }
+    setInputDiscountAmount(selectedLead?.leadDiscount)
+    setInputDiscountUnit(selectedLead?.discountUnit == "amount" ? "৳" : "%")
+    setSelectedDiscountID(selectedLead?.discountSource)
 
+    console.log(loggedUser)
 
-
-  useEffect(() => {
-    // setSearchInput(selectedLead?.enrolledTo ?? selectedLead?.interstedCourse ?? "");
-    
-
-
-    setSelectedDiscount(selectedLead?.discountSource ?? "");
-    setSelectedDiscountInput(selectedLead?.leadDiscount ?? "");
-    setSelectedDiscountUnit(selectedLead?.discountUnit == "percent" ? "%" : "৳");
-
-    setlastPaid(0);
-  }, [selectedLead]);
-
-
-  // helper to clamp based on current unit
-  function clampDiscount(val, unit) {
-    let num = parseFloat(val);
-    if (isNaN(num)) return 0;
-
-    const { minValue, maxValue } = getDiscountBounds(
-      unit,
-      selectedDiscountObject,
-      selectedCourse
-    );
-
-    if (minValue !== undefined && num < minValue) num = minValue;
-    if (maxValue !== undefined && num > maxValue) num = maxValue;
-
-    return num;
-  }
-
-
+    if (loggedUser?.role == "user" && selectedLead?.leadDiscount) {
+      console.log("true")
+      setIsDiscountDisabled(true)
+    }
+  }, [selectedLead])
 
 
 
 
   return (
     <div className="w-full max-w-xl mx-auto space-y-4">
-      {/* Course Name */}
-      {/* <div className="mt-3">
-        <input
-          type="text"
-          value={searchInput}
-          onChange={handleSearch}
-          placeholder="Course Name"
-          className="input input-bordered w-full focus:outline-0 focus:border-blue-600"
-        />
 
-        {searchSuggesion?.length > 0 && <ul className="bg-base-100 fixed z-50 shadow-md mt-1 rounded-box border border-base-300">
-          {
-            searchSuggesion.map(item => <li
-              onClick={() => handleSearchSuggesionClick(item)}
-              className="px-4 py-2 flex justify-between w-[290px] bg-gray-700 cursor-pointer hover:bg-base-200">
-              <span>{item.name} ({item.type})</span>
-              <span>৳ {item.price}</span>
-            </li>)
-          }
-        </ul>
-        }
-      </div> */}
-
-      {/* Discount Type */}
       <select
-        disabled={loggedUser.role == "user" &&  selectedLead?.leadDiscount}
-        onChange={(e) => setSelectedDiscount(e.target.value)}
-        value={selectedDiscount}
+        // disabled={loggedUser.role == "user" &&  selectedLead?.leadDiscount}
+        onChange={(e) => setSelectedDiscountID(e.target.value)}
+        value={selectedDiscountID}
         className="select focus:border-blue-600 px-2 focus:outline-0 select-bordered w-full"
       >
         <option>Select Discount</option>
-        {discount
-          ?.filter(item => {
-            const now = new Date();
-            const start = new Date(item.startAt);
-            const end = new Date(item.expireAt);
-            return (
-              item?.appliesTo?.includes(String(selectedCourse?._id)) &&
-              now >= start && now <= end
-            );
-          })
-          ?.map(item => <option key={item._id}>{item.name}</option>)
+        {
+          applicableDiscountOptions.map(item => <option
+            value={item.name}
+            key={item._id}> {item?.name}
+          </option>)
         }
       </select>
 
@@ -211,11 +117,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
           </label>
           <input
             type="number"
-
-            // value={selectedCourse?.price || ""}
-            value={selectedLead?.leadStatus === "Enrolled"
-              ? selectedLead?.originalPrice ?? ""
-              : selectedCourse?.price ?? ""}
+            value={originalPrice}
             placeholder="Auto-filled"
             className="input input-bordered w-full disabled:bg-transparent disabled:border disabled:border-gray-600"
             disabled
@@ -224,16 +126,16 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
 
         {/* Discount */}
         <div className="col-span-3">
-          <label className="block mb-1 text-white/80 text-sm">Discount {(minValue && maxValue) ? `( ${minValue + selectedDiscountUnit} - ${maxValue + selectedDiscountUnit})` : null}</label>
+          <label
+            className="block mb-1 text-white/80 text-sm">
+            Discount {(minValue && maxValue) ? `( ${minValue + inputDiscountUnit} - ${maxValue + inputDiscountUnit})` : null}</label>
+
           <div className="join grid grid-cols-3 w-full">
             <input
-              disabled={(loggedUser.role == "user" && selectedLead?.leadDiscount) || isCommited}
-              value={isCommited ? (selectedDiscountObject?.value ?? "") : (selectedDiscountinput ?? "")}
-              onChange={(e) => setSelectedDiscountInput(e.target.value)}
-              onBlur={(e) => {
-                setSelectedDiscountInput(clampDiscount(e.target.value, selectedDiscountUnit));
-              }}
 
+              value={inputDiscountAmount}
+              disabled={isDiscountDisabled}
+              onChange={(e) => setInputDiscountAmount(e.target.value)}
               type="number"
               min={minValue}
               max={maxValue}
@@ -241,16 +143,9 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
               className="input col-span-2 input-bordered join-item w-full focus:outline-0 focus:border-blue-600"
             />
             <select
-            
-              onChange={(e) => {
-                const newUnit = e.target.value;
-                setSelectedDiscountUnit(newUnit);
-
-                // Re-validate the existing discount against new unit bounds
-                setSelectedDiscountInput((prev) => clampDiscount(prev, newUnit));
-              }}
-              value={isCommited ? (selectedDiscountObject?.mode === "amount" ? "৳" : "%") : selectedDiscountUnit}
-             disabled={(loggedUser.role == "user" && selectedLead?.leadDiscount) || isCommited}
+              value={inputDiscountUnit}
+              disabled={isDiscountDisabled}
+              onChange={e => setInputDiscountUnit(e.target.value)}
               className="select select-bordered join-item focus:outline-0 focus:border-blue-600"
             >
               <option>%</option>
@@ -270,7 +165,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
           <input
             type="number"
             value={lastPaid ?? 0}
-            onChange={(e) => setlastPaid(e.target.value)}
+            onChange={(e) => setLastPaid(e.target.value)}
             placeholder="0"
             className="input input-bordered w-full focus:outline-0 focus:border-blue-600"
           />
@@ -283,7 +178,7 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
           <input
             type="number"
             disabled
-            value={calcTotalDue()}
+            value={dueAmount}
             className="input disabled:bg-transparent disabled:border disabled:border-gray-600 input-bordered w-full focus:outline-0 focus:border-blue-600"
           />
 
@@ -297,8 +192,8 @@ export default function CourseInput({ courseInput, setCourseInput, selectedLead,
           type="datetime-local"
           onClick={(e) => e.target.showPicker && e.target.showPicker()}
           className="input input-bordered bg- border border-gray-600 text-white rounded-md w-full focus:outline-none  focus:border-blue-600"
-          value={estemitePaymentDate}
-          onChange={(e) => setEstimatePaymentDate(e.target.value)}
+          value={estimatedPaymentDate}
+          onChange={(e) => setEstimatedPaymentDate(e.target.value)}
         />
 
       </div>

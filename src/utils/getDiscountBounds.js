@@ -1,9 +1,11 @@
 // Returns { minValue, maxValue } for the discount input
-export function getDiscountBounds(selectedDiscountUnit, selectedDiscountObject, selectedCourse) {
+export function getDiscountBounds(selectedDiscountUnit, selectedDiscountObject, price) {
     let minValue = 0;
     let maxValue = 0;
 
-    const price = selectedCourse?.price;
+    console.log(selectedDiscountUnit, selectedDiscountObject, price)
+
+   
     const ruleMin = parseFloat(selectedDiscountObject?.minValue);
     const ruleMax = parseFloat(selectedDiscountObject?.maxValue);
     const cap = parseFloat(selectedDiscountObject?.capAmount);
@@ -59,8 +61,9 @@ export function getDiscountBounds(selectedDiscountUnit, selectedDiscountObject, 
             minValue = Math.floor(ruleMinAmount);
 
             // If capAmount is LOWER → cap wins
-            maxValue = Math.min(ruleMaxAmount, cap);
-        }
+            maxValue = cap ? Math.min(ruleMaxAmount, cap) : ruleMaxAmount 
+
+      }
     }
 
     return { minValue, maxValue };
