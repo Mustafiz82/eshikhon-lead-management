@@ -96,6 +96,33 @@ const CourseSellingSummary = ({ state }) => {
     console.log(sortedData)
 
 
+    const totals = summary.reduce(
+        (acc, item) => {
+            acc.totalSales += item.totalSales || 0;
+            acc.totalDue += item.totalDue || 0;
+
+            acc.online.assigned += item.online?.assigned || 0;
+            acc.online.enrolled += item.online?.enrolled || 0;
+
+            acc.offline.assigned += item.offline?.assigned || 0;
+            acc.offline.enrolled += item.offline?.enrolled || 0;
+
+            acc.total.assigned += item.total?.assigned || 0;
+            acc.total.enrolled += item.total?.enrolled || 0;
+
+            return acc;
+        },
+        {
+            totalSales: 0,
+            totalDue: 0,
+            online: { assigned: 0, enrolled: 0 },
+            offline: { assigned: 0, enrolled: 0 },
+            total: { assigned: 0, enrolled: 0 },
+        }
+    );
+
+
+
 
 
 
@@ -111,9 +138,9 @@ const CourseSellingSummary = ({ state }) => {
                             onChange={e => setSearchText(e.target.value)}
 
                             placeholder="🔍︎ Search by course name"
-                            className="input  input-bordered rounded-none focus:outline-0  focus:border-blue-600  mb-4"
+                            className="input -z-1! input-bordered rounded-none focus:outline-0  focus:border-blue-600  mb-4"
                         />
-                        <select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)} defaultValue="Pick a color" className="select focus-within:ring-0 focus-within:outline-0 focus-within:border-blue-600 pl-5  ">
+                        <select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)} defaultValue="Pick a color" className="select focus-within:ring-0 focus-within:outline-0 focus-within:border-blue-600 -z-1! pl-5  ">
 
                             <option value={"count"}>By Highest Enrollment</option>
                             <option value={"rate"}>By Highest Conversion Rate     </option>
@@ -224,15 +251,38 @@ const CourseSellingSummary = ({ state }) => {
 
 
                 <div className='grid px-6 border-t border-gray-700 py-3 grid-cols-11'>
-                    <div className='col-span-3 pl-5'>Total </div>
-                    <div className=' text-center'>   <CountUp className=' text-sm' end={41610} /> </div>
-                    <div className=' text-center'>   <CountUp className=' text-sm' end={41610} /> </div>
+                    <div className='col-span-3 pl-5 font-semibold'>Total</div>
 
-                    <p className='col-span-2 w-[200px] mx-auto'>  <ProgressBar assigned={80} enrolled={20} /></p>
-                    <p className='col-span-2 w-[200px] mx-auto'>  <ProgressBar assigned={80} enrolled={20} /></p>
-                    <p className='col-span-2 w-[200px] mx-auto'>  <ProgressBar assigned={80} enrolled={20} /></p>
+                    <div className='text-center'>
+                        <CountUp className='text-sm' end={totals.totalSales} />
+                    </div>
 
+                    <div className='text-center'>
+                        <CountUp className='text-sm' end={totals.totalDue} />
+                    </div>
+
+                    <p className='col-span-2 w-[200px] mx-auto'>
+                        <ProgressBar
+                            assigned={totals.online.assigned}
+                            enrolled={totals.online.enrolled}
+                        />
+                    </p>
+
+                    <p className='col-span-2 w-[200px] mx-auto'>
+                        <ProgressBar
+                            assigned={totals.offline.assigned}
+                            enrolled={totals.offline.enrolled}
+                        />
+                    </p>
+
+                    <p className='col-span-2 w-[200px] mx-auto'>
+                        <ProgressBar
+                            assigned={totals.total.assigned}
+                            enrolled={totals.total.enrolled}
+                        />
+                    </p>
                 </div>
+
             </div>
         </div>
     );
@@ -260,7 +310,7 @@ const ProgressBar = ({ assigned, enrolled }) => {
 
 
     return (
-        <div className="flex flex-col mt-2 h-full">
+        <div className="flex relative flex-col mt-2 h-full">
             {/* The background bar now contains the text */}
             <div className="relative flex w-full h-4 bg-black/20 rounded-full overflow-hidden" role="progressbar">
 

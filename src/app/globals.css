@@ -11,29 +11,47 @@
 }
 
 .wrapper {
-  mask-image: linear-gradient(to bottom,
-      rgba(0, 0, 0, 0),
-      /* Top fade start */
-      black 8%,
-      /* Fully visible area */
-      black 70%,
-      /* Fully visible area */
-      rgba(0, 0, 0, 0));
-  /* Bottom fade end */
+  position: relative;
+  overflow-y: auto;
 
-  -webkit-mask-image: linear-gradient(to bottom,
-      rgba(0, 0, 0, 0),
-      black 8%,
-      black 80%,
-      rgba(0, 0, 0, 0));
+  /* scrollbar hiding */
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mask moved to pseudo-element */
+.wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+
+  /* Fade mask */
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0),
+    black 8%,
+    black 70%,
+    rgba(0, 0, 0, 0)
+  );
+
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0),
+    black 8%,
+    black 80%,
+    rgba(0, 0, 0, 0)
+  );
 
   mask-mode: match-source;
   -webkit-mask-mode: match-source;
-  -ms-overflow-style: none;
-  /* IE and Edge */
-  scrollbar-width: none;
-
 }
+
 
 
 .wrapper::-webkit-scrollbar {
@@ -359,4 +377,12 @@ select::-webkit-scrollbar-thumb {
 
 select::-webkit-scrollbar-thumb:hover {
   background: #666;
+}
+
+
+.react-date-range-custom-styles{
+  z-index: 99999 !important;
+  position: relative !important;
+  
+
 }

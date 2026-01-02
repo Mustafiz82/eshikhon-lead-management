@@ -53,7 +53,7 @@ export default function DateRangeComponent({state, setState}) {
     const selectedEndDate = state[0].endDate;
 
     return (
-        <div className="relative inline-block font-sans">
+        <div className="relative z-9999! inline-block font-sans">
             <button
                 ref={buttonRef}
                 className="flex items-center justify-between 
@@ -94,7 +94,7 @@ export default function DateRangeComponent({state, setState}) {
                         moveRangeOnFirstSelection={false}
                         months={2}
                         direction="horizontal"
-                        className="react-date-range-custom-styles"
+                        className="react-date-range-custom-styles z-9999!"
                     />
                 </div>
             )}
