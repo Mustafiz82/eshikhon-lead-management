@@ -144,7 +144,7 @@ const Page = () => {
     };
 
 
-    const totalPages = Math.round((leadsCount?.count / leadsPerPage)) || 1
+    const totalPages = Math.ceil((leadsCount?.count / leadsPerPage)) || 1
 
     const goToPage = (page) => {
         if (page >= 1 && page <= totalPages) setCurrentPage(page);
@@ -618,9 +618,9 @@ const Page = () => {
                     <div className="flex md:justify-between md:w-full items-center gap-4 flex-wrap">
                         {/* Items Per Page Selector */}
                         <div className="flex justify-between lg:ml-auto lg:justify-start w-full md:w-auto items-center gap-2">
-                            <p className="text-sm text-nowrap">Per page:</p>
+                            <p className="text-sm  text-nowrap">Per page:</p>
                             <select
-                                className="select select-sm focus:outline-0"
+                                className="select px-1 w-14 select-sm focus:outline-0"
                                 value={leadsPerPage}
                                 onChange={(e) => {
                                     setLeadsPerPage(parseInt(e.target.value));

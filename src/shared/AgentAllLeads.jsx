@@ -109,7 +109,9 @@ const AgentAllLeads = () => {
     const upcOptions = ["None", "All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
     const missedFUOption = ["All", "Last 3 Days", "Last 7 Days", "Last 15 Days", "Last 30 Days"]
     const stageOptions = ["All", "Pending", "Contacted"];
-    const totalPages = Math.round((leadsCount?.count / leadsPerPage)) || 1
+    const totalPages = Math.ceil((leadsCount?.count / leadsPerPage)) || 1
+
+    console.log(leadsCount.count)
 
 
 
@@ -476,16 +478,16 @@ const AgentAllLeads = () => {
                         <div className="flex justify-between w-full items-center gap-5">
                             <p className="text-sm flex-1 text-nowrap">Showing {leadCountStart + 1}–{leadCountEnd + 1} of {leadsCount?.count} results</p>
                             <div className="flex justify-between w-full md:w-auto items-center gap-2">
-                                <p className="text-sm flex-1 text-nowrap">per page :</p>
+                                <p className="text-sm   flex-1 text-nowrap">per page :</p>
                                 <select
-                                    className="select select-sm focus:outline-0"
+                                    className="select px-1 w-14 gap-1 select-sm focus:outline-0"
                                     value={leadsPerPage}
                                     onChange={(e) => {
                                         setLeadsPerPage(parseInt(e.target.value));
                                         setCurrentPage(1);
                                     }}
                                 >
-                                    {[10, 25, 50, 100, 200].map((n) => (
+                                    {[10, 25, 50, 100, 200 , 500].map((n) => (
                                         <option key={n} value={n}>
                                             {n}
                                         </option>
