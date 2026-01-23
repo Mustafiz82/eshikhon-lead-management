@@ -98,7 +98,7 @@ const AgentAllLeads = () => {
     const { data: leads, loading, refetch } = useFetch(`/leads?${params}`)
     const { data: course } = useFetch("/course")
     const { data: leadSource } = useFetch("/leads/source")
-     const { data: courseOption } = useFetch("/leads/intersted-course");
+    const { data: courseOption } = useFetch("/leads/intersted-course");
 
 
 
@@ -176,30 +176,57 @@ const AgentAllLeads = () => {
 
 
 
+ 
+
     const handleLeadExport = () => {
 
+        console.log(course)
         if (!Array.isArray(leads) || leads.length === 0) {
             return showToast("No leads found to export", "warning");
         }
 
-        // Prepare only required fields
+        console.log(course.items)
+
+        // If course data is required for correct export, don’t export before it exists.
+        // (If you have a loading flag from useFetch, check that instead.)
+        if (!course?.length) {
+            return showToast("Course list not loaded yet", "warning");
+        }
+
+        const norm = (v) => String(v ?? "").trim().toLowerCase();
+
+        const coursePriceMap = new Map(
+            (course ?? []).map((c) => [
+                `${norm(c.name)}|${norm(c.type)}`,
+                c.price ?? 0
+            ])
+        );
+
+        console.log(coursePriceMap)
+
         const exportData = leads.map((l) => {
-            // --- calculate discounted price ---
-            let discountedPrice = l.originalPrice || 0;
+            const courseKey = `${norm(l.interstedCourse)}|${norm(l.interstedCourseType)}`;
+            const coursePrice = coursePriceMap.get(courseKey);
+
+            // ✅ Original Price comes from course price (fallbacks included)
+            const originalPrice =
+                (typeof coursePrice === "number" ? coursePrice : undefined) ??
+                (typeof l.originalPrice === "number" ? l.originalPrice : 0);
+
+            // ✅ Discount uses *this* originalPrice
+            let discountedPrice = originalPrice;
             if (l.leadDiscount && l.leadDiscount > 0) {
                 if (l.discountUnit === "percent") {
-                    discountedPrice = Math.round(l.originalPrice * (1 - l.leadDiscount / 100));
+                    discountedPrice = Math.round(originalPrice * (1 - l.leadDiscount / 100));
                 } else if (l.discountUnit === "flat") {
-                    discountedPrice = Math.max(0, l.originalPrice - l.leadDiscount);
+                    discountedPrice = Math.max(0, originalPrice - l.leadDiscount);
                 }
             }
 
-            // --- format payment history ---
             const historyText = (l.history || [])
                 .map((h) => `${new Date(h.date).toLocaleString()} → ${h.paidAmount}`)
                 .join(" | ");
 
-            // --- format notes ---
             const noteText = (l.note || [])
                 .map((n) => `${n.by || "unknown"}: ${n.text}`)
                 .join(" | ");
@@ -213,8 +240,11 @@ const AgentAllLeads = () => {
                 "Seminar Type": l.interstedCourseType || "",
                 "Lead Source": l.leadSource || "",
                 "Lead Status": l.leadStatus || "",
-                "Original Price": l.originalPrice ?? 0,
+
+                // 👇 now driven by course lookup
+                "Original Price": originalPrice,
                 "Discounted Price": discountedPrice,
+
                 "Total Paid": l.totalPaid ?? 0,
                 "Total Due": l.totalDue ?? 0,
                 "Last Payment Amount": l.lastPayment?.paidAmount ?? 0,
@@ -223,16 +253,15 @@ const AgentAllLeads = () => {
                     : "",
                 "Payment History": historyText,
                 "Notes": noteText,
-                "Created At": l.createdAt
-                    ? new Date(l.createdAt).toLocaleString()
-                    : "",
+                "Created At": l.createdAt ? new Date(l.createdAt).toLocaleString() : "",
+
+                // optional but useful for debugging mismatches:
+                "Course Price Found": typeof coursePrice === "number" ? "YES" : "NO",
             };
         });
 
-        // Convert to CSV
         const csv = Papa.unparse(exportData);
 
-        // Trigger download
         const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
@@ -242,6 +271,7 @@ const AgentAllLeads = () => {
 
         showToast("Lead export completed", "success");
     };
+
 
 
 
@@ -487,7 +517,7 @@ const AgentAllLeads = () => {
                                         setCurrentPage(1);
                                     }}
                                 >
-                                    {[10, 25, 50, 100, 200 , 500].map((n) => (
+                                    {[10, 25, 50, 100, 200, 500, 1000].map((n) => (
                                         <option key={n} value={n}>
                                             {n}
                                         </option>
