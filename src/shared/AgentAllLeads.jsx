@@ -241,12 +241,12 @@ const AgentAllLeads = () => {
                 "Lead Source": l.leadSource || "",
                 "Lead Status": l.leadStatus || "",
 
-                // 👇 now driven by course lookup
+             
                 "Original Price": originalPrice,
                 "Discounted Price": discountedPrice,
 
                 "Total Paid": l.totalPaid ?? 0,
-                "Total Due": l.totalDue ?? 0,
+                "Total Due":l.leadStatus == "Enrolled" ? ( discountedPrice - l.totalPaid ) :  0,
                 "Last Payment Amount": l.lastPayment?.paidAmount ?? 0,
                 "Last Payment Date": l.lastPayment?.date
                     ? new Date(l.lastPayment.date).toLocaleString()
