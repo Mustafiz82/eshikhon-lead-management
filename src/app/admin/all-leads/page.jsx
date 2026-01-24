@@ -24,6 +24,8 @@ import DetailsModal from "@/components/allLeads/DetailsModal";
 import LeadModals from "@/components/agentLeads/LeadModals";
 import { statusOptions } from "@/shared/AgentAllLeads";
 import { AuthContext } from "@/context/AuthContext";
+import { FaFileExport } from "react-icons/fa";
+import { handleLeadExport } from "@/utils/exportLeads";
 
 
 const Page = () => {
@@ -152,7 +154,7 @@ const Page = () => {
 
 
 
-    
+
 
 
     useEffect(() => {
@@ -366,7 +368,7 @@ const Page = () => {
 
         if (result.isConfirmed) {
             try {
-                const payload = { ids, update: { assignTo: "", assignStatus: false , assignDate : null} };
+                const payload = { ids, update: { assignTo: "", assignStatus: false, assignDate: null } };
                 const res = await axiosPublic.patch("/leads", payload);
 
                 showAlert("Unassigned", `${res.data.modified || ids.length} lead(s) unassigned successfully.`, "success");
@@ -392,6 +394,69 @@ const Page = () => {
     }, [selectedIds]);
 
 
+
+    // 1) Export selected leads only
+    const handleExportSelected = () => {
+        const ids = Array.from(selectedIds);
+
+        if (!ids.length) {
+            return showAlert(
+                "No leads selected",
+                "Select at least one lead to export.",
+                "warning"
+            );
+        }
+
+        // only export the leads that are currently loaded AND selected
+        const selectedLeads = leads.filter((l) => ids.includes(l._id));
+
+        if (!selectedLeads.length) {
+            return showAlert(
+                "Selected leads not found",
+                "The selected leads are not in the current loaded list. (Try selecting from this page.)",
+                "warning"
+            );
+        }
+
+        handleLeadExport(course, selectedLeads);
+    };
+
+
+    // 2) Export all-time leads (fetch from backend)
+    const handleExportAllTime = async () => {
+        try {
+            // You should ideally create a backend endpoint like: GET /leads/export
+            // But if you don't have it, this is a workable approach:
+
+            const exportParams = new URLSearchParams({
+                status: "All",
+                course: "All",
+                search: "",
+                sort: "Default",
+                lock: "All",
+                leadSource: "All",
+                assignTo: "All",
+                leadStatus: "All",
+                // pull a big number (best: backend ignores pagination for export endpoint)
+                limit: 999999,
+                currentPage: 1,
+                // optional: only return fields needed for export if backend supports it
+                // fields: "export"
+            }).toString();
+
+            const res = await axiosPublic.get(`/leads?${exportParams}`);
+            const allLeads = res.data;
+
+            if (!Array.isArray(allLeads) || allLeads.length === 0) {
+                return showAlert("No leads found", "There are no leads to export.", "info");
+            }
+
+            handleLeadExport(course, allLeads);
+        } catch (err) {
+            console.log(err);
+            showAlert("Export failed", err?.message || "Something went wrong.", "error");
+        }
+    };
 
 
 
@@ -545,12 +610,12 @@ const Page = () => {
                 {/* Footer Controls */}
                 <div className="mt-4 flex flex-col lg:flex-row   justify-between items-center gap-4 border-t border-base-content/10 pt-4">
                     {/* Assignment Tools */}
-                    <div className="flex  w-full  justify-between  items-center gap-2">
+                    <div className="flex flex-1   w-full  justify-between  items-center gap-2">
                         <span className="text-sm hidden md:block text-nowrap">
                             Selected: <b>{selectedIds.size}</b>
                         </span>
                         <div className="flex w-full md:w-auto lg:w-full items-center gap-2 ">
-                            <span className="text-sm">Quick Select:</span>
+                            <span className="text-sm text-nowrap">Quick Select:</span>
                             {[10, 50, 100].map((count) => (
                                 <button
                                     key={count}
@@ -615,7 +680,7 @@ const Page = () => {
                     </div>
 
                     {/* Pagination */}
-                    <div className="flex md:justify-between md:w-full items-center gap-4 flex-wrap">
+                    <div className="flex  md:justify-between md:w-full items-center gap-4 flex-wrap">
                         {/* Items Per Page Selector */}
                         <div className="flex justify-between lg:ml-auto lg:justify-start w-full md:w-auto items-center gap-2">
                             <p className="text-sm  text-nowrap">Per page:</p>
@@ -644,6 +709,17 @@ const Page = () => {
                             totalPages={totalPages}
                             onPageChange={goToPage}
                         />
+
+                        <button onClick={handleExportSelected} className="btn btn-primary btn-sm bg-blue-600 "> <FaFileExport />  Export selected</button>
+
+
+                        <button
+                            onClick={handleExportAllTime}
+                            className="btn btn-outline btn-sm border-blue-600 text-blue-600"
+                        >
+                            <FaFileExport /> Export all-time
+                        </button>
+
                     </div>
 
                 </div>
