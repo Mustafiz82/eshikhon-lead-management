@@ -28,6 +28,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     const { user } = useContext(AuthContext)
     const [leadSource, setLeadSource] = useState(selectedLead?.leadSource || "");
     const [copied, setCopied] = useState(false);
+    
 
 
     const sourceOptions = [
@@ -56,6 +57,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             originalPrice,
             lastPaid,
             totalDue,
+            modifiedHistory ,
             minValue,
             maxValue } = courseInput
 
@@ -123,6 +125,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             originalPrice,
             refundAmount,
             paidAmount: lastPaid,
+             history: modifiedHistory,
             totalDue,
             followUpDate: followUpDate,
             leadStatus: modelStatus,

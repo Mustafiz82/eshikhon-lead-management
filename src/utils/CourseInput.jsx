@@ -5,6 +5,8 @@ import { formateDate } from "./date";
 import { AuthContext } from "@/context/AuthContext";
 import useDiscountCalculation from "@/hooks/useDiscountCalculation";
 import useDueCalculation from "@/hooks/useDueCalculation";
+import { FaEdit } from "react-icons/fa";
+import HistoryRow from "@/components/agentLeads/HistoryRow";
 
 export default function CourseInput({ setCourseInput, selectedLead, selectedCourseId }) {
 
@@ -12,8 +14,9 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
   const { user: loggedUser } = useContext(AuthContext)     // get user role 
   const [lastPaid, setLastPaid] = useState(0)              // handle input payment amount
   const [estimatedPaymentDate, setEstimatedPaymentDate] = useState(null)  // next payment date
-
-
+  const [localHistory, setLocalHistory] = useState([]);
+  const [editableOriginalPrice, setEditableOriginalPrice] = useState(0);
+  const [isEditingOriginalPrice, setIsEditingOriginalPrice] = useState(false);
 
   // get discount related result , option , course price from hook . 
   const {
@@ -35,7 +38,7 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
 
   // Calculate Due 
   const dueAmount = useDueCalculation(
-    originalPrice,
+    editableOriginalPrice,
     lastPaid,
     inputDiscountAmount,
     selectedLead,
@@ -50,10 +53,11 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
       discountSource: selectedDiscount?.name ?? "",
       leadDiscount: inputDiscountAmount,
       discountUnit: inputDiscountUnit,
-      originalPrice: originalPrice,
+      originalPrice: editableOriginalPrice,
       lastPaid: lastPaid ?? 0,
       totalDue: dueAmount,
-      minValue, maxValue
+      minValue, maxValue,
+      modifiedHistory: localHistory
     });
   }, [
     estimatedPaymentDate,
@@ -63,7 +67,31 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
     originalPrice,
     lastPaid,
     dueAmount,
+    localHistory
   ]);
+
+
+  useEffect(() => {
+    if (!isEditingOriginalPrice) {
+      setEditableOriginalPrice(Number(originalPrice ?? 0));
+    }
+  }, [originalPrice, isEditingOriginalPrice]);
+
+
+
+  // Initialize local history when selectedLead loads
+  useEffect(() => {
+    if (selectedLead?.history) {
+      // Create a deep copy to avoid mutating props directly
+      setLocalHistory(JSON.parse(JSON.stringify(selectedLead.history)));
+    }
+  }, [selectedLead]);
+
+  const handleHistoryUpdate = (index, newDate) => {
+    const updatedList = [...localHistory];
+    updatedList[index].date = newDate; // Update the date in local state
+    setLocalHistory(updatedList);
+  };
 
 
   // initialize the state with previous value from backend
@@ -117,11 +145,12 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
           </label>
           <input
             type="number"
-            value={originalPrice}
+            value={editableOriginalPrice}
+            onChange={(e) => setEditableOriginalPrice(Number(e.target.value || 0))}
             placeholder="Auto-filled"
-            className="input input-bordered w-full disabled:bg-transparent disabled:border disabled:border-gray-600"
-            disabled
+            className="input input-bordered w-full disabled:bg-transparent focus:outline-0 focus:border-blue-600 disabled:border disabled:border-gray-600"
           />
+
         </div>
 
         {/* Discount */}
@@ -201,21 +230,19 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
       {/* History */}
       <div>
         <h2 className="text-lg font-semibold ">History</h2>
-        <div className="max-h-28 overflow-y-auto">
-          {
-            selectedLead?.history?.map(item => <div className="flex w-full mt-3 justify-between">
-              <h2>{formateDate(item?.date)}</h2>
-              <p className="flex items-center">
-                <FaBangladeshiTakaSign /> {item?.paidAmount}
-              </p>
-            </div>)
-          }
-
-          {
-            selectedLead?.history?.length == 0 && <p>No History Available</p>
-          }
-
-
+        <div className="max-h-28 overflow-y-auto pr-2">
+          {localHistory.length > 0 ? (
+            localHistory.map((item, index) => (
+              <HistoryRow
+                key={index}
+                item={item}
+                originalItem={selectedLead.history[index]} // Pass original to compare
+                onUpdate={(newDate) => handleHistoryUpdate(index, newDate)}
+              />
+            ))
+          ) : (
+            <p className="mt-2 text-white/50 text-sm">No History Available</p>
+          )}
         </div>
       </div>
     </div>
