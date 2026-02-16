@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { DateRangeContext } from "@/context/DateRangeContext";
+import DateRangeComponent from "@/utils/DateRange";
+import { useContext, useState } from "react";
 
 const Dropdown = ({
     dropdownPosition = "",
@@ -9,17 +11,25 @@ const Dropdown = ({
     setCurrentPage = () => { },
     defaultOptions,
     showDatePicker = false,
-    showSearch = false // 1. Add new prop
+    showSearch = false, // 1. Add new prop
+    dateRange  , 
+    setDateRange ,
+
 }) => {
 
     // 2. State for search query
     const [searchTerm, setSearchTerm] = useState("");
 
+    
+  
+ 
+
+
+
     const handleSelect = (val) => {
         setSelectedState(val);
         setCurrentPage(1);
-        // Optional: Clear search on select if desired
-        // setSearchTerm(""); 
+
     };
 
     // 3. Filter options based on search term (if showSearch is true)
@@ -58,14 +68,14 @@ const Dropdown = ({
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 // Stop propagation to prevent dropdown close on click
-                                onClick={(e) => e.stopPropagation()} 
+                                onClick={(e) => e.stopPropagation()}
                             />
                         </div>
                     )}
 
                     <div className="max-h-[800px] overflow-y-auto">
                         {/* 5. Map through filteredOptions instead of options */}
-                        {filteredOptions.length > 0 ? (
+                        {filteredOptions.length > 0 && (
                             filteredOptions.map((item, idx) => (
                                 <li key={idx}>
                                     <button
@@ -77,18 +87,16 @@ const Dropdown = ({
                                     </button>
                                 </li>
                             ))
-                        ) : (
-                            <li className="text-gray-500 text-center py-2">No results found</li>
-                        )}
+                        ) }
 
                         {showDatePicker && (
-                            <>
+                            <div className="absolute w-full left-0 bg-gray-800" >
                                 {/* optional divider/title */}
                                 <li className="menu-title mt-1">
                                     <span className="opacity-70">Pick a date</span>
                                 </li>
 
-                                <li className="px-2 py-1">
+                                {/* <li className="px-2 py-1">
                                     <input
                                         type="date"
                                         className="date-input input input-sm w-full bg-gray-700 text-base-content border-base-300
@@ -97,8 +105,10 @@ const Dropdown = ({
                                         onClick={(e) => e.target.showPicker && e.target.showPicker()}
                                         onChange={(e) => handleSelect(e.target.value)}
                                     />
-                                </li>
-                            </>
+                                </li> */}
+
+                                <DateRangeComponent state={dateRange} setState={setDateRange} />
+                            </div>
                         )}
                     </div>
                 </ul>

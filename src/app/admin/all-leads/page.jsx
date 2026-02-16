@@ -63,9 +63,9 @@ const Page = () => {
     const [selectedLead, setSelectedLead] = useState(null);
     const { loogeduser } = useContext(AuthContext)
 
-
-
-
+    const minDate = new Date(2025, 0, 1);
+    const maxDate = new Date(2030, 11, 31);
+    maxDate.setHours(23, 59, 59, 999);
 
     const params = new URLSearchParams({
         status: (statusFilter == "All") ? "All" : (statusFilter == "Assigned") ? true : false,
@@ -692,7 +692,7 @@ const Page = () => {
                                     setCurrentPage(1);
                                 }}
                             >
-                                {[10, 25, 50, 100, 200, 500 , 1000].map((n) => (
+                                {[10, 25, 50, 100, 200, 500, 1000].map((n) => (
                                     <option key={n} value={n}>
                                         {n}
                                     </option>

@@ -73,6 +73,25 @@ const AgentAllLeads = () => {
 
     const [isSearchModalOpen, setSearchModalOpen] = useState(false);
     const [selectedLead, setSelectedLead] = useState(null);
+
+    
+    const minDate = new Date(2025, 0, 1);
+    const maxDate = new Date(2030, 11, 31);
+    maxDate.setHours(23, 59, 59, 999);
+
+    const [assignDateRange, setAssignDateRange] = useState([
+        {
+            startDate: minDate,
+            endDate: maxDate,
+            key: "selection",
+        },
+    ]);
+    
+
+
+
+
+
     console.log(user.email, "user email");
     const params = new URLSearchParams({
         currentPage: currentPage,
@@ -82,13 +101,15 @@ const AgentAllLeads = () => {
         leadStatus: selectedStatus,
         stage: selectedStage,
         assignDate: selectedAssingedDate,
+        assignStartDate : assignDateRange[0].startDate ,
+        assignEndDate : assignDateRange[0].endDate,
         assignTo: !includeGlobalSearch ? (decodedEmail ? decodedEmail : user.email) : null,
         sort: selectedSortMethod,
         showOnlyFollowups: followUpActive,
         followUpDate: selectedFollowedDate,
         showOnlyMissedFollowUps: missedFUActive,
         missedFollowUpDate: selectedMissedFollowedDate,
-        leadSource: selectedSource,
+        leadSource: selectedSource, 
         interstedSeminar: selectedInterstedSeminar,
         upcomingPaymentsDate: upcomingPaymentsDate
 
@@ -105,7 +126,7 @@ const AgentAllLeads = () => {
 
 
 
-    const assignedDateOptions = ["All", "Today", "This Week", "This Month", "This Year"]
+    const assignedDateOptions = []
     const followedOptions = ["All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
     const upcOptions = ["None", "All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
     const missedFUOption = ["All", "Last 3 Days", "Last 7 Days", "Last 15 Days", "Last 30 Days"]
@@ -177,7 +198,7 @@ const AgentAllLeads = () => {
 
 
 
- 
+
 
 
     return (
@@ -301,6 +322,8 @@ const AgentAllLeads = () => {
                         options={assignedDateOptions}
                         setCurrentPage={setCurrentPage}
                         showDatePicker
+                        dateRange={assignDateRange}
+                        setDateRange={setAssignDateRange}
 
                     />
 
@@ -355,7 +378,7 @@ const AgentAllLeads = () => {
                         options={upcOptions}
                         defaultOptions={"None"}
                         setCurrentPage={setCurrentPage}
-                        showDatePicker
+                        // showDatePicker
 
                     />
 
@@ -437,7 +460,7 @@ const AgentAllLeads = () => {
                                 />
                             </div>
 
-                            <button onClick={() => handleLeadExport(course , leads)} className="btn btn-primary btn-sm bg-blue-600 "> <FaFileExport />  Export selected</button>
+                            <button onClick={() => handleLeadExport(course, leads)} className="btn btn-primary btn-sm bg-blue-600 "> <FaFileExport />  Export selected</button>
 
                         </div>
 
