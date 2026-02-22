@@ -10,7 +10,18 @@ import CountUp from 'react-countup';
 const AgentsLeadsStatusPanel = ({ selectedFilter, state, setState }) => {
 
   const { user } = useContext(AuthContext)
-  const { data: userData, refetch, loading } = useFetch(`/dashboard/agent?month=${selectedFilter}&year=2025&email=${user.email}&startDate=${state[0].startDate}&endDate=${state[0].endDate}`);
+
+      const start = new Date(state[0].startDate);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(state[0].endDate);
+    end.setHours(23, 59, 59, 999);
+
+    // const { data: user, loading } = useFetch(
+    //     `/dashboard/agent?month=${selectedFilter}&year=2025&startDate=${start.toISOString()}&endDate=${end.toISOString()}`
+    // );
+
+  const { data: userData, refetch, loading } = useFetch(`/dashboard/agent?month=${selectedFilter}&year=2025&email=${user.email}&startDate=${start.toISOString()}&endDate=${end.toISOString()}`);
 
 
 

@@ -1,0 +1,83 @@
+"filename", "language", "JSON", "Markdown", "XML", "JavaScript", "JavaScript JSX", "JSON with Comments", "PostCSS", "comment", "blank", "total"
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\README.md", "Markdown", 0, 23, 0, 0, 0, 0, 0, 0, 14, 37
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\jsconfig.json", "JSON with Comments", 0, 0, 0, 0, 0, 7, 0, 0, 1, 8
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\next.config.mjs", "JavaScript", 0, 0, 0, 4, 0, 0, 0, 2, 3, 9
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\package-lock.json", "JSON", 2177, 0, 0, 0, 0, 0, 0, 0, 1, 2178
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\package.json", "JSON", 32, 0, 0, 0, 0, 0, 0, 0, 1, 33
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\postcss.config.mjs", "JavaScript", 0, 0, 0, 4, 0, 0, 0, 0, 3, 7
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\public\file.svg", "XML", 0, 0, 1, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\public\globe.svg", "XML", 0, 0, 1, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\public\logo\eshikhon.svg", "XML", 0, 0, 40, 0, 0, 0, 0, 0, 4, 44
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\public\next.svg", "XML", 0, 0, 1, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\public\vercel.svg", "XML", 0, 0, 1, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\public\window.svg", "XML", 0, 0, 1, 0, 0, 0, 0, 0, 0, 1
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\api\axios.js", "JavaScript", 0, 0, 0, 8, 0, 0, 0, 7, 3, 18
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\agents\[email]\page.jsx", "JavaScript JSX", 0, 0, 0, 0, 8, 0, 0, 1, 6, 15
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\agents\page.jsx", "JavaScript JSX", 0, 0, 0, 0, 107, 0, 0, 17, 37, 161
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\all-leads\page.jsx", "JavaScript JSX", 0, 0, 0, 0, 555, 0, 0, 44, 187, 786
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\layout.jsx", "JavaScript JSX", 0, 0, 0, 0, 73, 0, 0, 0, 19, 92
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\manage-cources\page.jsx", "JavaScript JSX", 0, 0, 0, 0, 200, 0, 0, 13, 72, 285
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\manage-discounts\page.jsx", "JavaScript JSX", 0, 0, 0, 0, 330, 0, 0, 0, 47, 377
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\manage-payments\page.jsx", "JavaScript JSX", 0, 0, 0, 0, 10, 0, 0, 0, 2, 12
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\manage-users\page.jsx", "JavaScript JSX", 0, 0, 0, 0, 269, 0, 0, 30, 47, 346
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\page.jsx", "JavaScript JSX", 0, 0, 0, 0, 87, 0, 0, 16, 30, 133
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\upload\page.jsx", "JavaScript JSX", 0, 0, 0, 0, 293, 0, 0, 14, 69, 376
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\agents\all-leads\page.js", "JavaScript", 0, 0, 0, 8, 0, 0, 0, 1, 6, 15
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\agents\create-leads\page.jsx", "JavaScript JSX", 0, 0, 0, 0, 240, 0, 0, 14, 56, 310
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\agents\layout.js", "JavaScript", 0, 0, 0, 91, 0, 0, 0, 0, 9, 100
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\agents\page.js", "JavaScript", 0, 0, 0, 89, 0, 0, 0, 12, 41, 142
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\agents\payments\page.jsx", "JavaScript JSX", 0, 0, 0, 0, 10, 0, 0, 0, 1, 11
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\globals.css", "PostCSS", 0, 0, 0, 0, 0, 0, 247, 49, 92, 388
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\layout.js", "JavaScript", 0, 0, 0, 30, 0, 0, 0, 0, 5, 35
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\leads\page.jsx", "JavaScript JSX", 0, 0, 0, 0, 7, 0, 0, 0, 3, 10
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\page.js", "JavaScript", 0, 0, 0, 12, 0, 0, 0, 0, 2, 14
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Dashboard\CallCountTable.jsx", "JavaScript JSX", 0, 0, 0, 0, 67, 0, 0, 0, 12, 79
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Dashboard\CourseSellingSummary.jsx", "JavaScript JSX", 0, 0, 0, 0, 234, 0, 0, 13, 85, 332
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Dashboard\LeadsGrowthChart.jsx", "JavaScript JSX", 0, 0, 0, 0, 78, 0, 0, 0, 10, 88
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Dashboard\LeadsStatusPanel.jsx", "JavaScript JSX", 0, 0, 0, 0, 114, 0, 0, 6, 26, 146
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Dashboard\SeminarPieChart.jsx", "JavaScript JSX", 0, 0, 0, 0, 67, 0, 0, 2, 8, 77
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Dashboard\SortableHeader.jsx", "JavaScript JSX", 0, 0, 0, 0, 53, 0, 0, 0, 7, 60
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Dashboard\TopSellingCourse.jsx", "JavaScript JSX", 0, 0, 0, 0, 44, 0, 0, 7, 14, 65
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Homepage\HomePage.jsx", "JavaScript JSX", 0, 0, 0, 0, 87, 0, 0, 4, 13, 104
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\agentLeads\AgentsLeadsStatusPanel.jsx", "JavaScript JSX", 0, 0, 0, 0, 139, 0, 0, 32, 40, 211
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\agentLeads\Dropdown.jsx", "JavaScript JSX", 0, 0, 0, 0, 84, 0, 0, 17, 19, 120
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\agentLeads\HistoryRow.jsx", "JavaScript JSX", 0, 0, 0, 0, 60, 0, 0, 4, 13, 77
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\agentLeads\LeadModals.jsx", "JavaScript JSX", 0, 0, 0, 0, 524, 0, 0, 59, 126, 709
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\agentLeads\LeadTable.jsx", "JavaScript JSX", 0, 0, 0, 0, 69, 0, 0, 8, 16, 93
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\agentLeads\QR.jsx", "JavaScript JSX", 0, 0, 0, 0, 15, 0, 0, 1, 3, 19
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\allLeads\AssignModal.jsx", "JavaScript JSX", 0, 0, 0, 0, 110, 0, 0, 5, 29, 144
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\allLeads\DetailsModal.jsx", "JavaScript JSX", 0, 0, 0, 0, 90, 0, 0, 8, 22, 120
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\allLeads\EditDrawer.jsx", "JavaScript JSX", 0, 0, 0, 0, 146, 0, 0, 2, 26, 174
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\allLeads\LeadTable.jsx", "JavaScript JSX", 0, 0, 0, 0, 133, 0, 0, 0, 32, 165
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\allLeads\SearchModal.jsx", "JavaScript JSX", 0, 0, 0, 0, 62, 0, 0, 0, 12, 74
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\auth\AdminRoute.jsx", "JavaScript JSX", 0, 0, 0, 0, 21, 0, 0, 3, 5, 29
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\auth\PrivateRoute.jsx", "JavaScript JSX", 0, 0, 0, 0, 17, 0, 0, 2, 5, 24
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\context\AuthContext.jsx", "JavaScript JSX", 0, 0, 0, 0, 37, 0, 0, 1, 13, 51
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\context\DateRangeContext.jsx", "JavaScript JSX", 0, 0, 0, 0, 20, 0, 0, 2, 6, 28
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\data\agents.js", "JavaScript", 0, 0, 0, 7, 0, 0, 0, 0, 1, 8
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\data\leads.js", "JavaScript", 0, 0, 0, 202, 0, 0, 0, 0, 2, 204
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\hooks\useDelete.jsx", "JavaScript JSX", 0, 0, 0, 0, 26, 0, 0, 0, 6, 32
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\hooks\useDiscountCalculation.jsx", "JavaScript JSX", 0, 0, 0, 0, 70, 0, 0, 6, 24, 100
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\hooks\useDueCalculation.jsx", "JavaScript JSX", 0, 0, 0, 0, 22, 0, 0, 6, 14, 42
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\hooks\useFetch.jsx", "JavaScript JSX", 0, 0, 0, 0, 30, 0, 0, 1, 8, 39
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\hooks\useIsSmall.jsx", "JavaScript JSX", 0, 0, 0, 0, 11, 0, 0, 0, 4, 15
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\hooks\useLeadFilterAgent.jsx", "JavaScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\hooks\useSaveData.jsx", "JavaScript JSX", 0, 0, 0, 0, 34, 0, 0, 0, 10, 44
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\shared\AgentAllLeads.jsx", "JavaScript JSX", 0, 0, 0, 0, 361, 0, 0, 35, 123, 519
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\shared\Leaderboard.jsx", "JavaScript JSX", 0, 0, 0, 0, 55, 0, 0, 5, 13, 73
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\shared\Modal.jsx", "JavaScript JSX", 0, 0, 0, 0, 36, 0, 0, 0, 4, 40
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\shared\Pagination.jsx", "JavaScript JSX", 0, 0, 0, 0, 84, 0, 0, 0, 9, 93
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\shared\Payments.jsx", "JavaScript JSX", 0, 0, 0, 0, 328, 0, 0, 22, 49, 399
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\shared\SidebarFooter.jsx", "JavaScript JSX", 0, 0, 0, 0, 17, 0, 0, 17, 11, 45
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\shared\Table.jsx", "JavaScript JSX", 0, 0, 0, 0, 37, 0, 0, 0, 3, 40
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\CourseInput.jsx", "JavaScript JSX", 0, 0, 0, 0, 199, 0, 0, 12, 40, 251
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\CustomSelect.jsx", "JavaScript JSX", 0, 0, 0, 0, 64, 0, 0, 0, 9, 73
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\DateRange.jsx", "JavaScript JSX", 0, 0, 0, 0, 87, 0, 0, 1, 16, 104
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\date.js", "JavaScript", 0, 0, 0, 11, 0, 0, 0, 0, 2, 13
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\exportLeads.js", "JavaScript", 0, 0, 0, 77, 0, 0, 0, 5, 20, 102
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\formateDiscount.js", "JavaScript", 0, 0, 0, 68, 0, 0, 0, 7, 11, 86
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\formateFileName.jsx", "JavaScript JSX", 0, 0, 0, 0, 16, 0, 0, 1, 6, 23
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\getDiscountBounds.js", "JavaScript", 0, 0, 0, 36, 0, 0, 0, 16, 19, 71
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\showToast.jsx", "JavaScript JSX", 0, 0, 0, 0, 24, 0, 0, 2, 3, 29
+"c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\swal.js", "JavaScript", 0, 0, 0, 38, 0, 0, 0, 4, 6, 48
+"Total", "-", 2209, 23, 45, 685, 5961, 7, 247, 536, 1717, 11430

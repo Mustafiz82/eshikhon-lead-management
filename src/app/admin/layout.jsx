@@ -25,6 +25,7 @@ export default function Layout({ children }) {
         { href: "/admin/manage-users", icon: <FaUserGroup className="text-xl" />, label: "Manage User" },
         { href: "/admin/manage-cources", icon: <FaChalkboardTeacher className="text-xl" />, label: "Manage Cources" },
         { href: "/admin/manage-discounts", icon: <MdDiscount className="text-xl" />, label: "Manage Discount" },
+        { href: "/admin/manage-payments", icon: <MdDiscount className="text-xl" />, label: "Manage Payments" },
     ];
 
 

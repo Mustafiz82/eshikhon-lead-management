@@ -1,0 +1,147 @@
+Date : 2026-02-19 10:02:30
+Directory : c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend
+Total : 81 files,  9177 codes, 536 comments, 1717 blanks, all 11430 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| JavaScript JSX     |         55 |      5,961 |        433 |      1,471 |      7,865 |
+| JSON               |          2 |      2,209 |          0 |          2 |      2,211 |
+| JavaScript         |         15 |        685 |         54 |        133 |        872 |
+| PostCSS            |          1 |        247 |         49 |         92 |        388 |
+| XML                |          6 |         45 |          0 |          4 |         49 |
+| Markdown           |          1 |         23 |          0 |         14 |         37 |
+| JSON with Comments |          1 |          7 |          0 |          1 |          8 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                              | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                 |         81 |      9,177 |        536 |      1,717 |     11,430 |
+| . (Files)                                                                                                         |          6 |      2,247 |          2 |         23 |      2,272 |
+| public                                                                                                            |          6 |         45 |          0 |          4 |         49 |
+| public (Files)                                                                                                    |          5 |          5 |          0 |          0 |          5 |
+| public\logo                                                                                                       |          1 |         40 |          0 |          4 |         44 |
+| src                                                                                                               |         69 |      6,885 |        534 |      1,690 |      9,109 |
+| src\api                                                                                                           |          1 |          8 |          7 |          3 |         18 |
+| src\app                                                                                                           |         19 |      2,666 |        211 |        731 |      3,608 |
+| src\app (Files)                                                                                                   |          3 |        289 |         49 |         99 |        437 |
+| src\app\admin                                                                                                     |         10 |      1,932 |        135 |        516 |      2,583 |
+| src\app\admin (Files)                                                                                             |          2 |        160 |         16 |         49 |        225 |
+| src\app\admin\agents                                                                                              |          2 |        115 |         18 |         43 |        176 |
+| src\app\admin\agents (Files)                                                                                      |          1 |        107 |         17 |         37 |        161 |
+| src\app\admin\agents\[email]                                                                                      |          1 |          8 |          1 |          6 |         15 |
+| src\app\admin\all-leads                                                                                           |          1 |        555 |         44 |        187 |        786 |
+| src\app\admin\manage-cources                                                                                      |          1 |        200 |         13 |         72 |        285 |
+| src\app\admin\manage-discounts                                                                                    |          1 |        330 |          0 |         47 |        377 |
+| src\app\admin\manage-payments                                                                                     |          1 |         10 |          0 |          2 |         12 |
+| src\app\admin\manage-users                                                                                        |          1 |        269 |         30 |         47 |        346 |
+| src\app\admin\upload                                                                                              |          1 |        293 |         14 |         69 |        376 |
+| src\app\agents                                                                                                    |          5 |        438 |         27 |        113 |        578 |
+| src\app\agents (Files)                                                                                            |          2 |        180 |         12 |         50 |        242 |
+| src\app\agents\all-leads                                                                                          |          1 |          8 |          1 |          6 |         15 |
+| src\app\agents\create-leads                                                                                       |          1 |        240 |         14 |         56 |        310 |
+| src\app\agents\payments                                                                                           |          1 |         10 |          0 |          1 |         11 |
+| src\app\leads                                                                                                     |          1 |          7 |          0 |          3 |         10 |
+| src\components                                                                                                    |         21 |      2,214 |        173 |        523 |      2,910 |
+| src\components\Dashboard                                                                                          |          7 |        657 |         28 |        162 |        847 |
+| src\components\Homepage                                                                                           |          1 |         87 |          4 |         13 |        104 |
+| src\components\agentLeads                                                                                         |          6 |        891 |        121 |        217 |      1,229 |
+| src\components\allLeads                                                                                           |          5 |        541 |         15 |        121 |        677 |
+| src\components\auth                                                                                               |          2 |         38 |          5 |         10 |         53 |
+| src\context                                                                                                       |          2 |         57 |          3 |         19 |         79 |
+| src\data                                                                                                          |          2 |        209 |          0 |          3 |        212 |
+| src\hooks                                                                                                         |          7 |        193 |         13 |         67 |        273 |
+| src\shared                                                                                                        |          7 |        918 |         79 |        212 |      1,209 |
+| src\utils                                                                                                         |         10 |        620 |         48 |        132 |        800 |
++-------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                                          | language           | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\README.md                                            | Markdown           |         23 |          0 |         14 |         37 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\jsconfig.json                                        | JSON with Comments |          7 |          0 |          1 |          8 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\next.config.mjs                                      | JavaScript         |          4 |          2 |          3 |          9 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\package-lock.json                                    | JSON               |      2,177 |          0 |          1 |      2,178 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\package.json                                         | JSON               |         32 |          0 |          1 |         33 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\postcss.config.mjs                                   | JavaScript         |          4 |          0 |          3 |          7 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\public\file.svg                                      | XML                |          1 |          0 |          0 |          1 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\public\globe.svg                                     | XML                |          1 |          0 |          0 |          1 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\public\logo\eshikhon.svg                             | XML                |         40 |          0 |          4 |         44 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\public\next.svg                                      | XML                |          1 |          0 |          0 |          1 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\public\vercel.svg                                    | XML                |          1 |          0 |          0 |          1 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\public\window.svg                                    | XML                |          1 |          0 |          0 |          1 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\api\axios.js                                     | JavaScript         |          8 |          7 |          3 |         18 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\agents\[email]\page.jsx                | JavaScript JSX     |          8 |          1 |          6 |         15 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\agents\page.jsx                        | JavaScript JSX     |        107 |         17 |         37 |        161 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\all-leads\page.jsx                     | JavaScript JSX     |        555 |         44 |        187 |        786 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\layout.jsx                             | JavaScript JSX     |         73 |          0 |         19 |         92 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\manage-cources\page.jsx                | JavaScript JSX     |        200 |         13 |         72 |        285 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\manage-discounts\page.jsx              | JavaScript JSX     |        330 |          0 |         47 |        377 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\manage-payments\page.jsx               | JavaScript JSX     |         10 |          0 |          2 |         12 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\manage-users\page.jsx                  | JavaScript JSX     |        269 |         30 |         47 |        346 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\page.jsx                               | JavaScript JSX     |         87 |         16 |         30 |        133 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\admin\upload\page.jsx                        | JavaScript JSX     |        293 |         14 |         69 |        376 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\agents\all-leads\page.js                     | JavaScript         |          8 |          1 |          6 |         15 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\agents\create-leads\page.jsx                 | JavaScript JSX     |        240 |         14 |         56 |        310 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\agents\layout.js                             | JavaScript         |         91 |          0 |          9 |        100 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\agents\page.js                               | JavaScript         |         89 |         12 |         41 |        142 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\agents\payments\page.jsx                     | JavaScript JSX     |         10 |          0 |          1 |         11 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\globals.css                                  | PostCSS            |        247 |         49 |         92 |        388 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\layout.js                                    | JavaScript         |         30 |          0 |          5 |         35 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\leads\page.jsx                               | JavaScript JSX     |          7 |          0 |          3 |         10 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\app\page.js                                      | JavaScript         |         12 |          0 |          2 |         14 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Dashboard\CallCountTable.jsx          | JavaScript JSX     |         67 |          0 |         12 |         79 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Dashboard\CourseSellingSummary.jsx    | JavaScript JSX     |        234 |         13 |         85 |        332 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Dashboard\LeadsGrowthChart.jsx        | JavaScript JSX     |         78 |          0 |         10 |         88 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Dashboard\LeadsStatusPanel.jsx        | JavaScript JSX     |        114 |          6 |         26 |        146 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Dashboard\SeminarPieChart.jsx         | JavaScript JSX     |         67 |          2 |          8 |         77 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Dashboard\SortableHeader.jsx          | JavaScript JSX     |         53 |          0 |          7 |         60 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Dashboard\TopSellingCourse.jsx        | JavaScript JSX     |         44 |          7 |         14 |         65 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\Homepage\HomePage.jsx                 | JavaScript JSX     |         87 |          4 |         13 |        104 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\agentLeads\AgentsLeadsStatusPanel.jsx | JavaScript JSX     |        139 |         32 |         40 |        211 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\agentLeads\Dropdown.jsx               | JavaScript JSX     |         84 |         17 |         19 |        120 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\agentLeads\HistoryRow.jsx             | JavaScript JSX     |         60 |          4 |         13 |         77 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\agentLeads\LeadModals.jsx             | JavaScript JSX     |        524 |         59 |        126 |        709 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\agentLeads\LeadTable.jsx              | JavaScript JSX     |         69 |          8 |         16 |         93 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\agentLeads\QR.jsx                     | JavaScript JSX     |         15 |          1 |          3 |         19 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\allLeads\AssignModal.jsx              | JavaScript JSX     |        110 |          5 |         29 |        144 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\allLeads\DetailsModal.jsx             | JavaScript JSX     |         90 |          8 |         22 |        120 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\allLeads\EditDrawer.jsx               | JavaScript JSX     |        146 |          2 |         26 |        174 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\allLeads\LeadTable.jsx                | JavaScript JSX     |        133 |          0 |         32 |        165 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\allLeads\SearchModal.jsx              | JavaScript JSX     |         62 |          0 |         12 |         74 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\auth\AdminRoute.jsx                   | JavaScript JSX     |         21 |          3 |          5 |         29 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\components\auth\PrivateRoute.jsx                 | JavaScript JSX     |         17 |          2 |          5 |         24 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\context\AuthContext.jsx                          | JavaScript JSX     |         37 |          1 |         13 |         51 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\context\DateRangeContext.jsx                     | JavaScript JSX     |         20 |          2 |          6 |         28 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\data\agents.js                                   | JavaScript         |          7 |          0 |          1 |          8 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\data\leads.js                                    | JavaScript         |        202 |          0 |          2 |        204 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\hooks\useDelete.jsx                              | JavaScript JSX     |         26 |          0 |          6 |         32 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\hooks\useDiscountCalculation.jsx                 | JavaScript JSX     |         70 |          6 |         24 |        100 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\hooks\useDueCalculation.jsx                      | JavaScript JSX     |         22 |          6 |         14 |         42 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\hooks\useFetch.jsx                               | JavaScript JSX     |         30 |          1 |          8 |         39 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\hooks\useIsSmall.jsx                             | JavaScript JSX     |         11 |          0 |          4 |         15 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\hooks\useLeadFilterAgent.jsx                     | JavaScript JSX     |          0 |          0 |          1 |          1 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\hooks\useSaveData.jsx                            | JavaScript JSX     |         34 |          0 |         10 |         44 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\shared\AgentAllLeads.jsx                         | JavaScript JSX     |        361 |         35 |        123 |        519 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\shared\Leaderboard.jsx                           | JavaScript JSX     |         55 |          5 |         13 |         73 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\shared\Modal.jsx                                 | JavaScript JSX     |         36 |          0 |          4 |         40 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\shared\Pagination.jsx                            | JavaScript JSX     |         84 |          0 |          9 |         93 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\shared\Payments.jsx                              | JavaScript JSX     |        328 |         22 |         49 |        399 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\shared\SidebarFooter.jsx                         | JavaScript JSX     |         17 |         17 |         11 |         45 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\shared\Table.jsx                                 | JavaScript JSX     |         37 |          0 |          3 |         40 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\CourseInput.jsx                            | JavaScript JSX     |        199 |         12 |         40 |        251 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\CustomSelect.jsx                           | JavaScript JSX     |         64 |          0 |          9 |         73 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\DateRange.jsx                              | JavaScript JSX     |         87 |          1 |         16 |        104 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\date.js                                    | JavaScript         |         11 |          0 |          2 |         13 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\exportLeads.js                             | JavaScript         |         77 |          5 |         20 |        102 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\formateDiscount.js                         | JavaScript         |         68 |          7 |         11 |         86 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\formateFileName.jsx                        | JavaScript JSX     |         16 |          1 |          6 |         23 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\getDiscountBounds.js                       | JavaScript         |         36 |         16 |         19 |         71 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\showToast.jsx                              | JavaScript JSX     |         24 |          2 |          3 |         29 |
+| c:\Users\Mustafiz Rahman\Desktop\eshikhon-lead\lead-frontend\src\utils\swal.js                                    | JavaScript         |         38 |          4 |          6 |         48 |
+| Total                                                                                                             |                    |      9,177 |        536 |      1,717 |     11,430 |
++-------------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

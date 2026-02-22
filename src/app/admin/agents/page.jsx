@@ -30,7 +30,22 @@ const page = () => {
 
     const { dateRange: state, setDateRange: setState } = useContext(DateRangeContext)
 
-    const { data: user, loading } = useFetch(`/dashboard/agent?month=${selectedFilter}&year=2025&startDate=${state[0].startDate}&endDate=${state[0].endDate}`)
+    // const { data: user, loading } = useFetch(`/dashboard/agent?month=${selectedFilter}&year=2025&startDate=${state[0].startDate}&endDate=${state[0].endDate}`)
+
+    const start = new Date(state[0].startDate);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(state[0].endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const { data: user, loading } = useFetch(
+        `/dashboard/agent?month=${selectedFilter}&year=2025&startDate=${start.toISOString()}&endDate=${end.toISOString()}`
+    );
+
+
+    console.log(state[0].startDate)
+    console.log(state[0].endDate)
+
     const agents = user.filter(user => user.role == "user")
 
     const options = [

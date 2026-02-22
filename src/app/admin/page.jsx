@@ -17,6 +17,8 @@ const page = () => {
     const currentMonth = new Date().getMonth() + 1;
     const [selectedFilter, setSelectedFilter] = useState(String(currentMonth));
 
+
+
     // const now = new Date();
     // const [state, setState] = useState([
     //     {
@@ -30,9 +32,15 @@ const page = () => {
     const { dateRange: state, setDateRange: setState } = useContext(DateRangeContext)
 
 
+    const start = new Date(state[0].startDate);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(state[0].endDate);
+    end.setHours(23, 59, 59, 999);
+
 
     const { data: leaderboard, loading, refetch } = useFetch(
-        `/dashboard/leaderboards?month=${selectedFilter}&year=2025&startDate=${state[0].startDate}&endDate=${state[0].endDate}`
+        `/dashboard/leaderboards?month=${selectedFilter}&year=2025&startDate=${start.toISOString()}&endDate=${end.toISOString()}`
     );
 
     console.log(selectedFilter)
@@ -115,7 +123,7 @@ const page = () => {
 
             {/* Top selling Course */}
 
-            <CourseSellingSummary state={state} setState={setState}/>
+            <CourseSellingSummary state={state} setState={setState} />
 
 
         </div>

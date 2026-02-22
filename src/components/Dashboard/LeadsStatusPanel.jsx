@@ -12,7 +12,15 @@ import CountUp from 'react-countup';
 const LeadsStatusPanel = ({ selectedFilter , state , setState}) => {
 
   const { user } = useContext(AuthContext)
-  const { data: userData, loading } = useFetch(`/dashboard/admin?month=${selectedFilter}&year=2025&email=${user.email}&startDate=${state[0].startDate}&endDate=${state[0].endDate}`);
+
+      const start = new Date(state[0].startDate);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(state[0].endDate);
+    end.setHours(23, 59, 59, 999);
+
+
+  const { data: userData, loading } = useFetch(`/dashboard/admin?month=${selectedFilter}&year=2025&email=${user.email}&startDate=${start.toISOString()}&endDate=${end.toISOString()}`);
 
 
   console.log(userData)
