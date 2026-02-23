@@ -1,10 +1,27 @@
 import React from 'react';
-import { formatDate } from './Payments';
 import { FaHistory } from 'react-icons/fa';
 
 const PaymentHistory = ({ historyData, historyLoading }) => {
 
     // monthKey: "2025-11" => "Nov 2025"
+
+
+
+    // --- helpers ---
+    const formatDate = (d) => {
+        try {
+            const dt = new Date(d);
+            if (Number.isNaN(dt.getTime())) return "";
+            return dt.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "2-digit",
+            });
+        } catch {
+            return "";
+        }
+    };
+
     const monthKeyToLabel = (monthKey) => {
         try {
             if (!monthKey || typeof monthKey !== "string") return "";

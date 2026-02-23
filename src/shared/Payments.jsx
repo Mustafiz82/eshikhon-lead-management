@@ -8,21 +8,6 @@ import PaymentHistory from "./PaymentHistory";
 import PaymentModal from "./PaymentModal";
 import PaymentDue from "./PaymentDue";
 
-// --- helpers ---
-export const formatDate = (d) => {
-    try {
-        const dt = new Date(d);
-        if (Number.isNaN(dt.getTime())) return "";
-        return dt.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "2-digit",
-        });
-    } catch {
-        return "";
-    }
-};
-
 
 
 const Page = () => {
@@ -131,8 +116,6 @@ const Page = () => {
                         </div>
                         <h2 className="text-xl font-semibold text-white">Pending Payments</h2>
                     </div>
-
-
                     {
                         user.role !== "admin" ? <button
                             // onClick={() => handleOpenPayModal(item)}
