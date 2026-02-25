@@ -46,13 +46,13 @@ const PaymentDue = ({ PENDING_PAYMENTS_DATA, handleOpenPayModal, loading }) => {
 
                                 <td className="p-4">
                                     <div className="flex items-center justify-end text-right font-bold text-white">
-                                        {Number(item.commissionDue ?? 0).toFixed(2)} <TbCurrencyTaka />
+                                        {Number(item.commissionDue ?? 0)} <TbCurrencyTaka />
                                     </div>
 
                                     {/* Extra info (not deleting UI; only adding clarity) */}
                                     <div className="text-right text-xs text-slate-400">
-                                        Paid: {Number(item.totalPaid ?? 0).toFixed(2)} | Due:{" "}
-                                        {Number(item.balance ?? 0).toFixed(2)}
+                                        Paid: {Number(item.totalPaid ?? 0)} | Due:{" "}
+                                        {Number(item.balance ?? 0)}
                                     </div>
                                 </td>
 

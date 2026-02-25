@@ -7,6 +7,7 @@ import { AuthContext } from "@/context/AuthContext";
 import PaymentHistory from "./PaymentHistory";
 import PaymentModal from "./PaymentModal";
 import PaymentDue from "./PaymentDue";
+import UpdatePaymentInfoModal from "./UpdatePaymentInfoModal";
 
 
 
@@ -17,6 +18,7 @@ const Page = () => {
     const [selectedPayment, setSelectedPayment] = useState(null); // row being paid
     const [paymentAmount, setPaymentAmount] = useState("");
     const { user } = useContext(AuthContext)
+    const [isUpdateInfoOpen, setIsUpdateInfoOpen] = useState(false);
 
     useEffect(() => {
         if (user && user.role !== "admin") {
@@ -26,12 +28,16 @@ const Page = () => {
 
 
     // --- Fetch: pending/overview rows (this includes status/balance) ---
+    const shouldFetch = user && (user.role === "admin" || selectedAgent);
+
     const {
         data: PENDING_PAYMENTS_DATA = [],
         loading,
         refetch: refetchPending,
     } = useFetch(
-        `/payments/commissions${selectedAgent ? `?email=${encodeURIComponent(selectedAgent)}` : ""}`
+        shouldFetch
+            ? `/payments/commissions${selectedAgent ? `?email=${encodeURIComponent(selectedAgent)}` : ""}`
+            : null
     );
 
     // --- Fetch: agents list ---
@@ -79,6 +85,20 @@ const Page = () => {
     };
 
 
+    const handleOpenUpdateInfo = () => {
+        setIsUpdateInfoOpen(true);
+    };
+
+    const handleCloseUpdateInfo = () => {
+        setIsUpdateInfoOpen(false);
+    };
+
+
+    useEffect(() => {
+        refetchPending()
+    }, [user.role])
+
+
 
     return (
         <div className="min-h-screen bg-gray-900 text-slate-200 p-6 font-sans">
@@ -118,10 +138,10 @@ const Page = () => {
                     </div>
                     {
                         user.role !== "admin" ? <button
-                            // onClick={() => handleOpenPayModal(item)}
-                            className={`px-4 cursor-pointer py-2 rounded text-xs font-medium transition-colors shadow-lg bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20`}
+                            onClick={handleOpenUpdateInfo}
+                            className="px-4 cursor-pointer py-2 rounded text-xs font-medium transition-colors shadow-lg bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20"
                         >
-                            update Payment Info
+                            Update Payment Info
                         </button> : null
                     }
 
@@ -148,6 +168,12 @@ const Page = () => {
                     paymentAmount={paymentAmount}
                     refetchPending={refetchPending}
                     refetchHistory={refetchHistory}
+                />
+            )}
+
+            {isUpdateInfoOpen && (
+                <UpdatePaymentInfoModal
+                    handleClose={handleCloseUpdateInfo}
                 />
             )}
         </div>
