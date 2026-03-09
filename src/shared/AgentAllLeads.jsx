@@ -87,6 +87,14 @@ const AgentAllLeads = () => {
         },
     ]);
     
+    const [paymentDateRange, setPaymentDateRange] = useState([
+        {
+            startDate: minDate,
+            endDate: maxDate,
+            key: "selection",
+        },
+    ]);
+    
 
 
 
@@ -103,6 +111,8 @@ const AgentAllLeads = () => {
         assignDate: selectedAssingedDate,
         assignStartDate : assignDateRange[0].startDate ,
         assignEndDate : assignDateRange[0].endDate,
+        paymentStartDate : paymentDateRange[0].startDate ,
+        paymentEndDate : paymentDateRange[0].endDate,
         assignTo: !includeGlobalSearch ? (decodedEmail ? decodedEmail : user.email) : null,
         sort: selectedSortMethod,
         showOnlyFollowups: followUpActive,
@@ -324,6 +334,19 @@ const AgentAllLeads = () => {
                         showDatePicker
                         dateRange={assignDateRange}
                         setDateRange={setAssignDateRange}
+
+                    />
+
+                    <Dropdown
+                        dropdownPosition=""
+                        selectedState={selectedAssingedDate}
+                        setSelectedState={setSelectedAssignedDate}
+                        label="Payments Date"
+                        options={assignedDateOptions}
+                        setCurrentPage={setCurrentPage}
+                        showDatePicker
+                        dateRange={paymentDateRange}
+                        setDateRange={setPaymentDateRange}
 
                     />
 

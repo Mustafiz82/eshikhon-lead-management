@@ -76,12 +76,14 @@ export const handleLeadExport = (course , leads) => {
       "Total Due":
         l.leadStatus == "Enrolled" ? discountedPrice - l.totalPaid : 0,
       "Last Payment Amount": l.lastPayment?.paidAmount ?? 0,
-      "Last Payment Date": l.lastPayment?.date
-        ? new Date(l.lastPayment.date).toLocaleString()
-        : "",
+      // "Last Payment Date": l.lastPayment?.date
+      //   ? new Date(l.lastPayment.date).toLocaleString()
+      //   : "",
+      "Last Payment Date": l.lastPayment?.date ? new Date(l.lastPayment?.date).toISOString().slice(0,19).replace("T"," ") : "" ,
       "Payment History": historyText,
       Notes: noteText,
       "Created At": l.createdAt ? new Date(l.createdAt).toLocaleString() : "",
+      "Assigned At": l.assignDate ? new Date(l.assignDate).toLocaleString() : "",
 
       // optional but useful for debugging mismatches:
       "Course Price Found": typeof coursePrice === "number" ? "YES" : "NO",
