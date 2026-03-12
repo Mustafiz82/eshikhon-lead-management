@@ -48,6 +48,7 @@ const AgentAllLeads = () => {
     const [selectedSeminar, setSelectedSeminar] = useState("All");
     const [selectedStatus, setSelectedStatus] = useState("All");
     const [selectedAssingedDate, setSelectedAssignedDate] = useState("All")
+    const [selectedPaymentMode, setSelectedPaymentMode] = useState("All")
     const [selectedSortMethod, setSelectedSortMethod] = useState("Default")
     const [selectedStage, setSelectedStage] = useState("All")
     const [selectedSource, setSelectedSource] = useState("All")
@@ -74,7 +75,7 @@ const AgentAllLeads = () => {
     const [isSearchModalOpen, setSearchModalOpen] = useState(false);
     const [selectedLead, setSelectedLead] = useState(null);
 
-    
+
     const minDate = new Date(2025, 0, 1);
     const maxDate = new Date(2030, 11, 31);
     maxDate.setHours(23, 59, 59, 999);
@@ -86,7 +87,7 @@ const AgentAllLeads = () => {
             key: "selection",
         },
     ]);
-    
+
     const [paymentDateRange, setPaymentDateRange] = useState([
         {
             startDate: minDate,
@@ -94,7 +95,7 @@ const AgentAllLeads = () => {
             key: "selection",
         },
     ]);
-    
+
 
 
 
@@ -109,17 +110,18 @@ const AgentAllLeads = () => {
         leadStatus: selectedStatus,
         stage: selectedStage,
         assignDate: selectedAssingedDate,
-        assignStartDate : assignDateRange[0].startDate ,
-        assignEndDate : assignDateRange[0].endDate,
-        paymentStartDate : paymentDateRange[0].startDate ,
-        paymentEndDate : paymentDateRange[0].endDate,
+        paymentMode: selectedPaymentMode,
+        assignStartDate: assignDateRange[0].startDate,
+        assignEndDate: assignDateRange[0].endDate,
+        paymentStartDate: paymentDateRange[0].startDate,
+        paymentEndDate: paymentDateRange[0].endDate,
         assignTo: !includeGlobalSearch ? (decodedEmail ? decodedEmail : user.email) : null,
         sort: selectedSortMethod,
         showOnlyFollowups: followUpActive,
         followUpDate: selectedFollowedDate,
         showOnlyMissedFollowUps: missedFUActive,
         missedFollowUpDate: selectedMissedFollowedDate,
-        leadSource: selectedSource, 
+        leadSource: selectedSource,
         interstedSeminar: selectedInterstedSeminar,
         upcomingPaymentsDate: upcomingPaymentsDate
 
@@ -136,7 +138,7 @@ const AgentAllLeads = () => {
 
 
 
-    const assignedDateOptions = []
+    const assignedDateOptions = ["All", "DateRange"]
     const followedOptions = ["All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
     const upcOptions = ["None", "All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
     const missedFUOption = ["All", "Last 3 Days", "Last 7 Days", "Last 15 Days", "Last 30 Days"]
@@ -334,19 +336,23 @@ const AgentAllLeads = () => {
                         showDatePicker
                         dateRange={assignDateRange}
                         setDateRange={setAssignDateRange}
+                        minDate={minDate}
+                        maxDate={maxDate}
 
                     />
 
                     <Dropdown
                         dropdownPosition=""
-                        selectedState={selectedAssingedDate}
-                        setSelectedState={setSelectedAssignedDate}
+                        selectedState={selectedPaymentMode}
+                        setSelectedState={setSelectedPaymentMode}
                         label="Payments Date"
                         options={assignedDateOptions}
                         setCurrentPage={setCurrentPage}
                         showDatePicker
                         dateRange={paymentDateRange}
                         setDateRange={setPaymentDateRange}
+                        minDate={minDate}
+                        maxDate={maxDate}
 
                     />
 
@@ -401,7 +407,7 @@ const AgentAllLeads = () => {
                         options={upcOptions}
                         defaultOptions={"None"}
                         setCurrentPage={setCurrentPage}
-                        // showDatePicker
+                    // showDatePicker
 
                     />
 

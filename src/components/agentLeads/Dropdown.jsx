@@ -12,23 +12,35 @@ const Dropdown = ({
     defaultOptions,
     showDatePicker = false,
     showSearch = false, // 1. Add new prop
-    dateRange  , 
-    setDateRange ,
+    dateRange,
+    setDateRange,
+    minDate , 
+    maxDate
 
 }) => {
 
     // 2. State for search query
     const [searchTerm, setSearchTerm] = useState("");
 
-    
-  
- 
+
+
+
 
 
 
     const handleSelect = (val) => {
         setSelectedState(val);
         setCurrentPage(1);
+
+        setDateRange([
+            {
+                startDate: minDate,
+                endDate: maxDate,
+                key: "selection",
+            },
+        ])
+
+
 
     };
 
@@ -87,9 +99,9 @@ const Dropdown = ({
                                     </button>
                                 </li>
                             ))
-                        ) }
+                        )}
 
-                        {showDatePicker && (
+                        {selectedState === "DateRange" && (
                             <div className="absolute w-full left-0 bg-gray-800" >
                                 {/* optional divider/title */}
                                 <li className="menu-title mt-1">
