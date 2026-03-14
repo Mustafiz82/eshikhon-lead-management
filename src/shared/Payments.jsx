@@ -2,12 +2,13 @@
 
 import useFetch from "@/hooks/useFetch";
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { FaMoneyBillWave, FaHistory, FaTimes } from "react-icons/fa";
+import { FaMoneyBillWave, FaHistory, FaTimes, FaInfo, FaInfoCircle } from "react-icons/fa";
 import { AuthContext } from "@/context/AuthContext";
 import PaymentHistory from "./PaymentHistory";
 import PaymentModal from "./PaymentModal";
 import PaymentDue from "./PaymentDue";
 import UpdatePaymentInfoModal from "./UpdatePaymentInfoModal";
+import Link from "next/link";
 
 
 
@@ -100,6 +101,9 @@ const Page = () => {
 
 
 
+
+
+
     return (
         <div className="min-h-screen bg-gray-900 text-slate-200 p-6 font-sans">
             {/* Header & Filter Section */}
@@ -129,13 +133,17 @@ const Page = () => {
 
             {/* SECTION 1: Pending Payments */}
             <div className="mb-10">
-                <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-2 mb-4">
+                <div className="flex items-center gap-2 justify-between">
+                    <div className="flex flex-1 items-center gap-2 mb-4">
                         <div className="p-2 bg-blue-600/20 rounded-lg text-blue-500">
                             <FaMoneyBillWave />
                         </div>
                         <h2 className="text-xl font-semibold text-white">Pending Payments</h2>
+                        <Link href={`/${user.role === "admin" ? "admin" : "agents"}/docs/agent_commission_guide`}>  <FaInfoCircle className="text-lg " title=" Learn How Commission Is calculated"></FaInfoCircle></Link>
                     </div>
+
+
+
                     {
                         user.role !== "admin" ? <button
                             onClick={handleOpenUpdateInfo}

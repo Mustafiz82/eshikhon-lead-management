@@ -21,8 +21,9 @@ const courseTypeOption = [
 
 export default function ManageCoursePage() {
 
-    
+
     const [selectedCourse, setSelectedCourse] = useState("");
+    const [search, setSearch] = useState("");
     const [questions, setQuestions] = useState([]); // [{title, value}]
 
     // when editing a lead, prefill select and questions
@@ -32,8 +33,18 @@ export default function ManageCoursePage() {
     const { data: courses } = useFetch("/course")
     const { data: leads, loading, error, refetch } = useFetch(`/leads?createdBy=${user?.email}`)
     const { setEditCourse, editCourse, handleSave, loading: isSubmitting, error: submitError } = useSaveData(refetch)
-    const { handleDelete } = useDelete(refetch, "course")
     const [showModal, setShowModal] = useState(false)
+    const [formSubmitError, setFormSubmitError] = useState("")
+
+
+
+    const uniqueCourses = [
+        ...new Map(courses.map(course => [course.name.toLowerCase(), course])).values()
+    ];
+
+    const filteredCourses = uniqueCourses.filter((course) =>
+        course.name.toLowerCase().includes(search.toLowerCase())
+    );
 
 
 
@@ -81,6 +92,16 @@ export default function ManageCoursePage() {
         if (!user?.email) return toast.error("User Not found")
         const form = e.target;
 
+        if (!form.lead_phone.value) {
+            return setFormSubmitError("Phone Number is Requered")
+        }
+        else if(!selectedCourse){
+            return setFormSubmitError("Please select a valid course from suggestions")
+        }
+        if (!courseType) {
+            return setFormSubmitError("Course Type is Requered")
+        }
+
         // Convert [{title, value}] into {title: value}
         const formattedQuestions = questions.reduce((acc, q) => {
             if (q.title.trim()) acc[q.title.trim()] = q.value.trim();
@@ -96,14 +117,17 @@ export default function ManageCoursePage() {
             interstedCourse: selectedCourse,
             interstedCourseType: courseType,
             leadSource: "incoming",
+            creatorRole :"agent",
             createdBy: user.email,
             assignTo: user.email,
             assignDate: Date.now(),
-            assignStatus : true 
+            assignStatus: true  
         };
         console.log(payload)
         await handleSave(payload, form, "/leads/single-lead")
-        setSelectedCourse("Select Course")
+        setSelectedCourse("")
+        setSearch("")
+        setFormSubmitError("")
         setQuestions([])
 
     };
@@ -116,12 +140,7 @@ export default function ManageCoursePage() {
             >
                 Edit
             </button>
-            <button
-                className="btn btn-sm bg-red-500"
-                onClick={() => handleDelete(`/course/${row._id ?? row.id}`)} // <- selected row id
-            >
-                Delete
-            </button>
+           
         </div>
     )
 
@@ -163,7 +182,7 @@ export default function ManageCoursePage() {
                             <div className="flex flex-col gap-4">
                                 <input
                                     name="lead_name"
-                                    required
+
                                     placeholder="Lead Name"
                                     defaultValue={editCourse?.name || ""}
                                     className="input focus:outline-0 focus:border-blue-600 bg-gray-900 input-bordered w-full"
@@ -172,7 +191,7 @@ export default function ManageCoursePage() {
                                 <input
                                     name="lead_email"
                                     type="email"
-                                    required
+
                                     placeholder="Email"
                                     defaultValue={editCourse?.email || ""}
                                     className="input focus:outline-0 focus:border-blue-600 bg-gray-900 input-bordered w-full"
@@ -181,7 +200,7 @@ export default function ManageCoursePage() {
 
                                 <input
                                     name="lead_phone"
-                                    required
+
                                     placeholder="Phone"
                                     defaultValue={editCourse?.phone || ""}
                                     className="input focus:outline-0 focus:border-blue-600 bg-gray-900 input-bordered w-full"
@@ -190,14 +209,14 @@ export default function ManageCoursePage() {
 
                                 <input
                                     name="lead_Address"
-                                    required
-                                    placeholder="Address"
+
+                                    placeholder="Address"   
                                     defaultValue={editCourse?.address || ""}
                                     className="input focus:outline-0 focus:border-blue-600 bg-gray-900 input-bordered w-full"
                                     disabled={isSubmitting}
                                 />
 
-                                <select
+                                {/* <select
                                     name="interstedCourse"
                                     className="select focus:border-blue-600 bg-gray-900 focus:outline-0 select-bordered w-full"
                                     value={selectedCourse}
@@ -211,8 +230,34 @@ export default function ManageCoursePage() {
                                             {item.name}
                                         </option>
                                     ))}
-                                </select>
+                                </select> */}
+                                <div className="relative w-full">
+                                    <input
+                                        type="text"
+                                        placeholder="Search course..."
+                                        className="input input-bordered w-full bg-gray-900"
+                                        value={search}
+                                        onChange={(e) => setSearch(e.target.value)}
+                                        disabled={isSubmitting}
+                                    />
 
+                                    {search && search !== selectedCourse && (
+                                        <ul className="absolute z-10 w-full bg-gray-900 border border-gray-700 max-h-60 overflow-y-auto">
+                                            {filteredCourses.map((course) => (
+                                                <li
+                                                    key={course._id ?? course.id ?? course.name}
+                                                    className="p-2 hover:bg-gray-700 cursor-pointer"
+                                                    onClick={() => {
+                                                        setSelectedCourse(course.name);
+                                                        setSearch(course.name);
+                                                    }}
+                                                >
+                                                    {course.name}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
 
                                 {/* <div>
                                     <CustomSelect
@@ -235,7 +280,7 @@ export default function ManageCoursePage() {
 
                                     />
                                 </div>
-
+                                    
 
 
                                 <div className="mt-4">
@@ -277,7 +322,7 @@ export default function ManageCoursePage() {
                                                 onClick={addQuestion}
                                                 className="btn btn-xs btn-outline border-gray-400 text-white/80 flex items-center gap-1"
                                             >
-                                                <FiPlus /> Create Question
+                                                <FiPlus /> Create Q&A
                                             </button>
                                         </div>
 
@@ -287,9 +332,9 @@ export default function ManageCoursePage() {
                             </div>
 
                             {/* Inline Error */}
-                            {submitError && <div className="mt-3 text-red-500 text-sm">{submitError}</div>}
+                            <div className="mt-auto text-red-500 text-sm">{submitError || formSubmitError}</div>
 
-                            <div className="mt-auto pt-4 flex gap-2">
+                            <div className=" pt-4 flex gap-2">
                                 <button type="submit" className="btn bg-blue-600 btn-primary w-full" disabled={isSubmitting}>
                                     {isSubmitting ? (editCourse ? "Updating..." : "Creating...") : editCourse ? "Update Lead" : "Create Lead"}
                                 </button>
@@ -301,8 +346,10 @@ export default function ManageCoursePage() {
             )
             }
 
+
+
             <button onClick={() => setShowModal(true)} type="submit" className="btn z-50  lg:hidden fixed bottom-2 bg-blue-600 btn-primary w-full" >
-               Create New Lead
+                Create New Lead
             </button>
         </div >
     );

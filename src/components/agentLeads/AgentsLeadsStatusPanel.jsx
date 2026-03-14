@@ -11,15 +11,15 @@ const AgentsLeadsStatusPanel = ({ selectedFilter, state, setState }) => {
 
   const { user } = useContext(AuthContext)
 
-      const start = new Date(state[0].startDate);
-    start.setHours(0, 0, 0, 0);
+  const start = new Date(state[0].startDate);
+  start.setHours(0, 0, 0, 0);
 
-    const end = new Date(state[0].endDate);
-    end.setHours(23, 59, 59, 999);
+  const end = new Date(state[0].endDate);
+  end.setHours(23, 59, 59, 999);
 
-    // const { data: user, loading } = useFetch(
-    //     `/dashboard/agent?month=${selectedFilter}&year=2025&startDate=${start.toISOString()}&endDate=${end.toISOString()}`
-    // );
+  // const { data: user, loading } = useFetch(
+  //     `/dashboard/agent?month=${selectedFilter}&year=2025&startDate=${start.toISOString()}&endDate=${end.toISOString()}`
+  // );
 
   const { data: userData, refetch, loading } = useFetch(`/dashboard/agent?month=${selectedFilter}&year=2025&email=${user.email}&startDate=${start.toISOString()}&endDate=${end.toISOString()}`);
 
@@ -94,7 +94,7 @@ const AgentsLeadsStatusPanel = ({ selectedFilter, state, setState }) => {
 
     // 9. Achievement → sales
     {
-      label: "Total Sales / Target Amount",
+      label: "Total Sales / Target Amount (assigned)",
       value: userData?.totalSales,
       unit: "Tk",
       gradient: "from-teal-700 to-lime-600",// Teal/lime = money, prosperity
@@ -119,7 +119,7 @@ const AgentsLeadsStatusPanel = ({ selectedFilter, state, setState }) => {
               </div>
             </div>
 
-       
+
 
 
             <div className="flex w-full h-4 bg-black/20 rounded-full overflow-hidden " role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
@@ -127,7 +127,42 @@ const AgentsLeadsStatusPanel = ({ selectedFilter, state, setState }) => {
             </div>
 
             {/* Bottom: Percentage Label */}
-           
+
+          </div>
+        );
+      })()
+    },
+    {
+      label: "Total Sales / sell count (created)",
+      value: userData?.totalSales,
+      unit: "Tk",
+      gradient: "from-teal-700 to-lime-600",// Teal/lime = money, prosperity
+      children: (() => {
+        // 1. Calculate Values cleanly
+        const currentSales = userData?.totalSales || 0;
+        const target = userData?.targetAmount || 0; // Prevent divide by zero
+        const percentage = Math.min(100, Math.round((currentSales / target) * 100));
+
+        return (
+          <div className="flex flex-col    mt-2 h-full">
+            {/* Top: Numbers with Hierarchy */}
+            <div className="flex items-end justify-between mb-2">
+              <div className="flex flex-col">
+                <span className="text-3xl font-bold tracking-tight">
+                  <CountUp end={userData?.agentCreatedSales} separator="," duration={1.5} />      <span className="text-lg font-normal opacity-80 ml-1">Tk</span>
+                  <span> /</span>
+                  <span> <CountUp end={userData?.agentCreatedLeadCount} separator="," duration={1.5} /></span>
+
+                </span>
+              </div>
+
+            </div>
+
+
+
+
+            {/* Bottom: Percentage Label */}
+
           </div>
         );
       })()
@@ -175,36 +210,57 @@ const AgentsLeadsStatusPanel = ({ selectedFilter, state, setState }) => {
   console.log(userData)
 
 
-  return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-6  gap-4">
-      {stats.map((item, index) => (
-        <div
-          key={index}
-          className={`rounded-md p-4 text-white shadow-sm bg-gradient-to-r ${item.gradient} ${item.label == "Total Due" ? "col-span-1" : "col-span-1"}`}
-        >
-          <p className="text-sm line-clamp-1 font-medium mb-1">
-            {item.label} {item?.unit && <span>({item.unit})</span>}
-          </p>
-          {
-            loading ? <p className='animate-pulse py-2'> counting... </p> : item.children ? item.children : <div className="text-3xl font-bold flex items-center gap-2">
-              {/* The Main Value (Amount) */}
-              <span>
-                <CountUp end={item.value || 0} duration={1.5} separator="," />
-              </span>
+  const renderCard = (item, index , lessPadding) => (
+    <div
+      key={index}
+      className={`rounded-md ${lessPadding ? "p-3" : "p-4"} text-white shadow-sm bg-gradient-to-r flex flex-col  ${item.gradient}`}
+    >
+      <p className="text-sm line-clamp-1 font-medium ">
+        {item.label} {item?.unit && <span>({item.unit})</span>}
+      </p>
+      {loading ? (
+        <p className="animate-pulse py-2">counting...</p>
+      ) : item.children ? (
+        item.children
+      ) : (
+        <div className="text-3xl font-bold flex items-center gap-2">
+          <span>
+            <CountUp end={item.value || 0} duration={1.5} separator="," />
+          </span>
 
-              {/* The Secondary Count (inside parentheses) */}
-              {item.count !== undefined && (
-                <span title='Refund Count' className="text-lg font-semibold opacity-90">
-                  (<CountUp end={item.count || 0} duration={1.5} separator="," />)
-                </span>
-              )}
-
-            </div>
-          }
+          {item.count !== undefined && (
+            <span title="Refund Count" className="text-lg font-semibold opacity-90">
+              (<CountUp end={item.count || 0} duration={1.5} separator="," />)
+            </span>
+          )}
         </div>
-      ))}
+      )}
+    </div>
+  );
+
+
+
+  return (
+    <div className="flex flex-col gap-4">
+
+      {/* --- FIRST ROW: 7 Items --- */}
+      {/* On mobile: 2 cols, iPad: 3 or 4 cols, Desktop (xl): 7 cols */}
+      <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 gap-4">
+        {stats.slice(0, 7).map((item, index) => renderCard(item, index))}
+      </div>
+
+      {/* --- SECOND ROW: 6 Items --- */}
+      {/* On mobile: 2 cols, iPad: 3 cols, Desktop (xl): 6 cols */}
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
+        {stats.slice(7).map((item, index) => renderCard(item, index + 7 , true))}
+      </div>
+
     </div>
   );
 };
 
 export default AgentsLeadsStatusPanel;
+
+
+
+
