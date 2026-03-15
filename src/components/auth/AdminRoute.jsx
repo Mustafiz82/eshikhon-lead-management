@@ -9,7 +9,7 @@ export default function AdminRoute({ children, fallback = null }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  useEffect(() => {
+  useEffect(() => { 
     if (user === null) {
       // Not logged in → login
       const next = encodeURIComponent(pathname || "/");
@@ -17,12 +17,12 @@ export default function AdminRoute({ children, fallback = null }) {
       return;
     }
     // Logged in but not admin → bounce to user route (e.g., /dashboard)
-    if (user && user.role !== "admin") {
+    if (user && user.role == "user" ) {
       router.replace("/");
     }
   }, [user, router, pathname]);
 
-  if (!user || user.role !== "admin") return fallback; // or a spinner
+  if (!user || user.role == "user") return fallback; // or a spinner
 
   return children;
 }

@@ -60,6 +60,8 @@ const Page = () => {
     const [editLead, setEditLead] = useState(null);
 
 
+
+
     const [selectedLead, setSelectedLead] = useState(null);
     const { loogeduser } = useContext(AuthContext)
 
@@ -87,7 +89,10 @@ const Page = () => {
     const { data: courseOption } = useFetch("/leads/intersted-course");
     const { data: leadSource } = useFetch("/leads/source")
     const { data: user } = useFetch("/user")
+    const { user: authUser } = useContext(AuthContext)
 
+
+    authUser.role == "admin"
 
     console.log(rawCourses)
 
@@ -659,13 +664,17 @@ const Page = () => {
                                 {showAssignStatus ? "Unassign" : "Assign"}
                             </button>
 
-                            <button
+                            {
+
+                            }
+
+                            {authUser.role == "admin" &&        <button
                                 className="btn flex gap-1 bg-red-500 btn-sm btn-error text-white"
                                 onClick={handleDeleteLeads}
                             >
                                 <MdDelete />
                                 Delete
-                            </button>
+                            </button> }
                             <button
                                 className="btn flex bg-[#a855f7]  btn-sm btn-primary border-[#a855f7] text-white"
                                 onClick={handleLockLeads}

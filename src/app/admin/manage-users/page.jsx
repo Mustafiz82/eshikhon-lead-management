@@ -1,8 +1,9 @@
 "use client";
 import axiosPublic from "@/api/axios";
+import { AuthContext } from "@/context/AuthContext";
 import CustomSelect from "@/utils/CustomSelect";
 import { showAlert, showConfirm } from "@/utils/swal";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 import { FaEdit, FaPlus } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -15,11 +16,16 @@ const allowedDesignations = [
 ];
 
 
-const roleOption = [
+const adminRole = [
     { value: "user", label: "User" },
-    { value: "admin", label: "Admin" }
+    { value: "admin", label: "Admin" },
+    { value: "manager", label: "Manager" }
 ]
 
+const managerRole = [
+    { value: "user", label: "Agent" },
+    { value: "manager", label: "Manager" }
+]
 
 export default function Page() {
     const [users, setUsers] = useState([]);
@@ -31,6 +37,7 @@ export default function Page() {
     const [designation, setDesignation] = useState(editUser?.designation || null)
     const [fetchError, setFetchError] = useState("")
     const [showPassword, setShowPassword] = useState(false);
+    const { user: authUser } = useContext(AuthContext)
 
     const [showModal, setShowModal] = useState(false)
 
@@ -60,10 +67,10 @@ export default function Page() {
         const payload = {
             name: form.user_name.value.trim(),
             email: form.user_email.value.trim().toLowerCase(),
-           
+
             role: role,
             designation: designation,
-            target: form.target.value ? Number(form.target.value) : null,   
+            target: form.target.value ? Number(form.target.value) : null,
         };
 
         const updatedPayload = {
@@ -167,12 +174,14 @@ export default function Page() {
                                                 <td>{user.target ?? "-"}</td>
                                                 <td className="flex gap-2">
                                                     <button
-                                                        className="btn btn-sm bg-blue-600 btn-primary"
+                                                        disabled={!authUser.role !== "admin"}
+                                                        className="btn btn-sm disabled:bg-blue-800 bg-blue-600 btn-primary"
                                                         onClick={() => setEditUser(user)}
                                                     >
                                                         <FaEdit /> Edit
                                                     </button>
                                                     <button
+                                                        disabled={!authUser.role !== "admin"}
                                                         className="btn btn-sm bg-red-500"
                                                         onClick={() => handleDelete(user._id)}
                                                     >
@@ -260,7 +269,7 @@ export default function Page() {
                                     <CustomSelect
                                         selected={role}
                                         setSelected={setRole}
-                                        options={roleOption}
+                                        options={authUser.role !== "admin" ? managerRole : adminRole}
                                         bgColor
 
                                     />
@@ -343,3 +352,12 @@ export default function Page() {
         </div>
     );
 }
+
+
+
+
+
+// manager permisson
+
+// admin panel stastics
+// lead managemtn (cant delete)

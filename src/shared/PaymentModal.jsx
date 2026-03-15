@@ -243,6 +243,7 @@ const PaymentModal = ({
 
                             <input
                                 value={payerState.number}
+                                type="number"
                                 onChange={(e) =>
                                     setPayerState({ ...payerState, number: e.target.value })
                                 }
@@ -294,6 +295,7 @@ const PaymentModal = ({
 
                             <input
                                 value={payeeState.accountNumber}
+                                type="number"
                                 onChange={(e) =>
                                     setPayeeState({
                                         ...payeeState,

@@ -1,12 +1,13 @@
 "use client";
 
 import Dropdown from "@/components/agentLeads/Dropdown";
+import { AuthContext } from "@/context/AuthContext";
 import useDelete from "@/hooks/useDelete";
 import useFetch from "@/hooks/useFetch";
 import useSaveData from "@/hooks/useSaveData";
 import Table from "@/shared/Table";
 import CustomSelect from "@/utils/CustomSelect";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 
 
@@ -37,10 +38,10 @@ export default function ManageCoursePage() {
   const { handleDelete } = useDelete(refetch, "course")
 
 
+  const {user:authUser} = useContext(AuthContext)
+
+
   console.log(searchQuery)
-
-
-
 
 
   useEffect(() => {
@@ -56,8 +57,6 @@ export default function ManageCoursePage() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
-
-
 
 
   const handleSubmit = async (e) => {
@@ -78,14 +77,16 @@ export default function ManageCoursePage() {
   const actionsCell = (row) => (
     <div className="flex justify-end gap-2">
       <button
-        className="btn btn-sm bg-blue-600 btn-primary"
+        className="btn disabled:bg-blue-800 btn-sm bg-blue-600 btn-primary"
         onClick={() => setEditCourse(row)}           // <- selected row here
+        disabled={authUser.role !== "admin"}
       >
         Edit
       </button>
       <button
-        className="btn btn-sm bg-red-500"
+        className="btn disabled:bg-red-800 btn-sm bg-red-500"
         onClick={() => handleDelete(`/course/${row._id ?? row.id}`)} // <- selected row id
+        disabled={authUser.role !== "admin"}
       >
         Delete
       </button>
@@ -266,7 +267,7 @@ export default function ManageCoursePage() {
               {submitError && <div className="mt-3 text-red-500 text-sm">{submitError}</div>}
 
               <div className="mt-auto pt-4 flex gap-2">
-                <button type="submit" className="btn bg-blue-600 btn-primary w-full" disabled={isSubmitting}>
+                <button  type="submit" className="btn bg-blue-600 btn-primary w-full" disabled={isSubmitting ||( authUser.role !== "admin")}>
                   {isSubmitting ? (editCourse ? "Updating..." : "Creating...") : editCourse ? "Update Course" : "Create Course"}
                 </button>
 

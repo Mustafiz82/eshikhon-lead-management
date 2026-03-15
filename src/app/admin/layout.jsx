@@ -53,6 +53,7 @@ export default function Layout({ children }) {
                                 <Link key={item.href} href={item.href}>
                                     <li
                                         className={`flex cursor-pointer px-5 flex-row items-center gap-2 text-md py-3 rounded-none transition
+                                            ${user.role === "manager" && item.label == "Manage Payments" ? "hidden" : "block"}
                                     ${pathname === item.href
                                                 ? " bg-blue-900 text-white"
                                                 : " hover:bg-blue-900 hover:text-white"
