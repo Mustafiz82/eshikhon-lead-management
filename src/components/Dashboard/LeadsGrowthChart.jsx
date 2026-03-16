@@ -23,13 +23,15 @@ ChartJS.register(
 const LeadsGrowthChart = () => {
 
 
-  const {data:leadGrowth} = useFetch("/dashboard/leadGrowth")
+  const { data: leadGrowth } = useFetch("/dashboard/leadGrowth")
   console.log(leadGrowth)
 
-  const labels = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
+  const now = new Date();
+
+  const labels = Array.from({ length: 12 }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (11 - i), 1);
+    return d.toLocaleString('default', { month: 'short' });
+  });
 
   const data = {
     labels,

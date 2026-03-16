@@ -130,7 +130,7 @@ export default function ManageCoursePage() {
 
 
   return (
-    <div className="flex  min-h-[calc(100vh-100px)] lg:h-screen overflow-hidden">
+    <div className="flex  min-h-[calc(100vh-200px)] lg:h-screen overflow-hidden">
       {loading ? (
         <p className="h-[300px] flex justify-center items-center w-full">Loading...</p>
       ) : error ? <p className="h-[300px] text-red-500 flex justify-center items-center w-full">Error Fetching Data</p> : (
@@ -192,7 +192,7 @@ export default function ManageCoursePage() {
           </div>
 
           {/* Drawer / Form */}
-          <div className={`h-full ${showModal ? "fixed lg:static top-0 left-0 w-full lg:w-auto z-9999 block " : "hidden lg:block"}  w-[400px] bg-gray-800 shadow-lg p-6`}>
+          <div className={`h-[calc(100vh-60px)] ${showModal ? "fixed lg:static top-0 left-0 w-full lg:w-auto z-9999 block " : "hidden lg:block"}  w-[400px] bg-gray-800 shadow-lg p-6`}>
             <form autoComplete="off" onSubmit={handleSubmit} className="flex flex-col h-full">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">

@@ -29,6 +29,11 @@ export default function Layout({ children }) {
     ];
 
 
+    const handleCloseDrawer = () => {
+        const el = document.getElementById("my-drawer")
+        if (el) el.checked = false
+    }
+
 
     return (
         <DateRangeProvider>
@@ -39,8 +44,8 @@ export default function Layout({ children }) {
 
                     <div className="drawer-content h-full">
                         <div className="flex bg-gray-900 fixed z-9999 w-full  2xl:hidden p-5 top-0 h-fit justify-between items-center">
-                            <a href="https://eshikhon.com/" target="blank"> <img className="h-10" src={"/logo/eshikhon.svg"} /></a>
                             <label htmlFor="my-drawer" className="btn btn-primary bg-blue-600 text-xl drawer-button"><LuMenu /></label>
+                            <a href="https://eshikhon.com/" target="blank"> <img className="h-10" src={"/logo/eshikhon.svg"} /></a>
                         </div>
                         <div className="mt-16 2xl:mt-0">
                             {children}
@@ -52,6 +57,8 @@ export default function Layout({ children }) {
                             {menuItems.map((item) => (
                                 <Link key={item.href} href={item.href}>
                                     <li
+                                        onClick={handleCloseDrawer}
+
                                         className={`flex cursor-pointer px-5 flex-row items-center gap-2 text-md py-3 rounded-none transition
                                             ${user.role === "manager" && item.label == "Manage Payments" ? "hidden" : "block"}
                                     ${pathname === item.href

@@ -472,7 +472,7 @@ const Page = () => {
     console.log(showLockStatus)
 
     return (
-        <div className="p-6 min-h-[calc(100vh-100px)] lg:h-screen overflow-hidden ">
+        <div className="p-6  min-h-[calc(100vh-100px)] lg:h-screen overflow-hidden ">
 
 
             {/* Filters */}
