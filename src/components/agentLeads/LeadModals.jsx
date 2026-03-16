@@ -570,7 +570,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                                     setModelStatus(s)
                                                     document.activeElement.blur()
                                                 }}
-                                                className={`capitalize ${user.role == "user" && s == "Refunded" && "hidden"}`}
+                                                className={`capitalize ${user?.role == "user" && s == "Refunded" && "hidden"}`}
                                             >
                                                 {s}
                                             </button>
@@ -613,7 +613,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                         <div className="mt-2 relative">
                             <input
                                 type="text"
-                                disabled={user.role == "user" && selectedLead.interstedCourse && selectedLead.leadStatus == "Enrolled"}
+                                disabled={user?.role == "user" && selectedLead.interstedCourse && selectedLead.leadStatus == "Enrolled"}
                                 value={searchInput}
                                 onChange={handleSearch}
                                 placeholder="Course Name"

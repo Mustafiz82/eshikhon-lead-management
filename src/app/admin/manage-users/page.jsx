@@ -169,19 +169,19 @@ export default function Page() {
                                             <tr key={user._id || user.id}>
                                                 <td>{user.name}</td>
                                                 <td>{user.email}</td>
-                                                <td>{user.role}</td>
+                                                <td>{user?.role}</td>
                                                 <td>{user.designation ?? "-"}</td>
                                                 <td>{user.target ?? "-"}</td>
                                                 <td className="flex gap-2">
                                                     <button
-                                                        disabled={!authUser.role !== "admin"}
+                                                        disabled={authUser?.role !== "admin"}
                                                         className="btn btn-sm disabled:bg-blue-800 bg-blue-600 btn-primary"
                                                         onClick={() => setEditUser(user)}
                                                     >
                                                         <FaEdit /> Edit
                                                     </button>
                                                     <button
-                                                        disabled={!authUser.role !== "admin"}
+                                                        disabled={authUser?.role !== "admin"}
                                                         className="btn btn-sm bg-red-500"
                                                         onClick={() => handleDelete(user._id)}
                                                     >
@@ -269,7 +269,7 @@ export default function Page() {
                                     <CustomSelect
                                         selected={role}
                                         setSelected={setRole}
-                                        options={authUser.role !== "admin" ? managerRole : adminRole}
+                                        options={authUser?.role !== "admin" ? managerRole : adminRole}
                                         bgColor
 
                                     />

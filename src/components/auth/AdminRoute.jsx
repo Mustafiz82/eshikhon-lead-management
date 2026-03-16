@@ -17,12 +17,12 @@ export default function AdminRoute({ children, fallback = null }) {
       return;
     }
     // Logged in but not admin → bounce to user route (e.g., /dashboard)
-    if (user && user.role == "user" ) {
+    if (user && user?.role == "user" ) {
       router.replace("/");
     }
   }, [user, router, pathname]);
 
-  if (!user || user.role == "user") return fallback; // or a spinner
+  if (!user || user?.role == "user") return fallback; // or a spinner
 
   return children;
 }

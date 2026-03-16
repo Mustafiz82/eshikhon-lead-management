@@ -22,14 +22,14 @@ const Page = () => {
     const [isUpdateInfoOpen, setIsUpdateInfoOpen] = useState(false);
 
     useEffect(() => {
-        if (user && user.role !== "admin") {
+        if (user && user?.role !== "admin") {
             setSelectedAgent(user.email)
         }
     }, [user])
 
 
     // --- Fetch: pending/overview rows (this includes status/balance) ---
-    const shouldFetch = user && (user.role === "admin" || selectedAgent);
+    const shouldFetch = user && (user?.role === "admin" || selectedAgent);
 
     const {
         data: PENDING_PAYMENTS_DATA = [],
@@ -97,7 +97,7 @@ const Page = () => {
 
     useEffect(() => {
         refetchPending()
-    }, [user.role])
+    }, [user?.role])
 
 
 
@@ -108,7 +108,7 @@ const Page = () => {
         <div className="min-h-screen bg-gray-900 text-slate-200 p-6 font-sans">
             {/* Header & Filter Section */}
             {
-                user.role === "admin" && <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+                user?.role === "admin" && <div className="flex flex-col md:flex-row justify-between items-center mb-8">
                     <div>
                         <h1 className="text-2xl font-bold text-white mb-1">Manage Payments</h1>
                         <p className="text-sm text-slate-400">Overview of commissions and payment history</p>
@@ -139,13 +139,13 @@ const Page = () => {
                             <FaMoneyBillWave />
                         </div>
                         <h2 className="text-xl font-semibold text-white">Pending Payments</h2>
-                        <Link href={`/${user.role === "admin" ? "admin" : "agents"}/docs/agent_commission_guide`}>  <FaInfoCircle className="text-lg " title=" Learn How Commission Is calculated"></FaInfoCircle></Link>
+                        <Link href={`/${user?.role === "admin" ? "admin" : "agents"}/docs/agent_commission_guide`}>  <FaInfoCircle className="text-lg " title=" Learn How Commission Is calculated"></FaInfoCircle></Link>
                     </div>
 
 
 
                     {
-                        user.role !== "admin" ? <button
+                        user?.role !== "admin" ? <button
                             onClick={handleOpenUpdateInfo}
                             className="px-4 cursor-pointer py-2 rounded text-xs font-medium transition-colors shadow-lg bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20"
                         >

@@ -59,7 +59,7 @@ const PaymentDue = ({ PENDING_PAYMENTS_DATA, handleOpenPayModal, loading }) => {
                                 <td className="p-4 text-center">
 
                                     {
-                                        user.role == "admin" ? <button
+                                        user?.role == "admin" ? <button
                                             disabled={item.status === "paid"}
                                             onClick={() => handleOpenPayModal(item)}
                                             className={`px-4 cursor-pointer py-1.5 rounded text-xs font-medium transition-colors shadow-lg ${item.status === "paid"

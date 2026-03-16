@@ -10,7 +10,7 @@ const CourseSellingSummary = ({ state }) => {
     const { user } = useContext(AuthContext)
     const { data, loading } = useFetch("course")
 
-    const query = user.role === "user" ? `email=${user.email}` : ""
+    const query = user?.role === "user" ? `email=${user.email}` : ""
     const { data: summary } = useFetch(`dashboard/courseSellingSummary?startDate=${state[0].startDate}&endDate=${state[0].endDate}&${query}`)
     const [searchText, setSearchText] = useState("")
 

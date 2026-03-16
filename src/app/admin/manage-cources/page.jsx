@@ -79,14 +79,14 @@ export default function ManageCoursePage() {
       <button
         className="btn disabled:bg-blue-800 btn-sm bg-blue-600 btn-primary"
         onClick={() => setEditCourse(row)}           // <- selected row here
-        disabled={authUser.role !== "admin"}
+        disabled={authUser?.role !== "admin"}
       >
         Edit
       </button>
       <button
         className="btn disabled:bg-red-800 btn-sm bg-red-500"
         onClick={() => handleDelete(`/course/${row._id ?? row.id}`)} // <- selected row id
-        disabled={authUser.role !== "admin"}
+        disabled={authUser?.role !== "admin"}
       >
         Delete
       </button>
@@ -267,7 +267,7 @@ export default function ManageCoursePage() {
               {submitError && <div className="mt-3 text-red-500 text-sm">{submitError}</div>}
 
               <div className="mt-auto pt-4 flex gap-2">
-                <button  type="submit" className="btn bg-blue-600 btn-primary w-full" disabled={isSubmitting ||( authUser.role !== "admin")}>
+                <button  type="submit" className="btn bg-blue-600 btn-primary w-full" disabled={isSubmitting ||( authUser?.role !== "admin")}>
                   {isSubmitting ? (editCourse ? "Updating..." : "Creating...") : editCourse ? "Update Course" : "Create Course"}
                 </button>
 

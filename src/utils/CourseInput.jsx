@@ -121,7 +121,7 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
     <div className="w-full max-w-xl mx-auto space-y-4">
 
       <select
-        // disabled={loggedUser.role == "user" &&  selectedLead?.leadDiscount}
+        // disabled={loggeduser?.role == "user" &&  selectedLead?.leadDiscount}
         onChange={(e) => setSelectedDiscountID(e.target.value)}
         value={selectedDiscountID}
         className="select focus:border-blue-600 px-2 focus:outline-0 select-bordered w-full"

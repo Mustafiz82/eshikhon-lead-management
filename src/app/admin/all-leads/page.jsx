@@ -58,6 +58,7 @@ const Page = () => {
     //editLeadsDrawer
     const [showDrawer, setShowDrawer] = useState(false);
     const [editLead, setEditLead] = useState(null);
+    
 
 
 
@@ -92,10 +93,7 @@ const Page = () => {
     const { user: authUser } = useContext(AuthContext)
 
 
-    authUser.role == "admin"
-
-    console.log(rawCourses)
-
+   
     // Remove duplicates
 
 
@@ -668,7 +666,7 @@ const Page = () => {
 
                             }
 
-                            {authUser.role == "admin" &&        <button
+                            {authUser?.role == "admin" &&        <button
                                 className="btn flex gap-1 bg-red-500 btn-sm btn-error text-white"
                                 onClick={handleDeleteLeads}
                             >
