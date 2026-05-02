@@ -1,9 +1,9 @@
 const { default: axios } = require("axios");
 
 const axiosPublic = axios.create({
-    // baseURL : "http://localhost:3001/api" ,
+    baseURL : "http://localhost:4000/api" ,
     // baseURL : "http://192.168.10.3:3001/api" ,
-    baseURL : "http://192.168.10.150:4000/api" ,
+    // baseURL : "http://192.168.10.150:4000/api" ,
     // baseURL : "http://192.168.10.42:4000/api" ,
     // baseURL : "http://192.168.10.42:3001/api" ,
     // baseURL : "http://192.168.10.15:3001/api" ,

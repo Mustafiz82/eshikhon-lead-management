@@ -1,6 +1,6 @@
 const Table = ({ data, config , dataType , width=""}) => {
     return (
-        <div className="flex-1 h-[calc(100vh-160px)] overflow-auto pt-0 p-2 lg:pt-0 lg:p-6">
+        <div className="flex-1 h-[calc(100vh-160px)]  overflow-auto pt-0 p-2 lg:pt-0 lg:p-6">
             <div className="overflow-x-auto lg:overflow-visible">
                 {data.length > 0 ? (
                     <table style={{minWidth : width}} className="table   table-pin-rows  w-full">

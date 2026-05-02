@@ -51,7 +51,7 @@ export default function Layout({ children }) {
                             {children}
                         </div>
                     </div>
-                    <div className="drawer-side z-9999! p-0">
+                    <div className="drawer-side z-999! p-0">
                         <label htmlFor="my-drawer" className="drawer-overlay" />
                         <ul className="menu  p-0 pt-8 z-9999! relative bg-gray-800 gap-3  text-gray-100 min-h-full w-80 transition-colors">
                             {menuItems.map((item) => (

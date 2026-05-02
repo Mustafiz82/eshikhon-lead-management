@@ -27,6 +27,7 @@ export default function ManageDiscountPage() {
     const { handleDelete } = useDelete(refetch, "discount");
 
     const [authority, setAuthority] = useState(editDiscount?.authority || "");
+    const [appliedOn, setAppliedOn] = useState(editDiscount?.appliedOn || "");
     const [mode, setMode] = useState(editDiscount?.mode || "");
     const [appliesTo, setAppliesTo] = useState(
         Array.isArray(editDiscount?.appliesTo)
@@ -37,6 +38,7 @@ export default function ManageDiscountPage() {
 
     useEffect(() => {
         setAuthority(editDiscount?.authority || "");
+        setAppliedOn(editDiscount?.appliedOn || "");
         setMode(editDiscount?.mode || "");
         setAppliesTo(
             Array.isArray(editDiscount?.appliesTo)
@@ -52,7 +54,7 @@ export default function ManageDiscountPage() {
             .map(c => ({
                 label: c.name + "-" + c.type,
                 value: String(c._id ?? c.id),
-                type : c.type
+                type: c.type
             }));
     }, [courses]);
 
@@ -68,6 +70,22 @@ export default function ManageDiscountPage() {
         if (now > e) return "expired";
         return "active";
     };
+
+    const  camelToWords = (row) => {
+
+        console.log(row?.appliedOn)
+
+       if( row?.appliedOn ){
+
+           return row?.appliedOn
+               .replace(/([A-Z])/g, " $1")
+               .replace(/^./, s => s.toUpperCase());
+       }
+
+       return ""
+    }
+
+
 
     const appliedCount = (row) =>
         Array.isArray(row.appliesTo) ? row.appliesTo.length : 0;
@@ -95,6 +113,7 @@ export default function ManageDiscountPage() {
             "Authority",
 
             "Discount",
+            "Applied ON",
             "Start",
             "Expire",
             "Status",
@@ -106,6 +125,8 @@ export default function ManageDiscountPage() {
             "authority",
 
             formateDiscount,
+            camelToWords,
+            
             startDate,
             endDate,
             getStatus,
@@ -129,10 +150,14 @@ export default function ManageDiscountPage() {
             startAt: form.startAt.value || undefined,
             expireAt: form.expireAt.value || undefined,
             appliesTo,
+            appliedOn,
             notes: form.notes?.value.trim() || "",
         };
 
         console.log(payload)
+        await handleSave(payload, form, "/discount");
+
+        if (submitError) return
 
         if (payload.authority === "committed") {
             payload.minValue = null;
@@ -145,10 +170,10 @@ export default function ManageDiscountPage() {
             payload.capAmount = null;
         }
 
-        await handleSave(payload,  form, "/discount");
 
         setAuthority("")
         setMode("")
+        setAppliedOn("")
 
 
     };
@@ -298,9 +323,9 @@ export default function ManageDiscountPage() {
                                         defaultValue={editDiscount?.startAt?.slice(0, 10) || ""}
                                         className="input bg-gray-900  input-bordered w-full focus:outline-0 focus:border-blue-500"
                                         disabled={isSubmitting}
-                                        
+
                                     />
-                                </div>  
+                                </div>
 
                                 <div className="flex flex-col gap-1">
                                     <label className="text-xs text-white/80 mb-1">
@@ -313,7 +338,7 @@ export default function ManageDiscountPage() {
                                         defaultValue={editDiscount?.expireAt?.slice(0, 10) || ""}
                                         className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
                                         disabled={isSubmitting}
-                                    
+
                                     />
                                 </div>
 
@@ -333,6 +358,23 @@ export default function ManageDiscountPage() {
                                         root: { className: "bg-gray-700 text-white" }, // 👈 background applied
                                     }}
                                 />
+
+
+                                <select
+                                    name="appliedOn"
+                                    className="select px-2 bg-gray-900 w-full focus:outline-0 focus:border-blue-500"
+                                    value={appliedOn}          // <-- controlled
+                                    onChange={(e) => setAppliedOn(e.target.value)}
+                                    disabled={isSubmitting}
+                                    required
+                                >
+                                    <option value="" disabled>
+                                        Apply On
+                                    </option>
+                                    <option value="regularPrice">Regular Price</option>
+                                    <option value="sellPrice">Sell Price</option>
+
+                                </select>
 
                                 <textarea
                                     name="notes"

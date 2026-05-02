@@ -1,5 +1,6 @@
 "use client";
 
+import axiosPublic from "@/api/axios";
 import Dropdown from "@/components/agentLeads/Dropdown";
 import { AuthContext } from "@/context/AuthContext";
 import useDelete from "@/hooks/useDelete";
@@ -8,6 +9,7 @@ import useSaveData from "@/hooks/useSaveData";
 import Table from "@/shared/Table";
 import CustomSelect from "@/utils/CustomSelect";
 import React, { useContext, useEffect, useState } from "react";
+import { FaSync } from "react-icons/fa";
 
 
 
@@ -15,7 +17,7 @@ import React, { useContext, useEffect, useState } from "react";
 const courseOption = [
   { value: "Online", label: "Online" },
   { value: "Offline", label: "Offline" },
-  { value: "Video", label: "Video" },
+  // { value: "Video", label: "Video" },
 ]
 
 
@@ -36,12 +38,35 @@ export default function ManageCoursePage() {
   const { data: courses, loading, error, refetch } = useFetch(`/course?sort=${selectedSortMethod}&q=${searchQuery}&type=${(filterCourseType !== "All") ? filterCourseType : ""}`)
   const { setEditCourse, editCourse, handleSave, loading: isSubmitting, error: submitError } = useSaveData(refetch)
   const { handleDelete } = useDelete(refetch, "course")
+  const [syncResult, setSyncResult] = useState(null);
+  const [showSyncModal, setShowSyncModal] = useState(false);
 
 
-  const {user:authUser} = useContext(AuthContext)
+  const { user: authUser } = useContext(AuthContext)
+  const [syncing, setSyncing] = useState(false)
 
 
-  console.log(searchQuery)
+
+  const handleSync = async () => {
+    setSyncing(true);
+
+    try {
+      const res = await axiosPublic.get("/course/sync");
+
+      setSyncResult(res.data);   // 🔥 STORE RESULT
+      setSyncing(false);
+
+      refetch();
+    } catch (err) {
+      setSyncing(false);
+      console.log(err);
+    }
+  };
+
+
+  console.log(syncResult)
+
+
 
 
   useEffect(() => {
@@ -66,8 +91,9 @@ export default function ManageCoursePage() {
     const payload = {
       name: form.course_name.value.trim(),
       type: courseType,
+      regularPrice : form.regularPrice.value ? Number(form.regularPrice.value) : null,
       price: form.price.value ? Number(form.price.value) : null,
-      code : form?.code?.value
+      code: form?.code?.value
     };
     console.log(payload)
     await handleSave(payload, form, "/course")
@@ -75,7 +101,7 @@ export default function ManageCoursePage() {
   };
 
   const actionsCell = (row) => (
-    <div className="flex justify-end gap-2">
+    <div className="flex -mr-4 justify-end gap-2">
       <button
         className="btn disabled:bg-blue-800 btn-sm bg-blue-600 btn-primary"
         onClick={() => setEditCourse(row)}           // <- selected row here
@@ -94,8 +120,8 @@ export default function ManageCoursePage() {
   )
 
   const courseConfig = {
-    header: ["Name", "Type", "Price", "Code" , "Action"],
-    body: ["name", "type", "price", "code" , actionsCell]
+    header: ["Name", "Type",  "Regular Price" , "Sell Price", "Code", "Action"],
+    body: ["name", "type",  "regularPrice","price", "code", actionsCell]
   }
 
 
@@ -142,49 +168,106 @@ export default function ManageCoursePage() {
 
 
           <div className=" flex-1 justify-between items-center overflow-auto lg:overflow-x-hidden  ">
-            <div className="flex lg:items-start flex-col-reverse md:flex-row  p-6 pb-0 justify-between">
-              <div className="md:w-fit w-full  flex gap-2">
-                <Dropdown
-                  dropdownPosition="dropdown-start"
-                  selectedState={selectedSortMethod}
-                  setSelectedState={setSelectedSortMethod}
-                  label="Sort By"
-                  options={["Default", "Name (Ascending)", "Name (Descending)", "Price (Ascending)", "Price (Descending)"]}
-                  setCurrentPage={setCurrentPage}
-                  defaultOptions={"Default"}
-                />
-                <Dropdown
-                  dropdownPosition="dropdown-end"
-                  selectedState={filterCourseType}
-                  setSelectedState={setFilterCourseType}
-                  label="Course Type"
-                  options={["All", "Online", "Offline",]}
-                  setCurrentPage={setCurrentPage}
-                  defaultOptions={"All"}
-                />
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4  bg-gray-900/50 rounded-xl  border-gray-800">
 
+              {/* LEFT SIDE: Stats (Hidden on mobile, clean on Desktop) */}
+              <div className="hidden lg:block">
+                <p className="text-sm font-medium text-gray-400">
+                  Total courses: <span className="text-white">{courses?.length}</span>
+                  <span className="mx-2 text-gray-700">|</span>
+                  <span className="text-blue-400">{online}</span> Online
+                  <span className="mx-2 text-gray-600">•</span>
+                  <span className="text-gray-400">{offline}</span> Offline
+                </p>
+              </div>
 
+              {/* RIGHT SIDE: All Actions */}
+              <div className="flex flex-wrap items-center justify-end gap-2 w-full lg:w-auto">
 
+                {/* Dropdowns Group */}
+                <div className="flex gap-2">
+                  <Dropdown
+                    dropdownPosition="dropdown-start"
+                    selectedState={selectedSortMethod}
+                    setSelectedState={setSelectedSortMethod}
+                    label="Sort By"
+                    options={["Default", "Name (Ascending)", "Name (Descending)", "Price (Ascending)", "Price (Descending)"]}
+                    setCurrentPage={setCurrentPage}
+                    defaultOptions={"Default"}
+                  />
+                  <Dropdown
+                    dropdownPosition="dropdown-end"
+                    selectedState={filterCourseType}
+                    setSelectedState={setFilterCourseType}
+                    label="Type"
+                    options={["All", "Online", "Offline"]}
+                    setCurrentPage={setCurrentPage}
+                    defaultOptions={"All"}
+                  />
+                </div>
 
+                {/* Search Bar - flex-grow ensures it takes available space without breaking */}
+                <form
+                  className="flex-grow max-w-sm"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    setSearchQuery(searchText);
+                  }}
+                >
+                  <div className="relative">
+                    <span className="absolute z-[500] inset-y-0 left-3 flex items-center text-gray-500"> 🔍︎</span>
+                    <input
+                      type="text"
+                      id="course-search-input"
+                      placeholder="Search courses..."
+                      className="input input-bordered h-10 pl-9 w-full focus:outline-0 focus:border-blue-600 bg-gray-800 border-gray-700 text-sm"
+                      value={searchText}
+                      onChange={(e) => setSearchText(e.target.value)}
+                    />
+                  </div>
+                </form>
 
+                {/* SYNC SECTION - Fixed width area to prevent layout shifting */}
+                <div className="flex items-center min-w-fit">
+                  {syncResult && !syncing ? (
+
+                    <div className="flex items-center gap-2 bg-gray-800 p-1 rounded-lg border border-gray-700">
+                      {/* Compact Success Indicator */}
+                      <div className="flex items-center gap-1.5 px-2 py-1 text-[10px] font-bold text-green-500 uppercase tracking-tight">
+
+                        Done
+                      </div>
+
+                      {/* Button Group (DaisyUI Join) */}
+                      <div className="join">
+                        <button
+                          className="join-item btn btn-xs h-8 bg-gray-700 border-none text-white hover:bg-gray-600 px-3"
+                          onClick={() => setShowSyncModal(true)}
+                        >
+                          View
+                        </button>
+                        <button
+                          className="join-item btn btn-xs h-8 bg-blue-600 border-none text-white hover:bg-blue-700 px-3"
+                          onClick={handleSync}
+                        >
+                          Sync Again
+                        </button>
+                      </div>
+                    </div>
+
+                  ) : (
+                    <button
+                      onClick={handleSync}
+                      disabled={syncing}
+                      className="btn btn-sm bg-blue-600 hover:bg-blue-700 border-none text-white h-10 min-h-0 px-4"
+                    >
+                      <FaSync className={syncing ? "animate-spin" : ""} />
+                      {syncing ? "Syncing..." : "Sync Price"}
+                    </button>
+                  )}
+                </div>
 
               </div>
-              <p className="hidden lg:block">Total course :  {courses?.length} (online : {online} , offline : {offline})</p>
-              <form onSubmit={(e) => {
-                e.preventDefault()
-                setSearchQuery(searchText)
-
-              }}>
-                <input
-                  type="text"
-                  id="course-search-input"
-                  placeholder="🔍︎ Search by name, type or price"
-                  className="input lg:min-w-[300px] input-bordered focus:outline-0 focus:border-blue-600 w-full mb-4"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-
-                />
-              </form>
             </div>
             <div className="lg:-mr-4 overflow-auto  ">
               <Table data={courses} config={courseConfig} />
@@ -192,7 +275,7 @@ export default function ManageCoursePage() {
           </div>
 
           {/* Drawer / Form */}
-          <div className={`h-[calc(100vh-60px)] ${showModal ? "fixed lg:static top-0 left-0 w-full lg:w-auto z-9999 block " : "hidden lg:block"}  w-[400px] bg-gray-800 shadow-lg p-6`}>
+          <div className={`h-[calc(100vh-60px)] 2xl:h-screen   ${showModal ? "fixed lg:static top-0 left-0 w-full lg:w-auto z-9999 block " : "hidden lg:block"}  w-[400px] bg-gray-800 shadow-lg p-6`}>
             <form autoComplete="off" onSubmit={handleSubmit} className="flex flex-col h-full">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">
@@ -249,6 +332,18 @@ export default function ManageCoursePage() {
                   required
                 />
 
+                <input
+                  type="number"
+                  name="regularPrice"
+                  placeholder="Regular Price (৳)"
+                  defaultValue={editCourse?.regularPrice ?? ""}
+                  className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
+                  disabled={isSubmitting}
+                  min={0}
+                  step="1"
+                  required
+                />
+
 
                 <input
                   type="text"
@@ -267,13 +362,163 @@ export default function ManageCoursePage() {
               {submitError && <div className="mt-3 text-red-500 text-sm">{submitError}</div>}
 
               <div className="mt-auto pt-4 flex gap-2">
-                <button  type="submit" className="btn bg-blue-600 btn-primary w-full" disabled={isSubmitting ||( authUser?.role !== "admin")}>
+                <button type="submit" className="btn bg-blue-600 btn-primary w-full" disabled={isSubmitting || (authUser?.role !== "admin")}>
                   {isSubmitting ? (editCourse ? "Updating..." : "Creating...") : editCourse ? "Update Course" : "Create Course"}
                 </button>
 
               </div>
             </form>
           </div>
+
+
+
+    {showSyncModal && syncResult && (
+  <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-[9999] p-4">
+    <div className="bg-gray-900 border border-gray-800 w-full max-w-xl rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+      
+      {/* HEADER */}
+      <div className="bg-blue-600 px-4 py-2.5 flex justify-between items-center shrink-0">
+        <h2 className="text-sm font-bold text-white flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          Sync Summary Report
+        </h2>
+        <button onClick={() => setShowSyncModal(false)} className="text-white/80 hover:text-white transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="overflow-y-auto p-4 space-y-6">
+        
+        {/* STATS STRIP */}
+        <div className="flex gap-2">
+          <div className="flex-1 bg-blue-500/10 border border-blue-500/20 p-2 rounded-lg text-center">
+            <p className="text-[10px] text-blue-400 font-bold uppercase">Updated</p>
+            <p className="text-lg font-bold text-white">{syncResult.changedCount}</p>
+          </div>
+          <div className="flex-1 bg-emerald-500/10 border border-emerald-500/20 p-2 rounded-lg text-center">
+            <p className="text-[10px] text-emerald-400 font-bold uppercase">Added</p>
+            <p className="text-lg font-bold text-white">{syncResult.addedCount}</p>
+          </div>
+          <div className="flex-1 bg-rose-500/10 border border-rose-500/20 p-2 rounded-lg text-center">
+            <p className="text-[10px] text-rose-400 font-bold uppercase">Deleted</p>
+            <p className="text-lg font-bold text-white">{syncResult.deletedCount}</p>
+          </div>
+        </div>
+
+        {/* UPDATED SECTION */}
+        <section>
+          <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2 border-b border-gray-800 pb-1">Updated Courses</h3>
+          <div className="space-y-2">
+            {syncResult.changed?.map((c, i) => (
+              <div key={i} className="text-[11px] bg-gray-800/40 p-3 rounded-lg border border-gray-800/50">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="font-bold text-blue-100 leading-tight">{c.name}</span>
+                  <span className="text-[10px] px-1.5 py-0.5 bg-gray-800 text-gray-400 rounded border border-gray-700 shrink-0 font-mono uppercase">{c.type}</span>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-1.5">
+                  {/* DIFF: CODE */}
+                  {c.oldCode && c.newCode && c.oldCode !== c.newCode && (
+                    <div className="flex items-center gap-2 text-gray-400">
+                      <span className="w-12 text-[9px] uppercase text-gray-600">Code:</span>
+                      <span className="line-through opacity-50">{c.oldCode}</span>
+                      <span className="text-blue-400">→</span>
+                      <span className="text-blue-400 font-bold px-1 bg-blue-400/10 rounded">{c.newCode}</span>
+                    </div>
+                  )}
+
+                  {/* DIFF: SALE PRICE */}
+                  {c.newPrice !== undefined && (
+                    <div className="flex items-center gap-2 text-gray-400">
+                      <span className="w-12 text-[9px] uppercase text-gray-600">Sale:</span>
+                      <span className="line-through text-rose-500/60">${c.oldPrice || '0'}</span>
+                      <span className="text-emerald-400">→</span>
+                      <span className="text-emerald-400 font-bold">${c.newPrice}</span>
+                    </div>
+                  )}
+
+                  {/* DIFF: REGULAR PRICE */}
+                  {c.newRegularPrice !== undefined && (
+                    <div className="flex items-center gap-2 text-gray-400">
+                      <span className="w-12 text-[9px] uppercase text-gray-600">Reg:</span>
+                      <span className="line-through text-rose-500/60">${c.oldRegularPrice || '0'}</span>
+                      <span className="text-blue-400">→</span>
+                      <span className="text-blue-400 font-bold">${c.newRegularPrice}</span>
+                    </div>
+                  )}
+
+                   {/* DIFF: TYPE */}
+                   {c.oldType && c.newType && c.oldType !== c.newType && (
+                    <div className="flex items-center gap-2 text-gray-400">
+                      <span className="w-12 text-[9px] uppercase text-gray-600">Type:</span>
+                      <span className="line-through opacity-50">{c.oldType}</span>
+                      <span>→</span>
+                      <span className="text-white font-medium">{c.newType}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ADDED SECTION */}
+        <section>
+          <h3 className="text-[11px] font-bold text-emerald-500/70 uppercase tracking-widest mb-2 border-b border-gray-800 pb-1">Added Courses</h3>
+          <div className="space-y-1.5">
+            {syncResult.added?.map((c, i) => (
+              <div key={i} className="flex flex-col bg-emerald-500/5 border border-emerald-500/10 p-2.5 rounded text-[11px]">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-gray-200 font-bold tracking-tight">{c.name}</span>
+                  <span className="text-[9px] text-gray-300 font-mono uppercase bg-gray-800 px-1 rounded">{c.code}</span>
+                </div>
+                <div className="flex gap-3">
+                   <span className="text-emerald-400 font-bold">Sale: ${c.price}</span>
+                   {c.regularPrice && <span className="text-gray-500">Reg: ${c.regularPrice}</span>}
+                   <span className="text-gray-400 ml-auto uppercase text-[10px] italic">{c.type}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* DELETED SECTION */}
+        {syncResult.deleted?.length > 0 && (
+          <section>
+            <h3 className="text-[11px] font-bold text-rose-500/70 uppercase tracking-widest mb-2 border-b border-gray-800 pb-1">Deleted Courses</h3>
+            <div className="space-y-1.5">
+              {syncResult.deleted?.map((c, i) => (
+                <div key={i} className="flex justify-between items-center bg-rose-500/5 border border-rose-500/10 p-2.5 rounded text-[11px]">
+                  <div className="flex flex-col">
+                    <span className="text-gray-400 line-through decoration-rose-500/50">{c.name}</span>
+                    <span className="text-[10px] text-rose-500/40 font-mono uppercase">{c.code} • {c.type}</span>
+                  </div>
+                  <div className="w-6 h-6 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-500 font-bold text-xs">
+                    ×
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+
+      {/* FOOTER */}
+      <div className="p-3 border-t border-gray-800 bg-gray-900 flex justify-end">
+        <button
+          className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-all active:scale-95 shadow-lg shadow-blue-900/20"
+          onClick={() => setShowSyncModal(false)}
+        >
+          Acknowledge & Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}  
         </>
       )}
 

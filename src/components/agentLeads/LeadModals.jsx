@@ -279,9 +279,9 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
 
     return (
-        selectedLead && <div className="fixed inset-0 z-9999 bg-black/40 flex items-center justify-center">
+        selectedLead && <div className="fixed inset-0 !z-9999 bg-black/40 flex items-center justify-center">
             <div>
-                <div className={`bg-base-100 w-full   rounded-lg shadow-lg p-6 relative grid grid-cols-1 ${(modelStatus == "Enrolled" || modelStatus == "Refunded") ? "md:grid-cols-2 lg:grid-cols-4 max-w-7xl" : "md:grid-cols-3 lg:grid-cols-3 max-w-5xl"} gap-4 max-h-[90vh] overflow-y-auto`}>
+                <div className={`bg-base-100 w-full scale-90    rounded-lg shadow-lg p-6 relative grid grid-cols-1 ${(modelStatus == "Enrolled" || modelStatus == "Refunded") ? "md:grid-cols-2 lg:grid-cols-4 max-w-7xl" : "md:grid-cols-3 lg:grid-cols-3 max-w-5xl"} gap-4 max-h-[90vh] overflow-y-visible`}>
 
                     {/* Top bar with lead info */}
                     <div className="sticky md:absolute ml-auto   top-3 right-3">
@@ -622,7 +622,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
                             <span className="absolute border-gray-600 bg-gray-800 text-xs right-5 border p-1 px-2 rounded-full -top-2">{selectedCourseType}</span>
 
-                            {searchSuggesion?.length > 0 && <ul className="bg-base-100 fixed z-50 shadow-md mt-1 rounded-box border border-base-300">
+                            {searchSuggesion?.length > 0 && <ul className="bg-base-100 fixed !z-9999 shadow-md mt-1 rounded-box border border-base-300">
                                 {
                                     searchSuggesion.map(item => <li
                                         onClick={() => handleSearchSuggesionClick(item)}
