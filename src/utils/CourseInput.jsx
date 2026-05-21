@@ -16,6 +16,7 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
   const [estimatedPaymentDate, setEstimatedPaymentDate] = useState(null)  // next payment date
   const [localHistory, setLocalHistory] = useState([]);
   const [editableOriginalPrice, setEditableOriginalPrice] = useState(0);
+  const [orderNumber, setOrderNumber] = useState()
   const [isEditingOriginalPrice, setIsEditingOriginalPrice] = useState(false);
 
   // get discount related result , option , course price from hook . 
@@ -31,8 +32,8 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
     setIsDiscountDisabled,
     inputDiscountUnit,
     setInputDiscountUnit,
-    minValue,
-    maxValue,
+    // minValue,
+    // maxValue,
   } = useDiscountCalculation(selectedCourseId, selectedLead)
 
 
@@ -46,6 +47,10 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
   )
 
 
+  let minValue = 0
+  let maxValue = 100
+
+
   //  send course input data and states to lead modal 
   useEffect(() => {
     setCourseInput({
@@ -57,7 +62,8 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
       lastPaid: lastPaid ?? 0,
       totalDue: dueAmount,
       minValue, maxValue,
-      modifiedHistory: localHistory
+      modifiedHistory: localHistory,
+      uniqueID: orderNumber,
     });
   }, [
     estimatedPaymentDate,
@@ -120,7 +126,7 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
   return (
     <div className="w-full max-w-xl mx-auto space-y-4">
 
-      <select
+      {/* <select
         // disabled={loggeduser?.role == "user" &&  selectedLead?.leadDiscount}
         onChange={(e) => setSelectedDiscountID(e.target.value)}
         value={selectedDiscountID}
@@ -133,9 +139,21 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
             key={item._id}> {item?.name}
           </option>)
         }
-      </select>
+      </select> */}
 
+      <div className="col-span-2">
+        <label className="block mb-1 text-white/80 text-sm">
+          Order Number
+        </label>
+        <input
+          type="number"
+          value={orderNumber}
+          onChange={(e) => setOrderNumber(Number(e.target.value || 0))}
+          placeholder="Enter Order Number"
+          className="input input-bordered w-full disabled:bg-transparent focus:outline-0 focus:border-blue-600 disabled:border disabled:border-gray-600"
+        />
 
+      </div>
       {/* Prices + Discount */}
       <div className="grid grid-cols-5 gap-4">
         {/* Original Price */}
