@@ -20,6 +20,7 @@ import { handleLeadExport } from "@/utils/exportLeads";
 
 export const statusOptions = [
     "All",
+    "Contacted",
     "Pending",
     "Refunded",
     "Enrolled",
@@ -50,7 +51,6 @@ const AgentAllLeads = () => {
     const [selectedAssingedDate, setSelectedAssignedDate] = useState("All")
     const [selectedPaymentMode, setSelectedPaymentMode] = useState("All")
     const [selectedSortMethod, setSelectedSortMethod] = useState("Default")
-    const [selectedStage, setSelectedStage] = useState("All")
     const [selectedSource, setSelectedSource] = useState("All")
     const [selectedInterstedSeminar, setselectedInterstedSeminar] = useState("All")
 
@@ -101,6 +101,8 @@ const AgentAllLeads = () => {
 
 
 
+
+
     console.log(user.email, "user email");
     const params = new URLSearchParams({
         currentPage: currentPage,
@@ -108,7 +110,7 @@ const AgentAllLeads = () => {
         search: searchQuery.trim(),
         course: selectedSeminar,
         leadStatus: selectedStatus,
-        stage: selectedStage,
+        // stage: selectedStage,
         assignDate: selectedAssingedDate,
         paymentMode: selectedPaymentMode,
         assignStartDate: assignDateRange[0].startDate,
@@ -142,7 +144,6 @@ const AgentAllLeads = () => {
     const followedOptions = ["All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
     const upcOptions = ["None", "All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
     const missedFUOption = ["All", "Last 3 Days", "Last 7 Days", "Last 15 Days", "Last 30 Days"]
-    const stageOptions = ["All", "Pending", "Contacted"];
     const totalPages = Math.ceil((leadsCount?.count / leadsPerPage)) || 1
 
     console.log(leadsCount.count)
@@ -195,23 +196,6 @@ const AgentAllLeads = () => {
 
 
 
-    const reverseHeaderLead = (key) => {
-        switch (key) {
-            case "name": return "Full Name";
-            case "email": return "Email Address";
-            case "phone": return "Phone Number";
-            case "address": return "Address";
-            case "interstedCourse": return "Seminar Topic";
-            case "interstedCourseType": return "Seminar Type";
-            case "leadSource": return "Lead Source";
-            default: return key;
-        }
-    };
-
-
-
-
-
 
     return (
         <div className="p-6 overflow-hidden mx-auto min-h-[calc(100vh-100px)]  xl:min-h-screen">
@@ -224,17 +208,6 @@ const AgentAllLeads = () => {
                 </div>
                 {/*filter by stage */}
                 <div className=" grid  grid-cols-2 md:flex w-full xl:w-auto  flex-wrap gap-2">
-
-                    {/* Sort By Dropdown */}
-                    <Dropdown
-                        dropdownPosition="dropdown-start"
-                        selectedState={selectedStage}
-                        setSelectedState={setSelectedStage}
-                        label="Contact Status"
-                        options={stageOptions}
-                        setCurrentPage={setCurrentPage}
-                        defaultOptions={"All"}
-                    />
 
 
                     {/* Sort By Dropdown */}
@@ -325,6 +298,7 @@ const AgentAllLeads = () => {
 
                     />
 
+                 
                     {/* Filter by Assigned Date  */}
                     <Dropdown
                         dropdownPosition=""
