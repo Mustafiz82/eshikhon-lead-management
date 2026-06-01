@@ -223,13 +223,13 @@ const AgentsLeadsStatusPanel = ({ selectedFilter, state, setState }) => {
       ) : item.children ? (
         item.children
       ) : (
-        <div className="text-3xl font-bold flex items-center gap-2">
-          <span>
+        <div className="text-3xl  font-bold flex items-center gap-2">
+          <span className=''>
             <CountUp end={item.value || 0} duration={1.5} separator="," />
           </span>
 
           {item.count !== undefined && (
-            <span title="Refund Count" className="text-lg font-semibold opacity-90">
+            <span title="Refund Count" className="text-lg  font-semibold text-white/90">
               (<CountUp end={item.count || 0} duration={1.5} separator="," />)
             </span>
           )}

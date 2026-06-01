@@ -381,7 +381,7 @@ select::-webkit-scrollbar-thumb:hover {
 
 
 .react-date-range-custom-styles{
-  z-index: 99999 !important;
+  z-index: 9999 !important;
   position: relative !important;
   
 

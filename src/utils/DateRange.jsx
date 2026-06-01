@@ -84,7 +84,7 @@ export default function DateRangeComponent({state, setState}) {
             {showDateRange && (
                 <div
                     ref={dateRangeRef}
-                    className="absolute top-full right-0 z-10 mt-3 
+                    className="absolute top-full right-0  z-9999!  mt-3 
                     shadow-lg rounded-lg overflow-hidden"
                 >
                     <DateRangePicker
@@ -94,7 +94,7 @@ export default function DateRangeComponent({state, setState}) {
                         moveRangeOnFirstSelection={false}
                         months={2}
                         direction="horizontal"
-                        className="react-date-range-custom-styles z-9999!"
+                        className="react-date-range-custom-styles  "
                     />
                 </div>
             )}
