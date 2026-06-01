@@ -123,8 +123,8 @@ const Page = () => {
                     >
                         <option value="">All Agents</option>
                         {AGENTS.map((agent) => (
-                            <option key={agent._id || agent.id || agent.email} value={agent.email}>
-                                ({agent.email})
+                            <option title={agent.email} key={agent.email} value={agent.email}>
+                                ({agent.name})
                             </option>
                         ))}
                     </select>

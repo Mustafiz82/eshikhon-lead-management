@@ -44,6 +44,20 @@ const Dropdown = ({
 
     };
 
+
+    const renderTextWithTitle = (item) => {
+        if(item.includes("|")){
+            let arr = item.split("|")
+            
+            return <p title={arr[1]}>
+                {arr[0]}
+            </p>
+        }
+        else {
+            return <p>{item}</p>
+        }
+    }
+
     // 3. Filter options based on search term (if showSearch is true)
     const filteredOptions = showSearch
         ? options.filter((item) =>
@@ -92,10 +106,10 @@ const Dropdown = ({
                                 <li key={idx}>
                                     <button
                                         type="button"
-                                        onClick={() => handleSelect(item)}
+                                        onClick={() => handleSelect(item?.includes("|") ? item?.split("|")?.[1]?.trim() : item)}
                                         className={selectedState === item ? "font-bold text-blue-600" : ""}
                                     >
-                                        {item}
+                                        {renderTextWithTitle(item)}
                                     </button>
                                 </li>
                             ))

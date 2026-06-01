@@ -104,7 +104,8 @@ const Page = () => {
         new Map(courseOption?.map((item) => [item.name, item])).values()
     );
 
-    const userEmails = user.filter(item => item.role !== "admin").map(item => item.email)
+    // const userEmails = user.filter(item => item.role !== "admin").map(item => item.email)
+    const userNameAndEmail = user.filter(item => item.role !== "admin").map(item => item.name ? `${item.name} | ${item.email}` : item.email)
 
 
 
@@ -498,7 +499,7 @@ const Page = () => {
                         selectedState={selectedAgent}
                         setSelectedState={setSelectedAgent}
                         label="Assigned Agent"
-                        options={["All", ...userEmails]}
+                        options={["All", ...userNameAndEmail]}
                         setCurrentPage={setCurrentPage}
 
                     />
