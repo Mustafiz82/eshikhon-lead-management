@@ -25,10 +25,11 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     const [saving, setSaving] = useState(false)
     const [error, setError] = useState("")
     const [notes, setNotes] = useState(selectedLead?.note)
-    const { user } = useContext(AuthContext)
+    const {user} = useContext(AuthContext)
     const [leadSource, setLeadSource] = useState(selectedLead?.leadSource || "");
     const [copied, setCopied] = useState(false);
     
+    console.log(courseInput)
 
 
     const sourceOptions = [
@@ -515,6 +516,10 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                             selectedLead={selectedLead}
                             selectedCourseId={selectedCourseId}
                             setError={setError}
+                            searchInput={searchInput}
+                            setSearchInput={setSearchInput}
+                            setSelectedCourseType={setSelectedCourseType}
+                            course={course}
 
                         />
 

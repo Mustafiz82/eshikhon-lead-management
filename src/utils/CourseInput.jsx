@@ -7,19 +7,28 @@ import useDiscountCalculation from "@/hooks/useDiscountCalculation";
 import useDueCalculation from "@/hooks/useDueCalculation";
 import { FaEdit } from "react-icons/fa";
 import HistoryRow from "@/components/agentLeads/HistoryRow";
+import axios from "axios";
+import axiosPublic from "@/api/axios";
+import { findBestCourse } from "./matchCoursename";
 
-export default function CourseInput({ setCourseInput, selectedLead, selectedCourseId }) {
-
-
-  const { user: loggedUser } = useContext(AuthContext)     // get user role 
-  const [lastPaid, setLastPaid] = useState(0)              // handle input payment amount
-  const [estimatedPaymentDate, setEstimatedPaymentDate] = useState(null)  // next payment date
+export default function CourseInput({
+  setCourseInput,
+  selectedLead,
+  selectedCourseId,
+  searchInput,
+  setSearchInput,
+  setSelectedCourseType,
+  course
+}) {
+  const { user: loggedUser } = useContext(AuthContext); // get user role
+  const [lastPaid, setLastPaid] = useState(0); // handle input payment amount
+  const [estimatedPaymentDate, setEstimatedPaymentDate] = useState(null); // next payment date
   const [localHistory, setLocalHistory] = useState([]);
   const [editableOriginalPrice, setEditableOriginalPrice] = useState(0);
-  const [orderNumber, setOrderNumber] = useState()
+  const [orderNumber, setOrderNumber] = useState();
   const [isEditingOriginalPrice, setIsEditingOriginalPrice] = useState(false);
 
-  // get discount related result , option , course price from hook . 
+  // get discount related result , option , course price from hook .
   const {
     originalPrice,
     applicableDiscountOptions,
@@ -34,24 +43,22 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
     setInputDiscountUnit,
     // minValue,
     // maxValue,
-  } = useDiscountCalculation(selectedCourseId, selectedLead)
+  } = useDiscountCalculation(selectedCourseId, selectedLead);
 
 
-  // Calculate Due 
+  // Calculate Due
   const dueAmount = useDueCalculation(
     editableOriginalPrice,
     lastPaid,
     inputDiscountAmount,
     selectedLead,
     inputDiscountUnit,
-  )
+  );
 
+  let minValue = 0;
+  let maxValue = inputDiscountUnit == "%" ? 100 : editableOriginalPrice;
 
-  let minValue = 0
-  let maxValue = 100
-
-
-  //  send course input data and states to lead modal 
+  //  send course input data and states to lead modal
   useEffect(() => {
     setCourseInput({
       estemitePaymentDate: estimatedPaymentDate ?? null,
@@ -61,7 +68,8 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
       originalPrice: editableOriginalPrice,
       lastPaid: lastPaid ?? 0,
       totalDue: dueAmount,
-      minValue, maxValue,
+      minValue,
+      maxValue,
       modifiedHistory: localHistory,
       uniqueID: orderNumber,
     });
@@ -73,17 +81,19 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
     originalPrice,
     lastPaid,
     dueAmount,
-    localHistory
+    localHistory,
   ]);
 
+
+
+  
+  
 
   useEffect(() => {
     if (!isEditingOriginalPrice) {
       setEditableOriginalPrice(Number(originalPrice ?? 0));
     }
   }, [originalPrice, isEditingOriginalPrice]);
-
-
 
   // Initialize local history when selectedLead loads
   useEffect(() => {
@@ -99,33 +109,70 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
     setLocalHistory(updatedList);
   };
 
-
   // initialize the state with previous value from backend
   useEffect(() => {
-
     if (selectedLead?.nextEstimatedPaymentDate) {
-      let nextPaymentDate = new Date(selectedLead?.nextEstimatedPaymentDate).toISOString().slice(0, 16)
-      setEstimatedPaymentDate(nextPaymentDate)
+      let nextPaymentDate = new Date(selectedLead?.nextEstimatedPaymentDate)
+        .toISOString()
+        .slice(0, 16);
+      setEstimatedPaymentDate(nextPaymentDate);
     }
 
-    setInputDiscountAmount(selectedLead?.leadDiscount)
-    setInputDiscountUnit(selectedLead?.discountUnit == "amount" ? "৳" : "%")
-    setSelectedDiscountID(selectedLead?.discountSource)
+    setInputDiscountAmount(selectedLead?.leadDiscount);
+    setInputDiscountUnit(selectedLead?.discountUnit == "amount" ? "৳" : "%");
+    setSelectedDiscountID(selectedLead?.discountSource);
 
-    console.log(loggedUser)
+    console.log(loggedUser);
 
     if (loggedUser?.role == "user" && selectedLead?.leadDiscount) {
-      console.log("true")
-      setIsDiscountDisabled(true)
+      console.log("true");
+      setIsDiscountDisabled(true);
     }
-  }, [selectedLead])
+  }, [selectedLead]);
+
+  useEffect(() => {
+    console.log(searchInput);
+    const fetchOrder = async () => {
+      try {
+        if (orderNumber?.toString()?.length === 7) {
+          const res = await axiosPublic.get(
+            `/leads/order/${orderNumber}?searchInput=${searchInput}`,
+          );
+
+          console.log(res.data);
+
+          if (res?.data) {
+            setEditableOriginalPrice(
+              parseInt(res?.data?.originalPrice )|| editableOriginalPrice,
+            );
+            setInputDiscountAmount(parseInt(res?.data?.discount) || inputDiscountAmount)
+            setInputDiscountUnit("৳")
+
+            if(res?.data?.type == "online"){
+              setLastPaid(parseInt(res?.data?.total) || lastPaid)
+            }
+            else{
+              setLastPaid(0)
+            }
+
+            setSearchInput(findBestCourse(res?.data?.courseName , course)?.name)
+            setSelectedCourseType(res?.data?.type)
 
 
 
+            
+          }
+        }
+      } catch (error) {
+        console.log(error.response?.data || error.message);
+      }
+    };
+
+    fetchOrder();
+  }, [orderNumber]);
 
   return (
     <div className="w-full max-w-xl mx-auto space-y-4">
-
       {/* <select
         // disabled={loggeduser?.role == "user" &&  selectedLead?.leadDiscount}
         onChange={(e) => setSelectedDiscountID(e.target.value)}
@@ -142,9 +189,7 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
       </select> */}
 
       <div className="col-span-2">
-        <label className="block mb-1 text-white/80 text-sm">
-          Order Number
-        </label>
+        <label className="block mb-1 text-white/80 text-sm">Order Number</label>
         <input
           type="number"
           value={orderNumber}
@@ -152,7 +197,6 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
           placeholder="Enter Order Number"
           className="input input-bordered w-full disabled:bg-transparent focus:outline-0 focus:border-blue-600 disabled:border disabled:border-gray-600"
         />
-
       </div>
       {/* Prices + Discount */}
       <div className="grid grid-cols-5 gap-4">
@@ -164,22 +208,25 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
           <input
             type="number"
             value={editableOriginalPrice}
-            onChange={(e) => setEditableOriginalPrice(Number(e.target.value || 0))}
+            onChange={(e) =>
+              setEditableOriginalPrice(Number(e.target.value || 0))
+            }
             placeholder="Auto-filled"
             className="input input-bordered w-full disabled:bg-transparent focus:outline-0 focus:border-blue-600 disabled:border disabled:border-gray-600"
           />
-
         </div>
 
         {/* Discount */}
         <div className="col-span-3">
-          <label
-            className="block mb-1 text-white/80 text-sm">
-            Discount {(minValue && maxValue) ? `( ${minValue + inputDiscountUnit} - ${maxValue + inputDiscountUnit})` : null}</label>
+          <label className="block mb-1 text-white/80 text-sm">
+            Discount{" "}
+            {minValue && maxValue
+              ? `( ${minValue + inputDiscountUnit} - ${maxValue + inputDiscountUnit})`
+              : null}
+          </label>
 
           <div className="join grid grid-cols-3 w-full">
             <input
-
               value={inputDiscountAmount}
               disabled={isDiscountDisabled}
               onChange={(e) => setInputDiscountAmount(e.target.value)}
@@ -192,13 +239,12 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
             <select
               value={inputDiscountUnit}
               disabled={isDiscountDisabled}
-              onChange={e => setInputDiscountUnit(e.target.value)}
+              onChange={(e) => setInputDiscountUnit(e.target.value)}
               className="select select-bordered join-item focus:outline-0 focus:border-blue-600"
             >
               <option>%</option>
               <option>৳</option>
             </select>
-
           </div>
         </div>
       </div>
@@ -228,7 +274,6 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
             value={dueAmount}
             className="input disabled:bg-transparent disabled:border disabled:border-gray-600 input-bordered w-full focus:outline-0 focus:border-blue-600"
           />
-
         </div>
       </div>
 
@@ -242,7 +287,6 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
           value={estimatedPaymentDate}
           onChange={(e) => setEstimatedPaymentDate(e.target.value)}
         />
-
       </div>
 
       {/* History */}

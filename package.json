@@ -2,18 +2,18 @@
   "name": "lead-frontend",
   "version": "0.1.0",
   "private": true,
-"scripts": {
-  "dev": "next dev -p 4001 --turbopack",
-  "build": "next build",
-  "start": "next start -p 4001",
-  "lint": "next lint",
-  "pm2:start": "pm2 start npm --name leadapp -- run start",
-  "pm2:stop": "pm2 stop leadapp",
-  "pm2:restart": "pm2 restart leadapp",
-  "pm2:logs": "pm2 logs leadapp"
-},
+  "scripts": {
+    "dev": "next dev -p 4001 --turbopack",
+    "build": "next build",
+    "start": "next start -p 4001",
+    "lint": "next lint",
+    "pm2:start": "pm2 start npm --name leadapp -- run start",
+    "pm2:stop": "pm2 stop leadapp",
+    "pm2:restart": "pm2 restart leadapp",
+    "pm2:logs": "pm2 logs leadapp"
+  },
   "dependencies": {
-    "axios": "^1.11.0",
+    "axios": "^1.16.1",
     "chart.js": "^4.5.0",
     "next": "^15.4.8",
     "papaparse": "^5.5.3",
