@@ -533,11 +533,11 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
                                 <a
                                     // href={`tel:017429500624`}
-                                    href={`tel:${formatBDNumber(selectedLead?.phone)}`}
+                                  href={`sip:${formatBDNumber(selectedLead?.phone)}@192.168.10.150`}
                                     // href="http://192.168.10.10/webclient/#/call/017429500624"
-                                    className=" flex gap-2 py-3! w-full bg-[#373737] border border-[#373737] btn  "
+                                    className=" flex gap-2 py-3! w-full bg-[#EB6609] border border-[#373737] btn  "
                                 >
-                                    Call on <Image alt="3CX" src={"/logo/3cx.png"} className="w-auto h-5 " width={1000} height={1000} />
+                                  <Image alt="3CX" src={"/logo/linphone.jpg"} className="w-auto h-5 " width={1000} height={1000} />  Call on Linphone
                                 </a>
 
                                 <a
