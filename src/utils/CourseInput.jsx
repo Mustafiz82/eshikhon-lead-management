@@ -7,118 +7,73 @@ import useDiscountCalculation from "@/hooks/useDiscountCalculation";
 import useDueCalculation from "@/hooks/useDueCalculation";
 import { FaEdit } from "react-icons/fa";
 import HistoryRow from "@/components/agentLeads/HistoryRow";
+import axiosPublic from "@/api/axios";
+import { findBestCourse } from "./matchCourseName";
 
-export default function CourseInput({ setCourseInput, selectedLead, selectedCourseId }) {
-
-
-  const { user: loggedUser } = useContext(AuthContext)     // get user role 
-  const [lastPaid, setLastPaid] = useState(0)              // handle input payment amount
-  const [estimatedPaymentDate, setEstimatedPaymentDate] = useState(null)  // next payment date
-  const [localHistory, setLocalHistory] = useState([]);
-  const [editableOriginalPrice, setEditableOriginalPrice] = useState(0);
-  const [orderNumber, setOrderNumber] = useState()
-  const [isEditingOriginalPrice, setIsEditingOriginalPrice] = useState(false);
-
-  // get discount related result , option , course price from hook . 
-  const {
-    originalPrice,
-    applicableDiscountOptions,
-    selectedDiscount,
-    selectedDiscountID,
-    setSelectedDiscountID,
-    inputDiscountAmount,
-    setInputDiscountAmount,
-    isDiscountDisabled,
-    setIsDiscountDisabled,
-    inputDiscountUnit,
-    setInputDiscountUnit,
-    // minValue,
-    // maxValue,
-  } = useDiscountCalculation(selectedCourseId, selectedLead)
+export default function CourseInput({
+  selectedLead,
+  searchInput,
+  setSearchInput,
+  setError,
+  course,
+  setSelectedCourseType,
+  orderNumber, setOrderNumber,
+  coursePrice, setCoursePrice,
+  discount, setDiscount,
+  lastPaid, setLastPaid,
+  dueAmount, setDueAmount,
+  estimatedPaymentDate, setEstimatedPaymentDate,
+  localHistory, setLocalHistory,
+}) {
 
 
-  // Calculate Due 
-  const dueAmount = useDueCalculation(
-    editableOriginalPrice,
-    lastPaid,
-    inputDiscountAmount,
-    selectedLead,
-    inputDiscountUnit,
-  )
+  const { user: loggedUser } = useContext(AuthContext)
 
 
-  let minValue = 0
-  let maxValue = 100
+  const findOrderDetails = async (e) => {
+    if (e.key === "Enter") {
+      console.log(orderNumber)
+      try {
+
+        if (orderNumber?.toString()?.length === 7) {
+          const res = await axiosPublic.get(
+            `/leads/order/${orderNumber}?searchInput=${searchInput}`,
+          );
+
+          console.log(res.data);
+
+          if (res?.data) {
+
+            setCoursePrice(parseInt(res?.data?.originalPrice))
+            setDiscount(parseInt(res?.data?.discount))
+            res?.data?.type == "Online" && setLastPaid(parseInt(res?.data?.total))
+            res?.data?.type == "Online" && setDueAmount(res?.data?.originalPrice - res?.data?.discount - res?.data?.total)
+            setSearchInput(findBestCourse(res?.data?.courseName, course)?.name)
+            setSelectedCourseType(res?.data?.type)
+            setError()
+          }
+        }
+      } catch (error) {
+        console.log(error.response)
+        setError(error.response?.data?.title || error.response?.data.message);
+      }
 
 
-  //  send course input data and states to lead modal 
-  useEffect(() => {
-    setCourseInput({
-      estemitePaymentDate: estimatedPaymentDate ?? null,
-      discountSource: selectedDiscount?.name ?? "",
-      leadDiscount: inputDiscountAmount,
-      discountUnit: inputDiscountUnit,
-      originalPrice: editableOriginalPrice,
-      lastPaid: lastPaid ?? 0,
-      totalDue: dueAmount,
-      minValue, maxValue,
-      modifiedHistory: localHistory,
-      uniqueID: orderNumber,
-    });
-  }, [
-    estimatedPaymentDate,
-    selectedDiscount,
-    inputDiscountUnit,
-    inputDiscountAmount,
-    originalPrice,
-    lastPaid,
-    dueAmount,
-    localHistory
-  ]);
-
-
-  useEffect(() => {
-    if (!isEditingOriginalPrice) {
-      setEditableOriginalPrice(Number(originalPrice ?? 0));
     }
-  }, [originalPrice, isEditingOriginalPrice]);
-
-
-
-  // Initialize local history when selectedLead loads
-  useEffect(() => {
-    if (selectedLead?.history) {
-      // Create a deep copy to avoid mutating props directly
-      setLocalHistory(JSON.parse(JSON.stringify(selectedLead.history)));
-    }
-  }, [selectedLead]);
+  }
 
   const handleHistoryUpdate = (index, newDate) => {
     const updatedList = [...localHistory];
-    updatedList[index].date = newDate; // Update the date in local state
+    updatedList[index].date = newDate;
     setLocalHistory(updatedList);
   };
 
-
-  // initialize the state with previous value from backend
-  useEffect(() => {
-
-    if (selectedLead?.nextEstimatedPaymentDate) {
-      let nextPaymentDate = new Date(selectedLead?.nextEstimatedPaymentDate).toISOString().slice(0, 16)
-      setEstimatedPaymentDate(nextPaymentDate)
+  const calcDueAmount = (e) => {
+    if (e.key === "Enter") {
+      setDueAmount(coursePrice - discount - lastPaid)
     }
+  }
 
-    setInputDiscountAmount(selectedLead?.leadDiscount)
-    setInputDiscountUnit(selectedLead?.discountUnit == "amount" ? "৳" : "%")
-    setSelectedDiscountID(selectedLead?.discountSource)
-
-    console.log(loggedUser)
-
-    if (loggedUser?.role == "user" && selectedLead?.leadDiscount) {
-      console.log("true")
-      setIsDiscountDisabled(true)
-    }
-  }, [selectedLead])
 
 
 
@@ -126,36 +81,24 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
   return (
     <div className="w-full max-w-xl mx-auto space-y-4">
 
-      {/* <select
-        // disabled={loggeduser?.role == "user" &&  selectedLead?.leadDiscount}
-        onChange={(e) => setSelectedDiscountID(e.target.value)}
-        value={selectedDiscountID}
-        className="select focus:border-blue-600 px-2 focus:outline-0 select-bordered w-full"
-      >
-        <option>Select Discount</option>
-        {
-          applicableDiscountOptions.map(item => <option
-            value={item.name}
-            key={item._id}> {item?.name}
-          </option>)
-        }
-      </select> */}
 
       <div className="col-span-2">
-        <label className="block mb-1 text-white/80 text-sm">
-          Order Number
-        </label>
+
         <input
           type="number"
           value={orderNumber}
-          onChange={(e) => setOrderNumber(Number(e.target.value || 0))}
+          onChange={(e) => setOrderNumber((e.target.value))}
+          onKeyDown={findOrderDetails}
           placeholder="Enter Order Number"
           className="input input-bordered w-full disabled:bg-transparent focus:outline-0 focus:border-blue-600 disabled:border disabled:border-gray-600"
         />
 
       </div>
-      {/* Prices + Discount */}
-      <div className="grid grid-cols-5 gap-4">
+
+
+
+
+      <div className="grid grid-cols-4 gap-4">
         {/* Original Price */}
         <div className="col-span-2">
           <label className="block mb-1 text-white/80 text-sm">
@@ -163,8 +106,8 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
           </label>
           <input
             type="number"
-            value={editableOriginalPrice}
-            onChange={(e) => setEditableOriginalPrice(Number(e.target.value || 0))}
+            value={coursePrice}
+            disabled
             placeholder="Auto-filled"
             className="input input-bordered w-full disabled:bg-transparent focus:outline-0 focus:border-blue-600 disabled:border disabled:border-gray-600"
           />
@@ -172,33 +115,18 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
         </div>
 
         {/* Discount */}
-        <div className="col-span-3">
+        <div className="col-span-2">
           <label
             className="block mb-1 text-white/80 text-sm">
-            Discount {(minValue && maxValue) ? `( ${minValue + inputDiscountUnit} - ${maxValue + inputDiscountUnit})` : null}</label>
-
-          <div className="join grid grid-cols-3 w-full">
+            Discount </label>
+          <div className="join w-full">
             <input
-
-              value={inputDiscountAmount}
-              disabled={isDiscountDisabled}
-              onChange={(e) => setInputDiscountAmount(e.target.value)}
+              value={discount}
+              disabled
               type="number"
-              min={minValue}
-              max={maxValue}
               placeholder="Enter discount"
-              className="input col-span-2 input-bordered join-item w-full focus:outline-0 focus:border-blue-600"
+              className="input col-span-2 input-bordered join-item w-full focus:outline-0 focus:border-blue-600 disabled:bg-transparent disabled:border disabled:border-gray-600"
             />
-            <select
-              value={inputDiscountUnit}
-              disabled={isDiscountDisabled}
-              onChange={e => setInputDiscountUnit(e.target.value)}
-              className="select select-bordered join-item focus:outline-0 focus:border-blue-600"
-            >
-              <option>%</option>
-              <option>৳</option>
-            </select>
-
           </div>
         </div>
       </div>
@@ -213,6 +141,8 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
             type="number"
             value={lastPaid ?? 0}
             onChange={(e) => setLastPaid(e.target.value)}
+            onKeyDown={calcDueAmount}
+            disabled={setSelectedCourseType === ""}
             placeholder="0"
             className="input input-bordered w-full focus:outline-0 focus:border-blue-600"
           />
@@ -236,10 +166,11 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
         <label className="text-sm ">Next Estimate payment Date</label>
 
         <input
-          type="datetime-local"
-          onClick={(e) => e.target.showPicker && e.target.showPicker()}
+          type="date"
+          // onClick={(e) => e.target.showPicker && e.target.showPicker()}
           className="input input-bordered bg- border border-gray-600 text-white rounded-md w-full focus:outline-none  focus:border-blue-600"
           value={estimatedPaymentDate}
+           min={new Date().toISOString().split("T")[0]}
           onChange={(e) => setEstimatedPaymentDate(e.target.value)}
         />
 
@@ -254,7 +185,7 @@ export default function CourseInput({ setCourseInput, selectedLead, selectedCour
               <HistoryRow
                 key={index}
                 item={item}
-                originalItem={selectedLead.history[index]} // Pass original to compare
+                originalItem={selectedLead.history[index]}
                 onUpdate={(newDate) => handleHistoryUpdate(index, newDate)}
               />
             ))

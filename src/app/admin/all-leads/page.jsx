@@ -58,7 +58,7 @@ const Page = () => {
     //editLeadsDrawer
     const [showDrawer, setShowDrawer] = useState(false);
     const [editLead, setEditLead] = useState(null);
-    
+
 
 
 
@@ -93,7 +93,7 @@ const Page = () => {
     const { user: authUser } = useContext(AuthContext)
 
 
-   
+
     // Remove duplicates
 
 
@@ -186,7 +186,17 @@ const Page = () => {
 
             // Ctrl + A → Select all on current page
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") {
+                const tag = e.target.tagName;
+
+                const isTypingField =
+                    tag === "INPUT" ||
+                    tag === "TEXTAREA" ||
+                    e.target.isContentEditable;
+
+                if (isTypingField) return;
+
                 e.preventDefault();
+
                 const newSet = new Set(selectedIds);
                 leads.forEach((lead) => newSet.add(lead._id));
                 setSelectedIds(newSet);
@@ -667,13 +677,13 @@ const Page = () => {
 
                             }
 
-                            {authUser?.role == "admin" &&        <button
+                            {authUser?.role == "admin" && <button
                                 className="btn flex gap-1 bg-red-500 btn-sm btn-error text-white"
                                 onClick={handleDeleteLeads}
                             >
                                 <MdDelete />
                                 Delete
-                            </button> }
+                            </button>}
                             <button
                                 className="btn flex bg-[#a855f7]  btn-sm btn-primary border-[#a855f7] text-white"
                                 onClick={handleLockLeads}

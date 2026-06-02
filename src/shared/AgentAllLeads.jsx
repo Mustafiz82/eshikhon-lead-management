@@ -222,7 +222,7 @@ const AgentAllLeads = () => {
                     />
 
                     <Dropdown
-                        dropdownPosition="dropdown-end"
+                        dropdownPosition="dropdown-start"
                         selectedState={selectedSeminar}
                         showSearch
                         setSelectedState={setSelectedSeminar}
@@ -256,6 +256,16 @@ const AgentAllLeads = () => {
 
                     />
 
+
+                    <Dropdown
+                        dropdownPosition="dropdown-end"
+                        selectedState={selectedInterstedSeminar}
+                        setSelectedState={setselectedInterstedSeminar}
+                        label="Seminar Status"
+                        options={["All", "Online", "Offline", "None", "Joined"]}
+                        setCurrentPage={setCurrentPage}
+
+                    />
                 </div>
 
                 {/* Search */}
@@ -288,17 +298,9 @@ const AgentAllLeads = () => {
 
                     {/* filter by intersted seminar*/}
 
-                    <Dropdown
-                        dropdownPosition="dropdown-end"
-                        selectedState={selectedInterstedSeminar}
-                        setSelectedState={setselectedInterstedSeminar}
-                        label="Seminar Status"
-                        options={["All", "Online", "Offline", "None", "Joined"]}
-                        setCurrentPage={setCurrentPage}
 
-                    />
 
-                 
+
                     {/* Filter by Assigned Date  */}
                     <Dropdown
                         dropdownPosition=""
@@ -381,7 +383,7 @@ const AgentAllLeads = () => {
                         options={upcOptions}
                         defaultOptions={"None"}
                         setCurrentPage={setCurrentPage}
-                    // showDatePicker
+
 
                     />
 
