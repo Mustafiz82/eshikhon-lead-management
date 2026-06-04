@@ -61,6 +61,7 @@ const AgentAllLeads = () => {
     const [upcomingPaymentsDate, setUpcomingPaymentsDate] = useState("None")
 
     const [missedFUActive, setMissedFUActive] = useState(false);
+    const [missedUPActive, setMissedUPActive] = useState(false);
     const [selectedMissedFollowedDate, setSelectedMissedFolllowUpDate] = useState("All")
 
     const [includeGlobalSearch, setIncludeGlobalSearch] = useState(false)
@@ -117,11 +118,12 @@ const AgentAllLeads = () => {
         assignEndDate: assignDateRange[0].endDate,
         paymentStartDate: paymentDateRange[0].startDate,
         paymentEndDate: paymentDateRange[0].endDate,
-        assignTo: !includeGlobalSearch ? (decodedEmail ? decodedEmail : user.email) : null,
+        assignTo: !includeGlobalSearch ? (decodedEmail ? decodedEmail : user.email) : "All",
         sort: selectedSortMethod,
         showOnlyFollowups: followUpActive,
         followUpDate: selectedFollowedDate,
         showOnlyMissedFollowUps: missedFUActive,
+        showOnlyMissedPayments: missedUPActive,
         missedFollowUpDate: selectedMissedFollowedDate,
         leadSource: selectedSource,
         interstedSeminar: selectedInterstedSeminar,
@@ -194,6 +196,11 @@ const AgentAllLeads = () => {
         return () => clearTimeout(timeOut)
     }, [searchText])
 
+
+    useEffect(() => {
+        // Runs only after an option is selected
+        setMissedUPActive(false);
+    }, [upcomingPaymentsDate]);
 
 
 
@@ -282,6 +289,7 @@ const AgentAllLeads = () => {
                             className="btn btn-xs btn-outline"
                             onClick={() => {
                                 setSearchQuery("")
+                                setSearchText("")
                                 setIncludeGlobalSearch(false)
                             }
 
@@ -387,6 +395,17 @@ const AgentAllLeads = () => {
 
                     />
 
+                    <button
+                        className={`btn text-[10px] 3xl:text-[12px] btn-sm ${missedUPActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
+                        onClick={() => {
+                            setMissedUPActive(!missedUPActive);
+
+                            // setFollowUpActive(false)
+                            setCurrentPage(1);
+                        }}
+                    >
+                        Missed UP
+                    </button>
 
 
                     {/* Filter by Followed Date */}
@@ -429,6 +448,7 @@ const AgentAllLeads = () => {
                         leadsPerPage={leadsPerPage}
                         missedFUActive={missedFUActive}
                         followUpActive={followUpActive}
+                        upcActive={upcomingPaymentsDate !== "None"}
                     />
                 </div>
 

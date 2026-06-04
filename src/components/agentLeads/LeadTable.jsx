@@ -29,7 +29,7 @@ export const statusColors = {
     "Not Interested": "badge-error",
     "Wrong Number": "badge-error"
 };
-const LeadTable = ({ leads, setSelectedLead, currentPage, leadsPerPage, followUpActive, missedFUActive }) => {
+const LeadTable = ({ leads, setSelectedLead, currentPage, leadsPerPage, followUpActive, missedFUActive , upcActive}) => {
 
 
 
@@ -50,6 +50,7 @@ const LeadTable = ({ leads, setSelectedLead, currentPage, leadsPerPage, followUp
                         <th>Lead Source</th>
                         <th>Status</th>
                         <th>{followUpActive || missedFUActive ? "Follow Up Date" : "Assigned At"}</th>
+                        <th>{upcActive  && "Next Payment Date"}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -82,6 +83,8 @@ const LeadTable = ({ leads, setSelectedLead, currentPage, leadsPerPage, followUp
 
 
                             <td>{formateDate(followUpActive || missedFUActive ? lead?.followUpDate : lead?.assignDate)}</td>
+                            <td>{formateDate(upcActive && lead?.nextEstimatedPaymentDate )}</td>
+                            
                         </tr>
                     ))}
                 </tbody>
