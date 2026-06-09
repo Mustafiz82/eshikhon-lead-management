@@ -117,6 +117,17 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             return setError("Pleas Input a Valid Course Name");
         }
 
+        const totalPaid = coursePrice
+
+        console.log(coursePrice - discount)
+        console.log(totalPaid)
+
+
+        if (lastPaid > (coursePrice - discount - selectedLead.totalPaid)) {
+            setSaving(false)
+            return setError("Payment Exceeds Course Price")
+        }
+
         // if (modelStatus === "Enrolled") {
         //     console.log("enrolled", leadDiscount)
         //     if (leadDiscount !== null) {
@@ -132,7 +143,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
         setError("")
         console.log(notes.filter(item => item?.status == "unsaved").map(({ text, by }) => ({ text, by })))
-        
+
 
         const obj = {
             interstedCourse: (searchInput ?? "").trim(),
@@ -152,7 +163,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             note: notes.filter(item => item?.status == "unsaved").map(({ text, by }) => ({ text, by })),
             lastModifiedBy: user?.name,
             orderNumber: parseInt(orderNumber)
-        }   
+        }
 
         console.log(obj)
 
@@ -160,11 +171,13 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         if (modelStatus === "Enrolled" && !selectedLead?.enrolledAt) {
             obj.enrolledAt = Date.now();
         }
-
         const cleanedObj = Object.fromEntries(
             Object.entries(obj).filter(([_, v]) => {
                 if (Array.isArray(v)) return v.length > 0;
-                return Boolean(v);
+
+                return v !== undefined &&
+                    v !== null &&
+                    v !== "";
             })
         );
         // 01813164814
@@ -178,6 +191,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         console.log(res.data)
         setSaving(false)
         refetch()
+        setLastPaid()
         setSelectedLead(null)
 
     }
@@ -205,6 +219,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             setCoursePrice(selectedLead?.originalPrice)
             setDiscount(selectedLead?.leadDiscount)
             setDueAmount(selectedLead?.totalDue)
+            setLastPaid(null)
             setEstimatedPaymentDate(
                 selectedLead?.nextEstimatedPaymentDate
                     ? selectedLead.nextEstimatedPaymentDate.split("T")[0]
@@ -296,6 +311,22 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         // If user gave plain digits but not BD, just return cleaned number
         return digits || original;
     }
+
+
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+
+            if (e.key === "Escape") {
+                setSelectedLead(null)
+                return;
+            }
+
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
 
 
 

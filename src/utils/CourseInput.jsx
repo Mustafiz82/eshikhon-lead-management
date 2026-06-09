@@ -48,6 +48,7 @@ export default function CourseInput({
             setDiscount(parseInt(res?.data?.discount))
             res?.data?.type == "Online" && setLastPaid(parseInt(res?.data?.total))
             res?.data?.type == "Online" && setDueAmount(res?.data?.originalPrice - res?.data?.discount - res?.data?.total)
+            res?.data?.type == "Offline" && setDueAmount(res?.data?.originalPrice - res?.data?.discount)
             setSearchInput(findBestCourse(res?.data?.courseName, course)?.name)
             setSelectedCourseType(res?.data?.type)
             setError()
@@ -70,7 +71,7 @@ export default function CourseInput({
 
   const calcDueAmount = (e) => {
     if (e.key === "Enter") {
-      setDueAmount(coursePrice - discount - lastPaid)
+      setDueAmount(coursePrice - discount - (selectedLead?.totalPaid || 0) - lastPaid)
     }
   }
 
@@ -139,8 +140,11 @@ export default function CourseInput({
           </label>
           <input
             type="number"
-            value={lastPaid ?? 0}
+            value={lastPaid}
             onChange={(e) => setLastPaid(e.target.value)}
+            onBlur={() => {
+              setDueAmount(coursePrice - discount - (selectedLead?.totalPaid || 0) -  Number(lastPaid || 0))
+            }}
             onKeyDown={calcDueAmount}
             disabled={setSelectedCourseType === ""}
             placeholder="0"
@@ -155,6 +159,7 @@ export default function CourseInput({
           <input
             type="number"
             disabled
+
             value={dueAmount}
             className="input disabled:bg-transparent disabled:border disabled:border-gray-600 input-bordered w-full focus:outline-0 focus:border-blue-600"
           />
@@ -170,7 +175,7 @@ export default function CourseInput({
           // onClick={(e) => e.target.showPicker && e.target.showPicker()}
           className="input input-bordered bg- border border-gray-600 text-white rounded-md w-full focus:outline-none  focus:border-blue-600"
           value={estimatedPaymentDate}
-           min={new Date().toISOString().split("T")[0]}
+          min={new Date().toISOString().split("T")[0]}
           onChange={(e) => setEstimatedPaymentDate(e.target.value)}
         />
 

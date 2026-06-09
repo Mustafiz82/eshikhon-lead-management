@@ -135,7 +135,7 @@ const page = () => {
                                         <td className="pl- text-center">{user.totalRefunds}</td>
 
                                         <td className="pl-10">{user.targetCompletionRate ?? 0}%</td>
-                                        <td className="pl-10 flex items-center ">{user.commission ?? 0} <TbCurrencyTaka /></td>
+                                        <td className="pl-10 flex items-center ">{user.commission?.toFixed(2) ?? 0} <TbCurrencyTaka /></td>
 
 
                                     </tr>

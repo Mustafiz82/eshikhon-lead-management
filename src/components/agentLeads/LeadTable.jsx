@@ -31,7 +31,7 @@ export const statusColors = {
 };
 const LeadTable = ({ leads, setSelectedLead, currentPage, leadsPerPage, followUpActive, missedFUActive , upcActive}) => {
 
-
+// console.log(upcActive)
 
 
     return <div>
@@ -83,7 +83,7 @@ const LeadTable = ({ leads, setSelectedLead, currentPage, leadsPerPage, followUp
 
 
                             <td>{formateDate(followUpActive || missedFUActive ? lead?.followUpDate : lead?.assignDate)}</td>
-                            <td>{formateDate(upcActive && lead?.nextEstimatedPaymentDate )}</td>
+                            <td>{upcActive &&  formateDate(lead?.nextEstimatedPaymentDate )}</td>
                             
                         </tr>
                     ))}

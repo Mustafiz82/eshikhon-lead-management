@@ -100,6 +100,7 @@ const AgentAllLeads = () => {
 
 
 
+    console.log(upcomingPaymentsDate)
 
 
 
@@ -136,7 +137,7 @@ const AgentAllLeads = () => {
     const { data: leads, loading, refetch } = useFetch(`/leads?${params}`)
     const { data: course } = useFetch("/course")
     const { data: leadSource } = useFetch("/leads/source")
-    const { data: courseOption } = useFetch("/leads/intersted-course");
+    const { data: courseOption } = useFetch(`/leads/intersted-course?agentEmail=${user?.email}`);
 
 
 
@@ -223,7 +224,7 @@ const AgentAllLeads = () => {
                         selectedState={selectedSortMethod}
                         setSelectedState={setSelectedSortMethod}
                         label="Sort By"
-                        options={["Default", "Ascending", "Descending"]}
+                        options={["Default", "Ascending", "Descending" , "Last Modified"]}
                         setCurrentPage={setCurrentPage}
                         defaultOptions={"Default"}
                     />
@@ -448,7 +449,7 @@ const AgentAllLeads = () => {
                         leadsPerPage={leadsPerPage}
                         missedFUActive={missedFUActive}
                         followUpActive={followUpActive}
-                        upcActive={upcomingPaymentsDate !== "None"}
+                        upcActive={upcomingPaymentsDate !== "None" ? true : false}
                     />
                 </div>
 
