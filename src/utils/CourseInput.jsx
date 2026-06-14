@@ -23,11 +23,12 @@ export default function CourseInput({
   lastPaid, setLastPaid,
   dueAmount, setDueAmount,
   estimatedPaymentDate, setEstimatedPaymentDate,
-  localHistory, setLocalHistory,
+  localHistory, setLocalHistory, setOrderStatus
 }) {
 
 
   const { user: loggedUser } = useContext(AuthContext)
+
 
 
   const findOrderDetails = async (e) => {
@@ -37,13 +38,13 @@ export default function CourseInput({
 
         if (orderNumber?.toString()?.length === 7) {
           const res = await axiosPublic.get(
-            `/leads/order/${orderNumber}?searchInput=${searchInput}`,
+            `/leads/order/${orderNumber}?searchInput=${searchInput}&email=${loggedUser?.email}`,
           );
 
           console.log(res.data);
-
+          
           if (res?.data) {
-
+            setOrderStatus(res?.data?.status)
             setCoursePrice(parseInt(res?.data?.originalPrice))
             setDiscount(parseInt(res?.data?.discount))
             res?.data?.type == "Online" && setLastPaid(parseInt(res?.data?.total))

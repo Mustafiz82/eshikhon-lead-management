@@ -46,6 +46,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
     // course input internal state
     const [orderNumber, setOrderNumber] = useState("")
+    const [orderStatus, setOrderStatus] = useState("")
     const [coursePrice, setCoursePrice] = useState()
     const [discount, setDiscount] = useState()
     const [lastPaid, setLastPaid] = useState()
@@ -83,6 +84,12 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         if (!searchInput) {
             setSaving(false)
             return setError("Please input Course Name")
+        }
+
+        if (orderNumber){
+            if(orderStatus === "on-hold"){
+                return setError("On Hold Orders can't be marked as Enrolled ")
+            }
         }
 
         // if (discountSource) {
@@ -571,6 +578,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                         setEstimatedPaymentDate={setEstimatedPaymentDate}
                         localHistory={localHistory}
                         setLocalHistory={setLocalHistory}
+                        setOrderStatus={setOrderStatus}
 
                     />
 

@@ -49,6 +49,7 @@ const LeadTable = ({ leads, setSelectedLead, currentPage, leadsPerPage, followUp
                         <th>Type</th>
                         <th>Lead Source</th>
                         <th>Status</th>
+                                      <th className="sticky top-0 bg-base-300 z-10">Order No.</th>
                         <th>{followUpActive || missedFUActive ? "Follow Up Date" : "Assigned At"}</th>
                         <th>{upcActive  && "Next Payment Date"}</th>
                     </tr>
@@ -80,7 +81,9 @@ const LeadTable = ({ leads, setSelectedLead, currentPage, leadsPerPage, followUp
                                     {lead.leadStatus}
                                 </span>
                             </td>
-
+ <td>
+                  {lead?.orderNumber ?? lead.orderNumber}
+                  </td>
 
                             <td>{formateDate(followUpActive || missedFUActive ? lead?.followUpDate : lead?.assignDate)}</td>
                             <td>{upcActive &&  formateDate(lead?.nextEstimatedPaymentDate )}</td>

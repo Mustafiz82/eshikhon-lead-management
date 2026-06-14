@@ -74,6 +74,7 @@ const LeadTable = ({
               <th className="sticky top-0 bg-base-300 z-10">Internsted Course </th>
               <th className="sticky top-0 bg-base-300 z-10">Assign To</th>
               <th className="sticky top-0 bg-base-300 z-10">Lead Status</th>
+              <th className="sticky top-0 bg-base-300 z-10">Order No.</th>
             </tr>
           </thead>
 
@@ -147,6 +148,9 @@ const LeadTable = ({
                     >
                       {lead.leadStatus}
                     </span>
+                  </td>
+                  <td>
+                  {lead?.orderNumber ?? lead.orderNumber}
                   </td>
 
                 </tr>
