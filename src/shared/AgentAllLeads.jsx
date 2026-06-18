@@ -24,6 +24,7 @@ export const statusOptions = [
     "Pending",
     "Refunded",
     "Enrolled",
+    "Enrolled with Other Number",
     "Will Register",
     "On hold",
     "Already Enrolled",
@@ -261,6 +262,7 @@ const AgentAllLeads = () => {
                         label="source"
                         options={["All", ...leadSource]}
                         setCurrentPage={setCurrentPage}
+                        showSearch
 
                     />
 

@@ -586,7 +586,7 @@ const Page = () => {
                         selectedState={sortMethod}
                         setSelectedState={setSortMethod}
                         label="Sort By"
-                        options={["Default", "Ascending", "Descending"]}
+                        options={["Default", "Ascending", "Descending" , "Last Modified"]}
                         setCurrentPage={setCurrentPage}
                         defaultOptions={"Default"}
                     />

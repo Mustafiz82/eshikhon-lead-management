@@ -4,6 +4,7 @@ import { BiSolidLockAlt } from "react-icons/bi";
 export const statusColors = {
     // ✅ Success (Green) - Final Positive States
     "Enrolled": "badge-success",
+    "Enrolled with Other Number": "badge-success",
     "Already Enrolled": "badge-success",
 
     // 💠 Hot Lead (Teal) - Very High Intent / Almost Closed

@@ -24,7 +24,7 @@ export default function Layout({ children }) {
         { href: "/admin/agents", icon: <MdSupportAgent className="text-xl" />, label: "Agent Overview" },
         { href: "/admin/manage-users", icon: <FaUserGroup className="text-xl" />, label: "Manage User" },
         { href: "/admin/manage-cources", icon: <FaChalkboardTeacher className="text-xl" />, label: "Manage Cources" },
-        { href: "/admin/manage-discounts", icon: <MdDiscount className="text-xl" />, label: "Manage Discount" },
+        // { href: "/admin/manage-discounts", icon: <MdDiscount className="text-xl" />, label: "Manage Discount" },
         { href: "/admin/manage-payments", icon: <MdDiscount className="text-xl" />, label: "Manage Payments" },
     ];
 
@@ -66,7 +66,7 @@ export default function Layout({ children }) {
                                                 : " hover:bg-blue-900 hover:text-white"
                                             }`}
                                     >
-                                        {item.icon} {item.label}
+                                        <span className="">{item.icon}</span> {item.label}
                                     </li>
                                 </Link>
                             ))}

@@ -23,7 +23,7 @@ export default function CourseInput({
   lastPaid, setLastPaid,
   dueAmount, setDueAmount,
   estimatedPaymentDate, setEstimatedPaymentDate,
-  localHistory, setLocalHistory, setOrderStatus
+  localHistory, setLocalHistory, setOrderStatus , setCustomerPhone , setOrderCompletionDate
 }) {
 
 
@@ -52,6 +52,9 @@ export default function CourseInput({
             res?.data?.type == "Offline" && setDueAmount(res?.data?.originalPrice - res?.data?.discount)
             setSearchInput(findBestCourse(res?.data?.courseName, course)?.name)
             setSelectedCourseType(res?.data?.type)
+            setCustomerPhone(res?.data?.customerPhone)
+setOrderCompletionDate(res.data.orderCompletionDate);
+
             setError()
           }
         }

@@ -39,9 +39,22 @@ export default function Page() {
     const [showPassword, setShowPassword] = useState(false);
     const { user: authUser } = useContext(AuthContext)
 
+    const [target, setTarget] = useState(5);
+
     const [showModal, setShowModal] = useState(false)
 
     console.log(editUser?.designation)
+
+
+    useEffect(() => {
+        if (editUser?.target != null) {
+            setTarget(editUser.target);
+        } else {
+            if (designation === "Senior Executive") setTarget(10);
+            else if (designation === "Executive") setTarget(7);
+            else setTarget(5);
+        }
+    }, [designation, editUser]);
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -317,10 +330,9 @@ export default function Page() {
                                     <input
                                         type="number"
                                         name="target"
-                                        placeholder="Target (%)"
-                                        value={editUser?.target ?? designation == "Senior Executive" ? 10 : designation == "Executive" ? 7 : 5}
+                                        value={target}
                                         className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
-                                        disabled={isSubmitting}
+                                        onChange={(e) => setTarget(e.target.value)}
                                     />
                                 </div>)}
 

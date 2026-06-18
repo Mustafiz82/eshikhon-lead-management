@@ -27,7 +27,7 @@ export default function HomePage() {
       const { user } = res?.data
       setError("")
       setUser(res?.data?.user)
-      const fallback = user?.role === "admin" ? "/admin" : "/agents";
+      const fallback = user?.role === "user" ? "/agents" : "/admin";
       router.replace(next || fallback);
     } catch (error) {
       console.log(error, "errro")

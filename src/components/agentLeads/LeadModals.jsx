@@ -37,16 +37,20 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     const [isSourceMenuOpen, setIsSourceMenuOpen] = useState(false);
 
 
+
+
     const [copied, setCopied] = useState(false);
 
     const [saving, setSaving] = useState(false)
     const [error, setError] = useState("")
+    const [orderCompletionDate, setOrderCompletionDate] = useState(null);
 
     const { user } = useContext(AuthContext)
 
     // course input internal state
     const [orderNumber, setOrderNumber] = useState("")
     const [orderStatus, setOrderStatus] = useState("")
+    const [customerPhone, setCustomerPhone] = useState("")
     const [coursePrice, setCoursePrice] = useState()
     const [discount, setDiscount] = useState()
     const [lastPaid, setLastPaid] = useState()
@@ -67,7 +71,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
     const handleSaveChanges = async () => {
 
-        console.log(followUpDate)
+
         // setSaving(true)
         // const {
         //     estemitePaymentDate,
@@ -81,16 +85,51 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         //     minValue,
         //     maxValue } = courseInput
 
+
+
+
+
+        console.log(user.role)
+
         if (!searchInput) {
             setSaving(false)
             return setError("Please input Course Name")
         }
 
-        if (orderNumber){
-            if(orderStatus === "on-hold"){
+        if (orderNumber) {
+
+            console.log(selectedLead?.phone)
+
+
+            if (error) {
+                return
+            }
+
+            if (orderStatus === "on-hold") {
                 return setError("On Hold Orders can't be marked as Enrolled ")
             }
+
+
+            if (formatForWhatsApp(customerPhone) !== formatForWhatsApp(selectedLead?.phone) && modelStatus !== "Enrolled with Other Number" && user?.role == "user") {
+                return setError("The order number must match the phone number associated with this lead ")
+
+            }
+
+            else {
+                setError("")
+            }
+
+
         }
+
+    
+
+
+        if((selectedLead?.createdBy === user?.email) && (new Date(orderCompletionDate) < new Date(selectedLead?.createdAt))){
+            return setError("Lead was created after the order date. Enrollment cannot be processed.")    
+        }       
+
+        console.log("jsdlfsjdlj")
 
         // if (discountSource) {
 
@@ -169,7 +208,9 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             nextEstimatedPaymentDate: estimatedPaymentDate,
             note: notes.filter(item => item?.status == "unsaved").map(({ text, by }) => ({ text, by })),
             lastModifiedBy: user?.name,
-            orderNumber: parseInt(orderNumber)
+            orderNumber: parseInt(orderNumber),
+            orderCompletionDate
+
         }
 
         console.log(obj)
@@ -340,7 +381,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     return (
         selectedLead && <div className="fixed inset-0 !z-9999 bg-black/40 flex items-center justify-center">
 
-            <div className={`bg-base-100 w-full scale-90    rounded-lg shadow-lg p-6 relative grid grid-cols-1 ${(modelStatus == "Enrolled" || modelStatus == "Refunded") ? "md:grid-cols-2 lg:grid-cols-4 max-w-7xl" : "md:grid-cols-3 lg:grid-cols-3 max-w-5xl"} gap-4 max-h-[90vh] overflow-y-visible`}>
+            <div className={`bg-base-100 w-full scale-90    rounded-lg shadow-lg p-6 relative grid grid-cols-1 ${(modelStatus == "Enrolled" || modelStatus == "Refunded" || modelStatus == "Enrolled with Other Number") ? "md:grid-cols-2 lg:grid-cols-4 max-w-7xl" : "md:grid-cols-3 lg:grid-cols-3 max-w-5xl"} gap-4 max-h-[90vh] overflow-y-visible`}>
 
                 {/* Top bar with lead info */}
                 <div className="sticky md:absolute ml-auto   top-3 right-3">
@@ -550,7 +591,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
 
                 {/* column 3 */}
-                {(modelStatus == "Enrolled" || modelStatus == "Refunded") && <div className="space-y-2  flex flex-col text-sm">
+                {(modelStatus == "Enrolled" || modelStatus == "Refunded" || modelStatus == "Enrolled with Other Number") && <div className="space-y-2  flex flex-col text-sm">
                     <h3 className="text-lg font-semibold mb-2">Payment Details</h3>
 
                     <CourseInput
@@ -580,11 +621,13 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                         setLocalHistory={setLocalHistory}
                         setOrderStatus={setOrderStatus}
 
+                        setCustomerPhone={setCustomerPhone}
+                        setOrderCompletionDate={setOrderCompletionDate}
+
                     />
 
 
                 </div>}
-
 
 
                 {/*  Column 4: Actions */}
@@ -775,7 +818,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                     }
 
 
-                    <p className="text-red-500 font-semibold">{error}</p>
+                    <p className="text-red-500 text-sm font-semibold">{error}</p>
 
                     <button
 
@@ -790,7 +833,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
 
 
-                {/* column 4 */}
+
 
             </div>
 
