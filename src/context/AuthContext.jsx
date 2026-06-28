@@ -1,7 +1,8 @@
 "use client"
 
 import { showAlert, showToast } from "@/utils/swal";
-import { createContext, useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { createContext, useEffect, useState ,useRef } from "react";
 import Swal from "sweetalert2";
 
 export const AuthContext = createContext();
@@ -9,6 +10,7 @@ export const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(getUser());
   const isLoggingOut = useRef(false);
+  const router = useRouter()
 
   function getUser() {
 
@@ -17,7 +19,6 @@ const AuthProvider = ({ children }) => {
       return savedUser ? JSON.parse(savedUser) : null;
     }
     return null;
-
   }
 
   useEffect(() => {
@@ -25,6 +26,7 @@ const AuthProvider = ({ children }) => {
       localStorage.setItem("user", JSON.stringify(user));
     } else {
       localStorage.removeItem("user");
+      router.push("/")
 
 
       if (isLoggingOut.current) {

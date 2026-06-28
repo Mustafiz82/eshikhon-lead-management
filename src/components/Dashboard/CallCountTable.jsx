@@ -9,7 +9,7 @@ const CallCountTable = () => {
     const currentMonth = new Date().getMonth() + 1;
     const [selectedFilter, setSelectedFilter] = useState(String(currentMonth));
     const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-    const { data: callCount } = useFetch(`/dashboard/getDailyCallCount?month=${selectedFilter}&year=2025`)
+    const { data: callCount } = useFetch(`/dashboard/getDailyCallCount?month=${selectedFilter}&year=${new Date().getFullYear()}`)
     const daysCount = callCount?.[0]?.calls?.length || 30;
     const days = Array.from({ length: daysCount }, (_, i) => i + 1)
 
@@ -59,12 +59,12 @@ const CallCountTable = () => {
                         options={months}
 
                     />
-                    <CustomSelect
+                    {/* <CustomSelect
                         selected={selectedFilter}
                         setSelected={setSelectedFilter}
                         options={months}
 
-                    />
+                    /> */}
                 </div>
             </div>
             <div className="w-full overflow-x-auto z-[-1]">
@@ -85,7 +85,7 @@ const CallCountTable = () => {
                                 <td className="border border-gray-300 px-3 bg-slate-800 py-2 font-semibold ">{agent.name}</td>
                                 {agent.calls.map((count, i) => (
                                     <td key={i} className="border hover:bg-blue-600/60 border-gray-300 px-3 py-2 text-center">
-                                        {count}
+                                       <span className={ count == 0 &&  `text-white/60`} > {count}</span>
                                     </td>
                                 ))}
                             </tr>

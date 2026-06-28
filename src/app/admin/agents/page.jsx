@@ -46,7 +46,7 @@ const page = () => {
     console.log(state[0].startDate)
     console.log(state[0].endDate)
 
-    const agents = user.filter(user => user?.role == "user")
+    const agents = user?.filter(user => user?.role == "user")
 
     const options = [
         { value: "all", label: "All Time" },
