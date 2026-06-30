@@ -145,19 +145,19 @@ const CommissionGuide = () => {
                                     </tr>
                                     <tr className="hover:bg-[#2a3042] transition-colors">
                                         <td className="px-6 py-4">61% to 80%</td>
-                                        <td className="px-6 py-4 text-green-400 font-medium">1.50%</td>
+                                        <td className="px-6 py-4 text-green-400 font-medium">1.25%</td>
                                     </tr>
                                     <tr className="hover:bg-[#2a3042] transition-colors">
                                         <td className="px-6 py-4">81% to 90%</td>
-                                        <td className="px-6 py-4 text-green-400 font-medium">2.00%</td>
+                                        <td className="px-6 py-4 text-green-400 font-medium">1.50%</td>
                                     </tr>
                                     <tr className="hover:bg-[#2a3042] transition-colors">
                                         <td className="px-6 py-4">91% to 100%</td>
-                                        <td className="px-6 py-4 text-green-400 font-medium">2.50%</td>
+                                        <td className="px-6 py-4 text-green-400 font-medium">1.75%</td>
                                     </tr>
                                     <tr className="hover:bg-[#2a3042] transition-colors">
                                         <td className="px-6 py-4">Over 100%</td>
-                                        <td className="px-6 py-4 text-green-400 font-medium">3.00%</td>
+                                        <td className="px-6 py-4 text-green-400 font-medium">2.00%</td>
                                     </tr>
                                 </tbody>
                             </table>

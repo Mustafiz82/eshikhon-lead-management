@@ -17,403 +17,401 @@ import Papa from "papaparse";
 import { showToast } from "@/utils/showToast";
 import { handleLeadExport } from "@/utils/exportLeads";
 
-
 export const statusOptions = [
-    "All",
-    "Contacted",
-    "Pending",
-    "Refunded",
-    "Enrolled",
-    "Enrolled with Other Number",
-    "Will Register",
-    "On hold",
-    "Already Enrolled",
-    "Not Interested",
-    "Enrolled in Other Institute",
-    "Call later",
-    "Call Not Received",
-    "Number Off or Busy",
-    "Wrong Number",
-
-]
-
+  "All",
+  "Contacted",
+  "Pending",
+  "Refunded",
+  "Enrolled",
+  "Enrolled with Other Number",
+  "Will Register",
+  "On hold",
+  "Already Enrolled",
+  "Not Interested",
+  "Enrolled in Other Institute",
+  "Call later",
+  "Call Not Received",
+  "Number Off or Busy",
+  "Wrong Number",
+];
 
 const AgentAllLeads = () => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const [leadsPerPage, setLeadsPerPage] = useState(50)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [leadsPerPage, setLeadsPerPage] = useState(50);
 
-    console.log(leadsPerPage)
+  console.log(leadsPerPage);
 
-    const [searchText, setSearchText] = useState(""); // for onchange
-    const [searchQuery, setSearchQuery] = useState("");  // when press inter buton to show on table
+  const [searchText, setSearchText] = useState(""); // for onchange
+  const [searchQuery, setSearchQuery] = useState(""); // when press inter buton to show on table
 
-    const [selectedSeminar, setSelectedSeminar] = useState("All");
-    const [selectedStatus, setSelectedStatus] = useState("All");
-    const [selectedAssingedDate, setSelectedAssignedDate] = useState("All")
-    const [selectedPaymentMode, setSelectedPaymentMode] = useState("All")
-    const [selectedSortMethod, setSelectedSortMethod] = useState("Default")
-    const [selectedSource, setSelectedSource] = useState("All")
-    const [selectedInterstedSeminar, setselectedInterstedSeminar] = useState("All")
+  const [selectedSeminar, setSelectedSeminar] = useState("All");
+  const [selectedStatus, setSelectedStatus] = useState("All");
+  const [selectedAssingedDate, setSelectedAssignedDate] = useState("All");
+  const [selectedPaymentMode, setSelectedPaymentMode] = useState("All");
+  const [selectedSortMethod, setSelectedSortMethod] = useState("Default");
+  const [selectedSource, setSelectedSource] = useState("All");
+  const [selectedInterstedSeminar, setselectedInterstedSeminar] =
+    useState("All");
 
+  const [followUpActive, setFollowUpActive] = useState(false);
+  const [selectedFollowedDate, setSelectedFollowedpDate] = useState("All");
 
-    const [followUpActive, setFollowUpActive] = useState(false);
-    const [selectedFollowedDate, setSelectedFollowedpDate] = useState("All")
+  const [upcomingPaymentsDate, setUpcomingPaymentsDate] = useState("None");
 
-    const [upcomingPaymentsDate, setUpcomingPaymentsDate] = useState("None")
+  const [missedFUActive, setMissedFUActive] = useState(false);
+  const [missedUPActive, setMissedUPActive] = useState(false);
+  const [selectedMissedFollowedDate, setSelectedMissedFolllowUpDate] =
+    useState("All");
 
-    const [missedFUActive, setMissedFUActive] = useState(false);
-    const [missedUPActive, setMissedUPActive] = useState(false);
-    const [selectedMissedFollowedDate, setSelectedMissedFolllowUpDate] = useState("All")
+  const [includeGlobalSearch, setIncludeGlobalSearch] = useState(false);
+  const [dropdownOpen, setDropDownOpen] = useState(false);
 
-    const [includeGlobalSearch, setIncludeGlobalSearch] = useState(false)
-    const [dropdownOpen, setDropDownOpen] = useState(false)
+  const { user } = useContext(AuthContext);
+  const { email } = useParams();
+  const decodedEmail = email ? decodeURIComponent(email) : user?.email;
 
-    const { user } = useContext(AuthContext)
-    const { email } = useParams();
-    const decodedEmail = email ? decodeURIComponent(email) : user?.email;
+  console.log(decodedEmail, "decoded email");
 
-    console.log(decodedEmail, "decoded email");
+  const [isSearchModalOpen, setSearchModalOpen] = useState(false);
+  const [selectedLead, setSelectedLead] = useState(null);
 
-    const [isSearchModalOpen, setSearchModalOpen] = useState(false);
-    const [selectedLead, setSelectedLead] = useState(null);
+  const minDate = new Date(2025, 0, 1);
+  const maxDate = new Date(2030, 11, 31);
+  maxDate.setHours(23, 59, 59, 999);
 
+  const [assignDateRange, setAssignDateRange] = useState([
+    {
+      startDate: minDate,
+      endDate: maxDate,
+      key: "selection",
+    },
+  ]);
 
-    const minDate = new Date(2025, 0, 1);
-    const maxDate = new Date(2030, 11, 31);
-    maxDate.setHours(23, 59, 59, 999);
+  const [paymentDateRange, setPaymentDateRange] = useState([
+    {
+      startDate: minDate,
+      endDate: maxDate,
+      key: "selection",
+    },
+  ]);
 
-    const [assignDateRange, setAssignDateRange] = useState([
-        {
-            startDate: minDate,
-            endDate: maxDate,
-            key: "selection",
-        },
-    ]);
+  console.log(upcomingPaymentsDate);
 
-    const [paymentDateRange, setPaymentDateRange] = useState([
-        {
-            startDate: minDate,
-            endDate: maxDate,
-            key: "selection",
-        },
-    ]);
+  console.log(user.email, "user email");
+  const params = new URLSearchParams({
+    currentPage: currentPage,
+    limit: leadsPerPage,
+    search: searchQuery.trim(),
+    course: selectedSeminar,
+    leadStatus: selectedStatus,
+    // stage: selectedStage,
+    assignDate: selectedAssingedDate,
+    paymentMode: selectedPaymentMode,
+    assignStartDate: assignDateRange[0].startDate,
+    assignEndDate: assignDateRange[0].endDate,
+    paymentStartDate: paymentDateRange[0].startDate,
+    paymentEndDate: paymentDateRange[0].endDate,
+    assignTo: !includeGlobalSearch
+      ? decodedEmail
+        ? decodedEmail
+        : user.email
+      : "All",
+    sort: selectedSortMethod,
+    showOnlyFollowups: followUpActive,
+    followUpDate: selectedFollowedDate,
+    showOnlyMissedFollowUps: missedFUActive,
+    showOnlyMissedPayments: missedUPActive,
+    missedFollowUpDate: selectedMissedFollowedDate,
+    leadSource: selectedSource,
+    interstedSeminar: selectedInterstedSeminar,
+    upcomingPaymentsDate: upcomingPaymentsDate,
+  });
 
+  const { data: leadsCount, refetch: paginateRefetch } = useFetch(
+    `/leads/count?${params}`,
+  );
+  const { data: leads, loading, refetch } = useFetch(`/leads?${params}`);
+  const { data: course } = useFetch("/course");
+  const { data: leadSource } = useFetch("/leads/source");
+  const { data: courseOption } = useFetch(
+    `/leads/intersted-course?agentEmail=${user?.email}`,
+  );
 
+  const assignedDateOptions = ["All", "DateRange"];
+  const followedOptions = [
+    "All",
+    "Today",
+    "Next 3 Days",
+    "Next 7 Days",
+    "Next 30 Days",
+    "This Year",
+  ];
+  const upcOptions = [
+    "None",
+    "All",
+    "Today",
+    "Next 3 Days",
+    "Next 7 Days",
+    "Next 30 Days",
+    "This Year",
+  ];
+  const missedFUOption = [
+    "All",
+    "Last 3 Days",
+    "Last 7 Days",
+    "Last 15 Days",
+    "Last 30 Days",
+  ];
+  const totalPages = Math.ceil(leadsCount?.count / leadsPerPage) || 1;
 
+  console.log(leadsCount.count);
 
-    console.log(upcomingPaymentsDate)
+  const totalLeads = leadsCount?.count || 0;
+  const leadCountStart =
+    totalLeads > 0 ? (currentPage - 1) * leadsPerPage + 1 : 0;
+  const leadCountEnd = Math.min(currentPage * leadsPerPage, totalLeads);
 
+  const handleSearch = (term) => {
+    setSearchQuery(term);
+    setCurrentPage(1);
+  };
 
+  const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const isInputFocused = ["INPUT", "TEXTAREA"].includes(
+        document.activeElement.tagName,
+      );
 
-    console.log(user.email, "user email");
-    const params = new URLSearchParams({
-        currentPage: currentPage,
-        limit: leadsPerPage,
-        search: searchQuery.trim(),
-        course: selectedSeminar,
-        leadStatus: selectedStatus,
-        // stage: selectedStage,
-        assignDate: selectedAssingedDate,
-        paymentMode: selectedPaymentMode,
-        assignStartDate: assignDateRange[0].startDate,
-        assignEndDate: assignDateRange[0].endDate,
-        paymentStartDate: paymentDateRange[0].startDate,
-        paymentEndDate: paymentDateRange[0].endDate,
-        assignTo: !includeGlobalSearch ? (decodedEmail ? decodedEmail : user.email) : "All",
-        sort: selectedSortMethod,
-        showOnlyFollowups: followUpActive,
-        followUpDate: selectedFollowedDate,
-        showOnlyMissedFollowUps: missedFUActive,
-        showOnlyMissedPayments: missedUPActive,
-        missedFollowUpDate: selectedMissedFollowedDate,
-        leadSource: selectedSource,
-        interstedSeminar: selectedInterstedSeminar,
-        upcomingPaymentsDate: upcomingPaymentsDate
+      // Ctrl + K → open Search Modal (unless inside input)
+      if (
+        !isInputFocused &&
+        (e.ctrlKey || e.metaKey) &&
+        e.key.toLowerCase() === "k"
+      ) {
+        e.preventDefault();
+        setSearchModalOpen(true);
+      }
 
-    })
-
-
-    const { data: leadsCount, refetch: paginateRefetch } = useFetch(`/leads/count?${params}`)
-    const { data: leads, loading, refetch } = useFetch(`/leads?${params}`)
-    const { data: course } = useFetch("/course")
-    const { data: leadSource } = useFetch("/leads/source")
-    const { data: courseOption } = useFetch(`/leads/intersted-course?agentEmail=${user?.email}`);
-
-
-
-
-
-    const assignedDateOptions = ["All", "DateRange"]
-    const followedOptions = ["All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
-    const upcOptions = ["None", "All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"]
-    const missedFUOption = ["All", "Last 3 Days", "Last 7 Days", "Last 15 Days", "Last 30 Days"]
-    const totalPages = Math.ceil((leadsCount?.count / leadsPerPage)) || 1
-
-    console.log(leadsCount.count)
-
-
-
-    const leadCountStart = (currentPage - 1) * leadsPerPage
-    const expactedEnd = leadCountStart + leadsPerPage - 1
-    const leadCountEnd = leadsCount?.count > expactedEnd ? expactedEnd : leadsCount?.count
-
-    const handleSearch = (term) => {
-        setSearchQuery(term);
-        setCurrentPage(1);
+      // Escape → close Search Modal
+      if (e.key === "Escape" && isSearchModalOpen) {
+        setSearchModalOpen(false);
+        setSearchText("");
+      }
     };
 
-    const goToPage = (page) => {
-        if (page >= 1 && page <= totalPages) setCurrentPage(page);
-    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isSearchModalOpen, setSearchText]);
 
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            const isInputFocused = ["INPUT", "TEXTAREA"].includes(document.activeElement.tagName);
+  useEffect(() => {
+    const timeOut = setTimeout(() => {
+      setSearchQuery(searchText);
+    }, 400);
 
-            // Ctrl + K → open Search Modal (unless inside input)
-            if (!isInputFocused && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
-                e.preventDefault();
-                setSearchModalOpen(true);
-            }
+    return () => clearTimeout(timeOut);
+  }, [searchText]);
 
-            // Escape → close Search Modal
-            if (e.key === "Escape" && isSearchModalOpen) {
-                setSearchModalOpen(false);
+  useEffect(() => {
+    // Runs only after an option is selected
+    setMissedUPActive(false);
+  }, [upcomingPaymentsDate]);
+
+  return (
+    <div className="p-6 overflow-hidden mx-auto min-h-[calc(100vh-100px)]  xl:min-h-screen">
+      {/* Filters */}
+      <div
+        className={`flex ${dropdownOpen ? "h-64 md:h-42" : "h-10"} bg-gray-900 -mt-2  fixed xl:static z-9999 w-full left-0 px-5 xl:px-0 duration-300 flex-wrap justify-between  gap-4 mb-4`}
+      >
+        <div
+          onClick={() => setDropDownOpen(!dropdownOpen)}
+          className="flex xl:hidden justify-between items-center w-full  px-0"
+        >
+          <h2 className="text-lg ">Open filter </h2>
+          <IoIosArrowDown />
+        </div>
+        {/*filter by stage */}
+        <div className=" grid  grid-cols-2 md:flex w-full xl:w-auto  flex-wrap gap-2">
+          {/* Sort By Dropdown */}
+          <Dropdown
+            dropdownPosition="dropdown-start"
+            selectedState={selectedSortMethod}
+            setSelectedState={setSelectedSortMethod}
+            label="Sort By"
+            options={["Default", "Ascending", "Descending", "Last Modified"]}
+            setCurrentPage={setCurrentPage}
+            defaultOptions={"Default"}
+          />
+
+          <Dropdown
+            dropdownPosition="dropdown-start"
+            selectedState={selectedSeminar}
+            showSearch
+            setSelectedState={setSelectedSeminar}
+            label="Course"
+            options={[
+              "All",
+              ...courseOption
+                .slice() // clone to avoid mutating original
+                .sort((a, b) => a?.localeCompare(b)) // ✅ sort alphabetically
+                .map((item) => item),
+            ]}
+            setCurrentPage={setCurrentPage}
+          />
+
+          {/* filter by Status */}
+          <Dropdown
+            dropdownPosition=""
+            selectedState={selectedStatus}
+            setSelectedState={setSelectedStatus}
+            label="Status"
+            options={statusOptions}
+            setCurrentPage={setCurrentPage}
+          />
+          <Dropdown
+            dropdownPosition=""
+            selectedState={selectedSource}
+            setSelectedState={setSelectedSource}
+            label="source"
+            options={["All", ...leadSource]}
+            setCurrentPage={setCurrentPage}
+            showSearch
+          />
+
+          <Dropdown
+            dropdownPosition="dropdown-end"
+            selectedState={selectedInterstedSeminar}
+            setSelectedState={setselectedInterstedSeminar}
+            label="Seminar Status"
+            options={["All", "Online", "Offline", "None", "Joined"]}
+            setCurrentPage={setCurrentPage}
+          />
+        </div>
+
+        {/* Search */}
+        <div className="flex fixed xl:static top-7 z-999 right-[25%] md:right-24 items-center gap-2">
+          <button
+            onClick={() => setSearchModalOpen(true)}
+            className="flex cursor-pointer items-center gap-2"
+          >
+            <IoSearchOutline className="text-lg" />
+            <span className="hidden text-sm text-white/70 xl:inline">
+              Ctrl + K
+            </span>
+          </button>
+          {searchQuery && (
+            <button
+              className="btn btn-xs btn-outline"
+              onClick={() => {
+                setSearchQuery("");
                 setSearchText("");
-            }
-        };
+                setIncludeGlobalSearch(false);
+              }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
 
-        window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [isSearchModalOpen, setSearchText]);
+        <div className="grid grid-cols-2 md:flex w-full xl:w-auto  flex-wrap justify-between items-center gap-2 ">
+          {/* filter by intersted seminar*/}
 
+          {/* Filter by Assigned Date  */}
+          <Dropdown
+            dropdownPosition=""
+            selectedState={selectedAssingedDate}
+            setSelectedState={setSelectedAssignedDate}
+            label="Assigned Date"
+            options={assignedDateOptions}
+            setCurrentPage={setCurrentPage}
+            showDatePicker
+            dateRange={assignDateRange}
+            setDateRange={setAssignDateRange}
+            minDate={minDate}
+            maxDate={maxDate}
+          />
 
+          <Dropdown
+            dropdownPosition=""
+            selectedState={selectedPaymentMode}
+            setSelectedState={setSelectedPaymentMode}
+            label="Payments Date"
+            options={assignedDateOptions}
+            setCurrentPage={setCurrentPage}
+            showDatePicker
+            dateRange={paymentDateRange}
+            setDateRange={setPaymentDateRange}
+            minDate={minDate}
+            maxDate={maxDate}
+          />
 
-    useEffect(() => {
-        const timeOut = setTimeout(() => {
-            setSearchQuery(searchText)
-        }, 400);
+          {/* Follow Ups Toggle */}
+          <button
+            className={`btn btn-sm text-[10px] 3xl:text-[12px] ${followUpActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
+            onClick={() => {
+              setFollowUpActive(!followUpActive);
+              setMissedFUActive(false);
+              setSelectedFollowedpDate("All");
+              setCurrentPage(1);
+            }}
+          >
+            Follow Ups
+          </button>
 
-        return () => clearTimeout(timeOut)
-    }, [searchText])
+          {/* Filter by Followed Date */}
+          {followUpActive && !missedFUActive && (
+            <Dropdown
+              dropdownPosition="dropdown-end"
+              selectedState={selectedFollowedDate}
+              setSelectedState={setSelectedFollowedpDate}
+              label="Followed Date"
+              options={followedOptions}
+              setCurrentPage={setCurrentPage}
+              showDatePicker
+            />
+          )}
 
+          {/* Missed Follow Ups Toggle */}
+          <button
+            className={`btn text-[10px] 3xl:text-[12px] btn-sm ${missedFUActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
+            onClick={() => {
+              setMissedFUActive(!missedFUActive);
+              setSelectedMissedFolllowUpDate("All");
+              setFollowUpActive(false);
+              setCurrentPage(1);
+            }}
+          >
+            Missed FU
+          </button>
 
-    useEffect(() => {
-        // Runs only after an option is selected
-        setMissedUPActive(false);
-    }, [upcomingPaymentsDate]);
+          <Dropdown
+            dropdownPosition="dropdown-end"
+            selectedState={upcomingPaymentsDate}
+            setSelectedState={setUpcomingPaymentsDate}
+            label="UPC Payments"
+            options={upcOptions}
+            defaultOptions={"None"}
+            setCurrentPage={setCurrentPage}
+          />
 
+          <button
+            className={`btn text-[10px] 3xl:text-[12px] btn-sm ${missedUPActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
+            onClick={() => {
+              setMissedUPActive(!missedUPActive);
 
+              // setFollowUpActive(false)
+              setCurrentPage(1);
+            }}
+          >
+            Missed UP
+          </button>
 
-    return (
-        <div className="p-6 overflow-hidden mx-auto min-h-[calc(100vh-100px)]  xl:min-h-screen">
-            {/* Filters */}
-            <div className={`flex ${dropdownOpen ? "h-64 md:h-42" : "h-10"} bg-gray-900 -mt-2  fixed xl:static z-9999 w-full left-0 px-5 xl:px-0 duration-300 flex-wrap justify-between  gap-4 mb-4`}>
+          {/* Filter by Followed Date */}
 
-                <div onClick={() => setDropDownOpen(!dropdownOpen)} className="flex xl:hidden justify-between items-center w-full  px-0">
-                    <h2 className="text-lg ">Open filter </h2>
-                    <IoIosArrowDown />
-                </div>
-                {/*filter by stage */}
-                <div className=" grid  grid-cols-2 md:flex w-full xl:w-auto  flex-wrap gap-2">
-
-
-                    {/* Sort By Dropdown */}
-                    <Dropdown
-                        dropdownPosition="dropdown-start"
-                        selectedState={selectedSortMethod}
-                        setSelectedState={setSelectedSortMethod}
-                        label="Sort By"
-                        options={["Default", "Ascending", "Descending" , "Last Modified"]}
-                        setCurrentPage={setCurrentPage}
-                        defaultOptions={"Default"}
-                    />
-
-                    <Dropdown
-                        dropdownPosition="dropdown-start"
-                        selectedState={selectedSeminar}
-                        showSearch
-                        setSelectedState={setSelectedSeminar}
-                        label="Course"
-                        options={["All", ...courseOption
-                            .slice() // clone to avoid mutating original
-                            .sort((a, b) => a?.localeCompare(b)) // ✅ sort alphabetically
-                            .map(item => item)
-                        ]}
-                        setCurrentPage={setCurrentPage}
-
-                    />
-
-                    {/* filter by Status */}
-                    <Dropdown
-                        dropdownPosition=""
-                        selectedState={selectedStatus}
-                        setSelectedState={setSelectedStatus}
-                        label="Status"
-                        options={statusOptions}
-                        setCurrentPage={setCurrentPage}
-
-                    />
-                    <Dropdown
-                        dropdownPosition=""
-                        selectedState={selectedSource}
-                        setSelectedState={setSelectedSource}
-                        label="source"
-                        options={["All", ...leadSource]}
-                        setCurrentPage={setCurrentPage}
-                        showSearch
-
-                    />
-
-
-                    <Dropdown
-                        dropdownPosition="dropdown-end"
-                        selectedState={selectedInterstedSeminar}
-                        setSelectedState={setselectedInterstedSeminar}
-                        label="Seminar Status"
-                        options={["All", "Online", "Offline", "None", "Joined"]}
-                        setCurrentPage={setCurrentPage}
-
-                    />
-                </div>
-
-                {/* Search */}
-                <div className="flex fixed xl:static top-7 z-999 right-[25%] md:right-24 items-center gap-2">
-                    <button
-                        onClick={() => setSearchModalOpen(true)}
-                        className="flex cursor-pointer items-center gap-2"
-                    >
-                        <IoSearchOutline className="text-lg" />
-                        <span className="hidden text-sm text-white/70 xl:inline">Ctrl + K</span>
-                    </button>
-                    {searchQuery && (
-                        <button
-                            className="btn btn-xs btn-outline"
-                            onClick={() => {
-                                setSearchQuery("")
-                                setSearchText("")
-                                setIncludeGlobalSearch(false)
-                            }
-
-                            }
-                        >
-                            Clear
-                        </button>
-                    )}
-                </div>
-
-
-                <div className="grid grid-cols-2 md:flex w-full xl:w-auto  flex-wrap justify-between items-center gap-2 ">
-
-
-                    {/* filter by intersted seminar*/}
-
-
-
-
-                    {/* Filter by Assigned Date  */}
-                    <Dropdown
-                        dropdownPosition=""
-                        selectedState={selectedAssingedDate}
-                        setSelectedState={setSelectedAssignedDate}
-                        label="Assigned Date"
-                        options={assignedDateOptions}
-                        setCurrentPage={setCurrentPage}
-                        showDatePicker
-                        dateRange={assignDateRange}
-                        setDateRange={setAssignDateRange}
-                        minDate={minDate}
-                        maxDate={maxDate}
-
-                    />
-
-                    <Dropdown
-                        dropdownPosition=""
-                        selectedState={selectedPaymentMode}
-                        setSelectedState={setSelectedPaymentMode}
-                        label="Payments Date"
-                        options={assignedDateOptions}
-                        setCurrentPage={setCurrentPage}
-                        showDatePicker
-                        dateRange={paymentDateRange}
-                        setDateRange={setPaymentDateRange}
-                        minDate={minDate}
-                        maxDate={maxDate}
-
-                    />
-
-                    {/* Follow Ups Toggle */}
-                    <button
-                        className={`btn btn-sm text-[10px] 3xl:text-[12px] ${followUpActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
-                        onClick={() => {
-                            setFollowUpActive(!followUpActive);
-                            setMissedFUActive(false)
-                            setSelectedFollowedpDate("All");
-                            setCurrentPage(1);
-                        }}
-                    >
-                        Follow Ups
-                    </button>
-
-                    {/* Filter by Followed Date */}
-                    {followUpActive && !missedFUActive && (
-
-                        <Dropdown
-                            dropdownPosition="dropdown-end"
-                            selectedState={selectedFollowedDate}
-                            setSelectedState={setSelectedFollowedpDate}
-                            label="Followed Date"
-                            options={followedOptions}
-                            setCurrentPage={setCurrentPage}
-                            showDatePicker
-
-                        />
-                    )}
-
-
-                    {/* Missed Follow Ups Toggle */}
-                    <button
-                        className={`btn text-[10px] 3xl:text-[12px] btn-sm ${missedFUActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
-                        onClick={() => {
-                            setMissedFUActive(!missedFUActive);
-                            setSelectedMissedFolllowUpDate("All")
-                            setFollowUpActive(false)
-                            setCurrentPage(1);
-                        }}
-                    >
-                        Missed FU
-                    </button>
-
-
-                    <Dropdown
-                        dropdownPosition="dropdown-end"
-                        selectedState={upcomingPaymentsDate}
-                        setSelectedState={setUpcomingPaymentsDate}
-                        label="UPC Payments"
-                        options={upcOptions}
-                        defaultOptions={"None"}
-                        setCurrentPage={setCurrentPage}
-
-
-                    />
-
-                    <button
-                        className={`btn text-[10px] 3xl:text-[12px] btn-sm ${missedUPActive ? "btn-primary bg-blue-600" : "btn-outline"}`}
-                        onClick={() => {
-                            setMissedUPActive(!missedUPActive);
-
-                            // setFollowUpActive(false)
-                            setCurrentPage(1);
-                        }}
-                    >
-                        Missed UP
-                    </button>
-
-
-                    {/* Filter by Followed Date */}
-
-                    {/* {missedFUActive && (
+          {/* {missedFUActive && (
 
                         <Dropdown
                             dropdownPosition="dropdown-end"
@@ -426,122 +424,111 @@ const AgentAllLeads = () => {
 
                         />
                     )} */}
-
-
-
-                </div>
-
-
-            </div>
-            {
-                loading ? <div className="w-full flex gap-3 justify-center items-center h-96"><span className="loading loading-spinner text-blue-600"></span> Loading...  </div> : ""
-
-            }
-
-            {/* Table */}
-            {!loading && <>
-
-                {/* Leads Table */}
-
-                <div className="mt-10 xl:mt-0">
-                    <LeadTable
-                        leads={leads}
-                        setSelectedLead={setSelectedLead}
-                        currentPage={currentPage}
-                        leadsPerPage={leadsPerPage}
-                        missedFUActive={missedFUActive}
-                        followUpActive={followUpActive}
-                        upcActive={upcomingPaymentsDate !== "None" ? true : false}
-                    />
-                </div>
-
-                <div className="flex flex-col justify-between mt-6">
-
-
-                    {/* Pagination */}
-                    <div className="flex items-center gap-4 flex-wrap">
-                        {/* Items Per Page Selector */}
-                        <div className="flex justify-between w-full items-center gap-5">
-                            <p className="text-sm flex-1 text-nowrap">Showing {leadCountStart + 1}–{leadCountEnd + 1} of {leadsCount?.count} results</p>
-                            <div className="flex justify-between w-full md:w-auto items-center gap-2">
-                                <p className="text-sm   flex-1 text-nowrap">per page :</p>
-                                <select
-                                    className="select px-1 w-14 gap-1 select-sm focus:outline-0"
-                                    value={leadsPerPage}
-                                    onChange={(e) => {
-                                        setLeadsPerPage(parseInt(e.target.value));
-                                        setCurrentPage(1);
-                                    }}
-                                >
-                                    {[10, 25, 50, 100, 200, 500, 1000].map((n) => (
-                                        <option key={n} value={n}>
-                                            {n}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="hidden md:block">
-                                <Pagination
-                                    currentPage={currentPage}
-                                    totalPages={totalPages}
-                                    onPageChange={goToPage}
-                                />
-                            </div>
-
-                            <button onClick={() => handleLeadExport(course, leads)} className="btn btn-primary btn-sm bg-blue-600 "> <FaFileExport />  Export selected</button>
-
-                        </div>
-
-                        {/* Pagination Buttons */}
-                        <div className="flex md:hidden justify-center w-full xl:w-auto">
-                            <Pagination
-                                currentPage={currentPage}
-                                totalPages={totalPages}
-                                onPageChange={goToPage}
-                            />
-
-
-
-                        </div>
-                    </div>
-
-
-
-
-                </div>
-
-            </>}
-
-            <SearchModal
-                isOpen={isSearchModalOpen}
-                onClose={() => setSearchModalOpen(false)}
-                searchText={searchText}
-                setSearchText={setSearchText}
-                onSearch={handleSearch}
-                results={leads}
-                setCurrentPage={setCurrentPage}
-                setSearchQuery={setSearchQuery}
-                setIncludeGlobalSearch={setIncludeGlobalSearch}
-                includeGlobalSearch={includeGlobalSearch}
-            />
-
-
-            <LeadModals
-                selectedLead={selectedLead}
-                setSelectedLead={setSelectedLead}
-                statusOptions={statusOptions}
-                refetch={refetch}
-                course={course}
-
-
-            />
-
         </div>
-    );
+      </div>
+      {loading ? (
+        <div className="w-full flex gap-3 justify-center items-center h-96">
+          <span className="loading loading-spinner text-blue-600"></span>{" "}
+          Loading...{" "}
+        </div>
+      ) : (
+        ""
+      )}
+
+      {/* Table */}
+      {!loading && (
+        <>
+          {/* Leads Table */}
+
+          <div className="mt-10 xl:mt-0">
+            <LeadTable
+              leads={leads}
+              setSelectedLead={setSelectedLead}
+              currentPage={currentPage}
+              leadsPerPage={leadsPerPage}
+              missedFUActive={missedFUActive}
+              followUpActive={followUpActive}
+              upcActive={upcomingPaymentsDate !== "None" ? true : false}
+            />
+          </div>
+
+          <div className="flex flex-col justify-between mt-6">
+            {/* Pagination */}
+            <div className="flex items-center gap-4 flex-wrap">
+              {/* Items Per Page Selector */}
+              <div className="flex justify-between w-full items-center gap-5">
+              <p className="text-sm flex-1 text-nowrap">Showing {leadCountStart}–{leadCountEnd} of {totalLeads} results</p>
+                <div className="flex justify-between w-full md:w-auto items-center gap-2">
+                  <p className="text-sm   flex-1 text-nowrap">per page :</p>
+                  <select
+                    className="select px-1 w-14 gap-1 select-sm focus:outline-0"
+                    value={leadsPerPage}
+                    onChange={(e) => {
+                      setLeadsPerPage(parseInt(e.target.value));
+                      setCurrentPage(1);
+                    }}
+                  >
+                    {[10, 25, 50, 100, 200, 500, 1000].map((n) => (
+                      <option key={n} value={n}>
+                        {n}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="hidden md:block">
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={goToPage}
+                  />
+                </div>
+
+                <button
+                  onClick={() => handleLeadExport(course, leads)}
+                  className="btn btn-primary btn-sm bg-blue-600 "
+                >
+                  {" "}
+                  <FaFileExport /> Export selected
+                </button>
+              </div>
+
+              {/* Pagination Buttons */}
+              <div className="flex md:hidden justify-center w-full xl:w-auto">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={goToPage}
+                />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      <SearchModal
+        isOpen={isSearchModalOpen}
+        onClose={() => setSearchModalOpen(false)}
+        searchText={searchText}
+        setSearchText={setSearchText}
+        onSearch={handleSearch}
+        results={leads}
+        setCurrentPage={setCurrentPage}
+        setSearchQuery={setSearchQuery}
+        setIncludeGlobalSearch={setIncludeGlobalSearch}
+        includeGlobalSearch={includeGlobalSearch}
+      />
+
+      <LeadModals
+        selectedLead={selectedLead}
+        setSelectedLead={setSelectedLead}
+        statusOptions={statusOptions}
+        refetch={refetch}
+        course={course}
+      />
+    </div>
+  );
 };
 
 export default AgentAllLeads;
-
-
 
 // 582 line
