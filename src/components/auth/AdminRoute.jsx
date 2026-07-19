@@ -9,7 +9,9 @@ export default function AdminRoute({ children, fallback = null }) {
   const { user } = useContext(AuthContext);
 
   console.log(user)
-  const {data : backendUser} = useFetch(`/user/${user?._id}`)
+  const {data : backendUser , error} = useFetch(`/user/${user?._id}`)
+
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -17,7 +19,7 @@ export default function AdminRoute({ children, fallback = null }) {
   console.log(backendUser.role)
 
   useEffect(() => { 
-    if (backendUser === null) {
+    if (backendUser === null || error?.includes == "401") {
       // Not logged in → login
       const next = encodeURIComponent(pathname || "/");
       router.replace(`/?next=${next}`);

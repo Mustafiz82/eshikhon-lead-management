@@ -133,39 +133,12 @@ const AgentsLeadsStatusPanel = ({ selectedFilter, state, setState }) => {
       })()
     },
     {
-      label: "Total Sales / sell count (created)",
-      value: userData?.totalSales,
+      label: "Excluded Sales Lead",
+      value : userData?.enrolledWithOtherNumberSales,
+      count: userData?.enrolledWithOtherNumberCount,
       unit: "Tk",
       gradient: "from-teal-700 to-lime-600",// Teal/lime = money, prosperity
-      children: (() => {
-        // 1. Calculate Values cleanly
-        const currentSales = userData?.totalSales || 0;
-        const target = userData?.targetAmount || 0; // Prevent divide by zero
-        const percentage = Math.min(100, Math.round((currentSales / target) * 100));
-
-        return (
-          <div className="flex flex-col    mt-2 h-full">
-            {/* Top: Numbers with Hierarchy */}
-            <div className="flex items-end justify-between mb-2">
-              <div className="flex flex-col">
-                <span className="text-3xl font-bold tracking-tight">
-                  <CountUp end={userData?.agentCreatedSales} separator="," duration={1.5} />      <span className="text-lg font-normal opacity-80 ml-1">Tk</span>
-                  <span> /</span>
-                  <span> <CountUp end={userData?.agentCreatedLeadCount} separator="," duration={1.5} /></span>
-
-                </span>
-              </div>
-
-            </div>
-
-
-
-
-            {/* Bottom: Percentage Label */}
-
-          </div>
-        );
-      })()
+     
     },
 
     // // 10. Target set

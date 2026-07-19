@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import CallCountTable from "@/components/Dashboard/CallCountTable";
 import CourseSellingSummary from "@/components/Dashboard/CourseSellingSummary";
 import LeadsGrowthChart from "@/components/Dashboard/LeadsGrowthChart";
@@ -12,122 +12,127 @@ import DateRangeComponent from "@/utils/DateRange";
 import React, { useContext, useEffect, useState } from "react";
 
 const page = () => {
+  const { user } = useContext(AuthContext);
+  const currentMonth = new Date().getMonth() + 1;
+  const [selectedFilter, setSelectedFilter] = useState(String(currentMonth));
 
-    const { user } = useContext(AuthContext)
-    const currentMonth = new Date().getMonth() + 1;
-    const [selectedFilter, setSelectedFilter] = useState(String(currentMonth));
+  // const now = new Date();
+  // const [state, setState] = useState([
+  //     {
+  //         startDate: new Date(now.getFullYear(), now.getMonth(), 1),
+  //         endDate: new Date(now.getFullYear(), now.getMonth() + 1, 0),
+  //         key: "selection",
+  //     },
+  // ]);
 
+  const { dateRange: state, setDateRange: setState } =
+    useContext(DateRangeContext);
 
+  const start = new Date(state[0].startDate);
+  start.setHours(0, 0, 0, 0);
 
-    // const now = new Date();
-    // const [state, setState] = useState([
-    //     {
-    //         startDate: new Date(now.getFullYear(), now.getMonth(), 1),
-    //         endDate: new Date(now.getFullYear(), now.getMonth() + 1, 0),
-    //         key: "selection",
-    //     },
-    // ]);
+  const end = new Date(state[0].endDate);
+  end.setHours(23, 59, 59, 999);
 
+  const {
+    data: leaderboard,
+    loading,
+    refetch,
+  } = useFetch(
+    `/dashboard/leaderboards?month=${selectedFilter}&year=2025&startDate=${start.toISOString()}&endDate=${end.toISOString()}`,
+  );
 
-    const { dateRange: state, setDateRange: setState } = useContext(DateRangeContext)
+  console.log(selectedFilter);
 
+  const options = [
+    { value: "all", label: "All Time" },
+    { value: "1", label: "January" },
+    { value: "2", label: "February" },
+    { value: "3", label: "March" },
+    { value: "4", label: "April" },
+    { value: "5", label: "May" },
+    { value: "6", label: "June" },
+    { value: "7", label: "July" },
+    { value: "8", label: "August" },
+    { value: "9", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" },
+  ];
 
-    const start = new Date(state[0].startDate);
-    start.setHours(0, 0, 0, 0);
-
-    const end = new Date(state[0].endDate);
-    end.setHours(23, 59, 59, 999);
-
-
-    const { data: leaderboard, loading, refetch } = useFetch(
-        `/dashboard/leaderboards?month=${selectedFilter}&year=2025&startDate=${start.toISOString()}&endDate=${end.toISOString()}`
+  if (!user) {
+    return (
+      <div className="p-6 text-white text-center">Loading Dashboard...</div>
     );
+  }
 
-    console.log(selectedFilter)
+  return (
+    <div className="">
+      <div className="flex p-6 sticky top-0 bg-slate-900 justify-between mb-4">
+        <h2 className="text-white text-xl font-semibold capitalize">
+          {user?.name} Dashboard
+        </h2>
+        <div className="flex gap-2 items-center">
+          <p className="whitespace-nowrap  hidden lg:bl  text-gray-300">
+            View Statistics for:
+          </p>
 
-
-
-    const options = [
-        { value: "all", label: "All Time" },
-        { value: "1", label: "January" },
-        { value: "2", label: "February" },
-        { value: "3", label: "March" },
-        { value: "4", label: "April" },
-        { value: "5", label: "May" },
-        { value: "6", label: "June" },
-        { value: "7", label: "July" },
-        { value: "8", label: "August" },
-        { value: "9", label: "September" },
-        { value: "10", label: "October" },
-        { value: "11", label: "November" },
-        { value: "12", label: "December" },
-    ];
-
-    return <div className="">
-        <div className="flex p-6 sticky top-0 bg-slate-900 justify-between mb-4">
-            <h2 className="text-white text-xl font-semibold capitalize">{user.name} Dashboard</h2>
-            <div className="flex gap-2 items-center">
-                <p className="whitespace-nowrap  hidden lg:bl  text-gray-300">View Statistics for:</p>
-
-                {/* <CustomSelect
+          {/* <CustomSelect
                     selected={selectedFilter}
                     setSelected={setSelectedFilter}
                     options={options}
 
                 /> */}
 
+          <DateRangeComponent state={state} setState={setState} />
+        </div>
+      </div>
 
-                <DateRangeComponent state={state} setState={setState} />
-            </div>
+      <div className="p-6 pt-0">
+        <LeadsStatusPanel state={state} selectedFilter={selectedFilter} />
+        <LeadsGrowthChart />
+        <CallCountTable />
+        {/* <SeminarPieChart/> */}
+        <div className="mt-20 grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <Leaderboard
+            title="Most Performing Agents (by Admit count)"
+            data={leaderboard?.byAdmitCount || []}
+            valueKey="enrolledCount"
+            metricLabel="Admits"
+            loading={loading}
+          />
+
+          <Leaderboard
+            title="Most Performing Agents (by Sales count)"
+            data={leaderboard?.bySales || []}
+            valueKey="totalPaidFromEnrolled"
+            metricLabel="Sales (৳)"
+            loading={loading}
+          />
+
+          <Leaderboard
+            title="Agents With Highest Lead Conversion Rate"
+            data={leaderboard?.byConversion || []}
+            valueKey="conversionRate"
+            metricLabel="Conversion (%)"
+            loading={loading}
+          />
+
+          <Leaderboard
+            title="Target Completion by Agent"
+            data={leaderboard?.byTargetFilled || []}
+            valueKey="targetFilled"
+            metricLabel="Target"
+            loading={loading}
+          />
         </div>
 
-        <div className="p-6 pt-0">
-            <LeadsStatusPanel state={state} selectedFilter={selectedFilter} />
-            <LeadsGrowthChart />
-            <CallCountTable />
-            {/* <SeminarPieChart/> */}
-            <div className="mt-20 grid grid-cols-1 lg:grid-cols-2 gap-5">
-                <Leaderboard
-                    title="Most Performing Agents (by Admit count)"
-                    data={leaderboard?.byAdmitCount || []}
-                    valueKey="enrolledCount"
-                    metricLabel="Admits"
-                    loading={loading}
-                />
+        {/* Top selling Course */}
 
-                <Leaderboard
-                    title="Most Performing Agents (by Sales count)"
-                    data={leaderboard?.bySales || []}
-                    valueKey="totalPaidFromEnrolled"
-                    metricLabel="Sales (৳)"
-                    loading={loading}
-                />
-
-                <Leaderboard
-                    title="Agents With Highest Lead Conversion Rate"
-                    data={leaderboard?.byConversion || []}
-                    valueKey="conversionRate"
-                    metricLabel="Conversion (%)"
-                    loading={loading}
-                />
-
-                <Leaderboard
-                    title="Target Completion by Agent"
-                    data={leaderboard?.byTargetFilled || []}
-                    valueKey="targetFilled"
-                    metricLabel="Target"
-                    loading={loading}
-                />
-            </div>
-
-
-            {/* Top selling Course */}
-
-            <CourseSellingSummary state={state} setState={setState} />
-
-
-        </div>
+        <CourseSellingSummary state={state} setState={setState} />
+      </div>
     </div>
-}
+  );
+};
 
-export default page 
+export default page;
