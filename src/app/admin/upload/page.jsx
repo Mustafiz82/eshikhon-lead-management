@@ -5,14 +5,15 @@ import { Bounce, toast } from "react-toastify";
 import Papa from "papaparse";
 import axiosPublic from "@/api/axios";
 import useFetch from "@/hooks/useFetch";
-import { formateDate } from "@/utils/date";
+import { formateDate, parseCustomDate } from "@/utils/date";
 import { AuthContext } from "@/context/AuthContext";
 import { formatFilename } from "@/utils/formateFileName";
 import { showToast } from "@/utils/showToast";
 import { LuDownload, LuUpload } from "react-icons/lu";
 import Link from "next/link";
 import { FaExternalLinkAlt } from "react-icons/fa";
-
+import { formatForWhatsApp } from "@/components/agentLeads/LeadModals";
+import { findBestCourse } from "@/utils/matchCourseName";
 
 const STATUS = {
     PENDING: "pending",
@@ -24,8 +25,16 @@ const STATUS = {
     ERROR: "error",
 };
 
-const statusBadge = (state) => {
+const statusBadge = (statusObj) => {
     const base = "px-2 py-0.5 text-xs rounded font-medium inline-block";
+    const state = typeof statusObj === "object" ? statusObj.state : statusObj;
+    const message = typeof statusObj === "object" ? statusObj.message : "";
+
+    // Show live progress message if active
+    if (message) {
+        return <span className={`${base} bg-indigo-500/20 text-indigo-300`}>{message}</span>;
+    }
+
     switch (state) {
         case STATUS.PENDING:
             return <span className={`${base} bg-yellow-500/20 text-yellow-300`}>Pending</span>;
@@ -35,8 +44,6 @@ const statusBadge = (state) => {
             return <span className={`${base} bg-indigo-500/20 text-indigo-300`}>Saving</span>;
         case STATUS.COMPLETED:
             return <span className={`${base} bg-green-500/20 text-green-300`}>Completed</span>;
-        case STATUS.DUPLICATE:
-            return <span className={`${base} bg-amber-500/20 text-amber-300`}>Duplicate</span>;
         case STATUS.ERROR:
             return <span className={`${base} bg-red-500/20 text-red-300`}>Error</span>;
         default:
@@ -44,34 +51,74 @@ const statusBadge = (state) => {
     }
 };
 
+const isRowNotEmpty = (row) => {
+    if (!row || typeof row !== "object") return false;
+    return Object.values(row).some((val) => val !== null && val !== undefined && String(val).trim() !== "");
+};
+
+function normalizeSeminarType(val) {
+    if (!val) return "None";
+    const clean = String(val).trim().toLowerCase();
+
+    if (clean === "online") return "Online";
+    if (clean === "offline") return "Offline";
+    if (clean === "joined") return "Joined";
+    if (["no need", "not interested", "none", "no"].includes(clean)) return "None";
+
+    return "None"; // Default fallback for unknown values
+}
+
+function parseCallCount(val) {
+    if (!val) return 0;
+    // Strip out "x" and all non-digit characters
+    const digits = String(val).replace(/\D/g, "");
+    const parsed = parseInt(digits, 10);
+    return isNaN(parsed) ? 0 : parsed;
+}
+
+function parseNote(noteText) {
+    if (!noteText || typeof noteText !== "string" || !noteText.trim()) {
+        return []; // 🔹 Returns empty array if note cell is blank
+    }
+
+    return [
+        {
+            text: noteText.trim(),
+            by: "", // 🔹 Explicitly blank
+            createdAt: null, // 🔹 Explicitly null
+        },
+    ];
+}
+
+function parseOrderNumber(val) {
+    if (!val) return null;
+    const digits = String(val).replace(/\D/g, ""); // Extracts digits only
+    const parsed = parseInt(digits, 10);
+    return isNaN(parsed) ? null : parsed;
+}
 
 const Page = () => {
     const [dragActive, setDragActive] = useState(false);
     const [uploadStatus, setUploadStatus] = useState({});
     const { data: fileList = [], loading, refetch } = useFetch("/file"); // server history
     const fileInputRef = useRef(null);
-    const { user } = useContext(AuthContext)
-    const [uploadMode, setUploadMode] = useState("lead")
+    const { user } = useContext(AuthContext);
+    const [uploadMode, setUploadMode] = useState("lead");
+    const { data: rawCourses } = useFetch("/course");
 
-    const data = fileList?.filter(item => item.type == uploadMode)
+    const data = fileList?.filter((item) => item.type == uploadMode);
 
     // Any active upload? (for the big box indicator only)
     const hasActiveUploads = useMemo(
-        () =>
-            Object.values(uploadStatus).some(
-                (s) =>
-                    s.state === STATUS.PENDING ||
-                    s.state === STATUS.PARSING ||
-                    s.state === STATUS.SAVING
-            ),
-        [uploadStatus]
+        () => Object.values(uploadStatus).some((s) => s.state === STATUS.PENDING || s.state === STATUS.PARSING || s.state === STATUS.SAVING),
+        [uploadStatus],
     );
 
     // Helper to set status for a file
-    const setStatus = (fileName, state) => {
+    const setStatus = (fileName, state, message = "") => {
         setUploadStatus((prev) => ({
             ...prev,
-            [fileName]: { state, updatedAt: Date.now() },
+            [fileName]: { state, message, updatedAt: Date.now() },
         }));
     };
 
@@ -80,12 +127,10 @@ const Page = () => {
         if (!user.email) return showToast("User not found", "error");
         if (file.type !== "text/csv") return showToast("Only CSV files are allowed", "warning");
 
-
         const fileName = formatFilename(file.name);
         setStatus(fileName, STATUS.PENDING);
 
         // 1) Register file name (server “history”)
-
 
         // 2) Parse CSV
         setStatus(fileName, STATUS.PARSING);
@@ -94,7 +139,8 @@ const Page = () => {
             header: true,
             skipEmptyLines: true,
             transformHeader: uploadMode == "lead" ? transfromHeaderLead : transfromHeaderAttendence,
-            complete: (results) => uploadMode == "lead" ? handleCompleteLeadCSVUpload(results, fileName) : handleCompleteAttendenceCSVUpload(results, fileName),
+            complete: (results) =>
+                uploadMode == "lead" ? handleCompleteLeadCSVUpload(results, fileName) : handleCompleteAttendenceCSVUpload(results, fileName),
 
             error: function (err) {
                 setStatus(fileName, STATUS.ERROR);
@@ -102,7 +148,6 @@ const Page = () => {
                 console.error(err);
             },
         });
-
     };
 
     const handleDrop = (e) => {
@@ -133,14 +178,17 @@ const Page = () => {
         };
     });
 
-
     const handleCompleteLeadCSVUpload = async (results, fileName) => {
+        results.data = results.data.filter(isRowNotEmpty);
+
         const rows = results.data;
         const headers = Object.keys(rows[0] || {});
         const required = [];
         const missing = required.filter((f) => !headers.includes(f));
 
-        console.log(headers)
+        console.log(rows);
+
+        // return
 
         if (missing.length > 0) {
             setStatus(fileName, STATUS.ERROR);
@@ -148,33 +196,138 @@ const Page = () => {
             return;
         }
 
-
-
-
         const questionWiseData = rows.map((item) => {
-            const { name, email, address, phone, interstedCourse, interstedCourseType, leadSource, ...questions } = item;
+            console.log(item);
+            const {
+                date,
+                name,
+                email,
+                address,
+                phone,
+                interstedCourse,
+                interstedCourseType,
+                interstedSeminar,
+                leadSource,
+                entryBy,
+                leadStatus,
+                firstContacted,
+                lastContacted,
+                orderNumber,
+                followUpDate,
+                callCount,
+                note,
+                ...questions
+            } = item;
 
+            console.log(date);
             return {
+                createdAt: parseCustomDate(date),
                 name: name || "",
                 email: email || "",
                 address: address || "",
                 phone: phone || "",
                 interstedCourse: interstedCourse || "",
                 leadSource: leadSource || "",
-                interstedCourseType: interstedCourseType || "Online",
+                interstedCourseType: interstedCourseType || "Not Specified",
+                callCount: parseCallCount(callCount),
                 questions,
                 sourceFileName: fileName,
-                createdBy: user?.email || ""
+                createdBy: user?.email || "",
+                entryBy: entryBy || "",
+                note: parseNote(note),
+                leadStatus: leadStatus || "Pending",
+                orderNumber: parseOrderNumber(orderNumber),
+                interstedSeminar: normalizeSeminarType(interstedSeminar),
+                firstContacted: parseCustomDate(firstContacted),
+                lastContacted: parseCustomDate(lastContacted),
+                followUpDate: parseCustomDate(followUpDate),
             };
         });
 
+        console.log(questionWiseData);
+
+        const leadsWithOrders = questionWiseData.filter((lead) => lead.orderNumber);
+        console.log(leadsWithOrders);
+        // return console.log(questionWiseData)
+
+        if (leadsWithOrders.length > 0) {
+            let currentCount = 0;
+
+            for (const lead of questionWiseData) {
+                if (!lead.orderNumber) continue;
+
+                currentCount++;
+
+                // 🔹 Update status in UI showing current order being fetched
+                setStatus(fileName, STATUS.SAVING, `Fetching Order #${lead.orderNumber} (${currentCount}/${leadsWithOrders.length})`);
+
+                try {
+                    const searchInput = encodeURIComponent(lead.interstedCourse || "");
+                    const userEmail = encodeURIComponent(user?.email || "");
+
+                    // Call API one at a time
+                    const res = await axiosPublic.get(`/leads/order/${lead.orderNumber}?searchInput=${searchInput}&email=${userEmail}`);
+
+                    // Attach fetched order data to the lead object
+                    const orderData = res?.data;
+
+                    if (orderData) {
+                        // A. Phone Matching Rule
+                        console.log(orderData.customerPhone + "-" + lead.phone)
+                        const matchedPhone = formatForWhatsApp(orderData.customerPhone) === formatForWhatsApp(lead.phone);
+                        lead.leadStatus = matchedPhone ? "Enrolled" : "Enrolled with Other Number";
+
+                        // B. Course Name Matching
+                        const matchedCourse = findBestCourse(orderData.courseName, rawCourses);
+                        lead.interstedCourse = matchedCourse?.name || orderData.courseName || lead.interstedCourse;
+
+                        // C. Course Type, Prices & Dates
+                        lead.interstedCourseType = orderData.type;
+                        const originalPrice = Number(orderData.originalPrice || 0);
+                        const discount = Number(orderData.discount || 0);
+                        const totalPaid = Number(orderData.total || 0);
+
+                        lead.originalPrice = originalPrice;
+                        lead.leadDiscount = discount;
+                        lead.discountUnit = "flat";
+
+                        const completionDate = orderData.orderCompletionDate ? new Date(orderData.orderCompletionDate) : new Date();
+                        lead.enrolledAt = completionDate;
+
+                        const isOnline = orderData.type === "Online";
+
+                        if (isOnline) {
+                            lead.totalPaid = totalPaid;
+                            lead.totalDue = Math.max(0, originalPrice - discount - totalPaid);
+                            lead.history = [
+                                {
+                                    date: completionDate,
+                                    paidAmount: totalPaid,
+                                },
+                            ];
+                        } else {
+                            // Offline Order
+                            lead.totalDue = Math.max(0, originalPrice - discount);
+                            // totalPaid and history remain default (0 and [])
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Failed to fetch order #${lead.orderNumber}:`, error);
+                    // Keep going for remaining leads even if one order fails
+                }
+            }
+        }
+
+        
+
+       
 
         // ---- Save leads first ----
         setStatus(fileName, STATUS.SAVING);
 
         try {
             const res = await axiosPublic.post("/leads", questionWiseData);
-            console.log(res.data)
+            console.log(res.data);
 
             // ✅ Only if lead  s save succeeds → save file in history
             setStatus(fileName, STATUS.REGISTERING);
@@ -184,15 +337,12 @@ const Page = () => {
             refetch(); // refresh server-side history list
 
             if (res.data.ok == false) {
-                showToast(res.data.message, "error")
-            }
-            else {
-
+                showToast(res.data.message, "error");
+            } else {
                 showToast(res.data.message, "success");
             }
-
         } catch (error) {
-            console.log(error)
+            console.log(error);
             setStatus(fileName, STATUS.ERROR);
 
             if (error.response?.status === 413) {
@@ -203,13 +353,11 @@ const Page = () => {
         }
     };
 
-
-
-
     const transfromHeaderLead = (header) => {
         if (!header) return "";
-        const normalized =  header.trim().toLowerCase();
-        console.log(normalized)
+        const normalized = header.trim().toLowerCase();
+        console.log(normalized);
+        if (["date"].includes(normalized)) return "date";
         if (["full name", "name"].includes(normalized)) return "name";
         if (["email", "e-mail", "email address"].includes(normalized)) return "email";
         if (["phone", "phone number", "mobile"].includes(normalized)) return "phone";
@@ -217,9 +365,20 @@ const Page = () => {
         if (["Intersted Course", "intersted course", "courses", "course"].includes(normalized)) return "interstedCourse";
         if (["course type", "type", "course type"].includes(normalized)) return "interstedCourseType";
         if (["Lead Source", "lead source", "source"].includes(normalized)) return "leadSource";
-        return header;
-    }
+        if (["entry by", "entryby", "created by"].includes(normalized)) return "entryBy";
+        if (["lead status", "status"].includes(normalized)) return "leadStatus";
+        if (["intersted seminar", "interested seminar", "seminar", "seminar type"].includes(normalized)) return "interstedSeminar";
 
+        if (["first call date", "1st call date", "first contact date", "first contact", "1st contact"].includes(normalized)) return "firstContacted";
+        if (["last call date", "last contact date", "last contact"].includes(normalized)) return "lastContacted";
+        if (["followup date", "follow up date", "followup", "next followup"].includes(normalized)) return "followUpDate";
+
+        if (["call count", "callcount", "calls", "call_count"].includes(normalized)) return "callCount";
+        if (["notes", "note", "comment", "comments", "comment/note"].includes(normalized)) return "note";
+        if (["order number", "order", "order #", "order_number", "order no", "ordernumber"].includes(normalized)) return "orderNumber";
+
+        return header;
+    };
 
     const transfromHeaderAttendence = (header) => {
         if (!header) return "";
@@ -227,13 +386,12 @@ const Page = () => {
         if (["email", "e-mail", "email address"].includes(normalized)) return "email";
         if (["phone", "phone number", "mobile"].includes(normalized)) return "phone";
         return header;
-    }
-
+    };
 
     const handleCompleteAttendenceCSVUpload = async (results, fileName) => {
         console.log(results);
 
-        const filteredData = results.data.map(row => ({
+        const filteredData = results.data.map((row) => ({
             phone: row.phone || row.Phone || row.PHONE,
             email: row.email || row.Email || row.EMAIL,
         }));
@@ -257,22 +415,15 @@ const Page = () => {
             const total = results?.data?.length ?? 0;
             const message = `${updated} out of ${total} lead${total === 1 ? "" : "s"} updated`;
 
-            showToast(
-                message,
-                res.data.updated > 0 ? "success" : "warning"
-            );
+            showToast(message, res.data.updated > 0 ? "success" : "warning");
 
             console.log("Touched leads:", res.data.touched); // debug
             refetch();
-
         } catch (error) {
             setStatus(fileName, STATUS.ERROR);
             showToast(error.message || "Failed to process attendance", "error");
         }
     };
-
-
-
 
     return (
         <div
@@ -286,18 +437,35 @@ const Page = () => {
         >
             <div className="bg-gray-800 rounded-2xl shadow-lg p-6 w-full max-w-6xl transition-colors">
                 <div className="flex mb-5 flex-col lg:flex-row justify-between">
-                    <h2 className="text-xl lg:text-2xl font-semibold text-white mb-3 lg:mb-6"> Upload {uploadMode == "lead" ? "Leads" : "Attendence"} CSV & History</h2>
+                    <h2 className="text-xl lg:text-2xl font-semibold text-white mb-3 lg:mb-6">
+                        {" "}
+                        Upload {uploadMode == "lead" ? "Leads" : "Attendence"} CSV & History
+                    </h2>
                     <div className="flex  gap-2">
-                        <button onClick={() => setUploadMode(prev => prev == "attendence" ? "lead" : "attendence")} className="btn btn-sm bg-blue-600 flex-1 lg:flex-auto border-0 btn-primary"><LuUpload className="text-lg" /> Upload {uploadMode == "lead" ? "Attendence" : "Leads"}  CSV</button>
-                        <a target="blank" href={"https://docs.google.com/spreadsheets/d/1I79Tsq5nQwSvDbrHhaPC1pP1iJ3rXA0dSOaszIoUU1M/edit?gid=0#gid=0"} ><button className="btn border-0 btn-sm bg-blue-600 flex-1 lg:flex-auto btn-primary"> <FaExternalLinkAlt className="text-" /> View Template</button></a>
+                        <button
+                            onClick={() => setUploadMode((prev) => (prev == "attendence" ? "lead" : "attendence"))}
+                            className="btn btn-sm bg-blue-600 flex-1 lg:flex-auto border-0 btn-primary"
+                        >
+                            <LuUpload className="text-lg" /> Upload {uploadMode == "lead" ? "Attendence" : "Leads"} CSV
+                        </button>
+                        <a
+                            target="blank"
+                            href={"https://docs.google.com/spreadsheets/d/1I79Tsq5nQwSvDbrHhaPC1pP1iJ3rXA0dSOaszIoUU1M/edit?gid=0#gid=0"}
+                        >
+                            <button className="btn border-0 btn-sm bg-blue-600 flex-1 lg:flex-auto btn-primary">
+                                {" "}
+                                <FaExternalLinkAlt className="text-" /> View Template
+                            </button>
+                        </a>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Upload Box */}
                     <div
-                        className={`border-2 h-[350px] flex flex-col justify-center items-center border-dashed transition-all rounded-xl p-6 text-center cursor-pointer ${dragActive ? "border-blue-500 bg-blue-950/30" : "border-gray-600 hover:border-blue-400"
-                            }`}
+                        className={`border-2 h-[350px] flex flex-col justify-center items-center border-dashed transition-all rounded-xl p-6 text-center cursor-pointer ${
+                            dragActive ? "border-blue-500 bg-blue-950/30" : "border-gray-600 hover:border-blue-400"
+                        }`}
                         onClick={() => fileInputRef.current?.click()}
                     >
                         {hasActiveUploads ? (
@@ -311,13 +479,7 @@ const Page = () => {
                                 <p className="text-sm text-gray-500 mt-1">Max file size: 5MB</p>
                             </>
                         )}
-                        <input
-                            type="file"
-                            accept=".csv"
-                            className="hidden"
-                            ref={fileInputRef}
-                            onChange={(e) => handleFile(e.target.files[0])}
-                        />
+                        <input type="file" accept=".csv" className="hidden" ref={fileInputRef} onChange={(e) => handleFile(e.target.files[0])} />
                     </div>
 
                     {/* Upload History */}
@@ -334,10 +496,7 @@ const Page = () => {
                             {Object.entries(uploadStatus)
                                 .filter(([fileName]) => !rows.some((r) => r.fileName === fileName))
                                 .map(([fileName, s]) => (
-                                    <div
-                                        key={`live-${fileName}`}
-                                        className="grid grid-cols-3 items-center text-sm py-2 border-b border-gray-700"
-                                    >
+                                    <div key={`live-${fileName}`} className="grid grid-cols-3 items-center text-sm py-2 border-b border-gray-700">
                                         <div className="text-gray-200 truncate">{fileName}</div>
                                         <div className="text-gray-400">—</div>
                                         <div>{statusBadge(s.state)}</div>
@@ -350,9 +509,7 @@ const Page = () => {
                                         className="grid grid-cols-3 items-center text-sm py-2 border-b border-gray-700"
                                     >
                                         <div className="text-gray-200   ">{upload.fileName}</div>
-                                        <div className="text-gray-400">
-                                            {upload.date ? formateDate(upload.date) : "—"}
-                                        </div>
+                                        <div className="text-gray-400">{upload.date ? formateDate(upload.date) : "—"}</div>
                                         <div>{statusBadge(upload._status)}</div>
                                     </div>
                                 ))
@@ -364,7 +521,6 @@ const Page = () => {
                         </div>
 
                         {/* Live-only rows for files not yet in server history (optional) */}
-
                     </div>
                 </div>
             </div>

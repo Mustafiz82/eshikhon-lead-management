@@ -17,55 +17,65 @@ export default function CourseInput({
   setError,
   course,
   setSelectedCourseType,
-  orderNumber, setOrderNumber,
-  coursePrice, setCoursePrice,
-  discount, setDiscount,
-  lastPaid, setLastPaid,
-  dueAmount, setDueAmount,
-  estimatedPaymentDate, setEstimatedPaymentDate,
-  localHistory, setLocalHistory, setOrderStatus , setCustomerPhone , setOrderCompletionDate
+  orderNumber,
+  setOrderNumber,
+  coursePrice,
+  setCoursePrice,
+  discount,
+  setDiscount,
+  lastPaid,
+  setLastPaid,
+  dueAmount,
+  setDueAmount,
+  estimatedPaymentDate,
+  setEstimatedPaymentDate,
+  localHistory,
+  setLocalHistory,
+  setOrderStatus,
+  setCustomerPhone,
+  setOrderCompletionDate,
 }) {
-
-
-  const { user: loggedUser } = useContext(AuthContext)
-
-
+  const { user: loggedUser } = useContext(AuthContext);
 
   const findOrderDetails = async (e) => {
     if (e.key === "Enter") {
-      console.log(orderNumber)
+      console.log(orderNumber);
       try {
-
         if (orderNumber?.toString()?.length === 7) {
           const res = await axiosPublic.get(
             `/leads/order/${orderNumber}?searchInput=${searchInput}&email=${loggedUser?.email}`,
           );
 
           console.log(res.data);
-          
-          if (res?.data) {
-            setOrderStatus(res?.data?.status)
-            setCoursePrice(parseInt(res?.data?.originalPrice))
-            setDiscount(parseInt(res?.data?.discount))
-            res?.data?.type == "Online" && setLastPaid(parseInt(res?.data?.total))
-            res?.data?.type == "Online" && setDueAmount(res?.data?.originalPrice - res?.data?.discount - res?.data?.total)
-            res?.data?.type == "Offline" && setDueAmount(res?.data?.originalPrice - res?.data?.discount)
-            setSearchInput(findBestCourse(res?.data?.courseName, course)?.name)
-            setSelectedCourseType(res?.data?.type)
-            setCustomerPhone(res?.data?.customerPhone)
-setOrderCompletionDate(res.data.orderCompletionDate);
 
-            setError()
+          if (res?.data) {
+            setOrderStatus(res?.data?.status);
+            setCoursePrice(parseInt(res?.data?.originalPrice));
+            setDiscount(parseInt(res?.data?.discount));
+            res?.data?.type == "Online" &&
+              setLastPaid(parseInt(res?.data?.total));
+            res?.data?.type == "Online" &&
+              setDueAmount(
+                res?.data?.originalPrice -
+                  res?.data?.discount -
+                  res?.data?.total,
+              );
+            res?.data?.type == "Offline" &&
+            setDueAmount(res?.data?.originalPrice - res?.data?.discount);
+            setSearchInput(findBestCourse(res?.data?.courseName, course)?.name);
+            setSelectedCourseType(res?.data?.type);
+            setCustomerPhone(res?.data?.customerPhone);
+            setOrderCompletionDate(res.data.orderCompletionDate);
+
+            setError();
           }
         }
       } catch (error) {
-        console.log(error.response)
+        console.log(error.response);
         setError(error.response?.data?.title || error.response?.data.message);
       }
-
-
     }
-  }
+  };
 
   const handleHistoryUpdate = (index, newDate) => {
     const updatedList = [...localHistory];
@@ -75,33 +85,24 @@ setOrderCompletionDate(res.data.orderCompletionDate);
 
   const calcDueAmount = (e) => {
     if (e.key === "Enter") {
-      setDueAmount(coursePrice - discount - (selectedLead?.totalPaid || 0) - lastPaid)
+      setDueAmount(
+        coursePrice - discount - (selectedLead?.totalPaid || 0) - lastPaid,
+      );
     }
-  }
-
-
-
-
+  };
 
   return (
     <div className="w-full max-w-xl mx-auto space-y-4">
-
-
       <div className="col-span-2">
-
         <input
           type="number"
           value={orderNumber}
-          onChange={(e) => setOrderNumber((e.target.value))}
+          onChange={(e) => setOrderNumber(e.target.value)}
           onKeyDown={findOrderDetails}
           placeholder="Enter Order Number"
           className="input input-bordered w-full disabled:bg-transparent focus:outline-0 focus:border-blue-600 disabled:border disabled:border-gray-600"
         />
-
       </div>
-
-
-
 
       <div className="grid grid-cols-4 gap-4">
         {/* Original Price */}
@@ -116,14 +117,11 @@ setOrderCompletionDate(res.data.orderCompletionDate);
             placeholder="Auto-filled"
             className="input input-bordered w-full disabled:bg-transparent focus:outline-0 focus:border-blue-600 disabled:border disabled:border-gray-600"
           />
-
         </div>
 
         {/* Discount */}
         <div className="col-span-2">
-          <label
-            className="block mb-1 text-white/80 text-sm">
-            Discount </label>
+          <label className="block mb-1 text-white/80 text-sm">Discount </label>
           <div className="join w-full">
             <input
               value={discount}
@@ -147,7 +145,12 @@ setOrderCompletionDate(res.data.orderCompletionDate);
             value={lastPaid}
             onChange={(e) => setLastPaid(e.target.value)}
             onBlur={() => {
-              setDueAmount(coursePrice - discount - (selectedLead?.totalPaid || 0) -  Number(lastPaid || 0))
+              setDueAmount(
+                coursePrice -
+                  discount -
+                  (selectedLead?.totalPaid || 0) -
+                  Number(lastPaid || 0),
+              );
             }}
             onKeyDown={calcDueAmount}
             disabled={setSelectedCourseType === ""}
@@ -163,11 +166,9 @@ setOrderCompletionDate(res.data.orderCompletionDate);
           <input
             type="number"
             disabled
-
             value={dueAmount}
             className="input disabled:bg-transparent disabled:border disabled:border-gray-600 input-bordered w-full focus:outline-0 focus:border-blue-600"
           />
-
         </div>
       </div>
 
@@ -182,7 +183,6 @@ setOrderCompletionDate(res.data.orderCompletionDate);
           min={new Date().toISOString().split("T")[0]}
           onChange={(e) => setEstimatedPaymentDate(e.target.value)}
         />
-
       </div>
 
       {/* History */}
