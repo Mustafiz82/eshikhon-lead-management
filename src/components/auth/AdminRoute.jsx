@@ -1,4 +1,3 @@
-// src/components/auth/AdminRoute.jsx
 "use client";
 import { useContext, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -6,32 +5,45 @@ import { AuthContext } from "@/context/AuthContext";
 import useFetch from "@/hooks/useFetch";
 
 export default function AdminRoute({ children, fallback = null }) {
-  const { user } = useContext(AuthContext);
-
-  console.log(user)
-  const {data : backendUser , error} = useFetch(`/user/${user?._id}`)
-
-
+  const { user, authLoading } = useContext(AuthContext); // assumes AuthContext exposes a loading flag
   const router = useRouter();
   const pathname = usePathname();
 
+  // Only fetch once we actually know who the user is
+  const {
+    data: backendUser,
+    error,
+    loading: backendLoading,
+  } = useFetch(user?._id ? `/user/${user._id}` : null);
 
-  console.log(backendUser.role)
+  useEffect(() => {
+    // Still figuring out auth state — don't decide anything yet
+    if (authLoading || backendLoading) return;
 
-  useEffect(() => { 
-    if (backendUser === null || error?.includes == "401") {
-      // Not logged in → login
-      const next = encodeURIComponent(pathname || "/");
+    const next = encodeURIComponent(pathname || "/");
+
+    // No user in context at all → definitely not logged in
+    if (!user?._id) {
       router.replace(`/?next=${next}`);
       return;
     }
-    // Logged in but not admin → bounce to backendUser route (e.g., /dashboard)
-    if (backendUser && backendUser?.role == "user" ) {
+
+    // Token expired / rejected by backend
+    if (error?.includes("401")) {
+      router.replace(`/?next=${next}`);
+      return;
+    }
+
+    // Logged in but wrong role
+    if (backendUser && backendUser.role === "user") {
       router.replace("/");
     }
-  }, [backendUser, router, pathname]);
+  }, [authLoading, backendLoading, user, backendUser, error, router, pathname]);
 
-  if (!backendUser || backendUser?.role == "user") return fallback; // or a spinner
+  // While we don't yet know the answer, show fallback (spinner) — don't render admin content
+  if (authLoading || backendLoading || !backendUser || backendUser?.role === "user") {
+    return fallback;
+  }
 
   return children;
 }

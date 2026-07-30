@@ -105,6 +105,7 @@
   background: var(--p-input-background) !important;
   color: var(--p-text-color) !important;
   border-color: var(--p-input-border-color) !important;
+  z-index: 9999 !important;
 
   /* size */
   min-height: 44px;

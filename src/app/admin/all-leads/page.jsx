@@ -604,7 +604,7 @@ const Page = () => {
             {/* Table */}
             {!loading && <>
 
-                <LeadTable
+                        <LeadTable
                     currentPage={currentPage}
                     leads={leads}
                     handleCheckboxChange={handleCheckboxChange}

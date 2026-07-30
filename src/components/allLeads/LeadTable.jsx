@@ -1,170 +1,144 @@
-
 import { formateDate } from "@/utils/date";
 import Link from "next/link";
 import { BiSolidLockAlt } from "react-icons/bi";
 import { FaEdit } from "react-icons/fa";
 import { statusColors } from "../agentLeads/LeadTable";
 
-
-const LeadTable = ({
-  selectedIds,
-  setSelectedIds,
-  leads,
-  currentPage,
-  leadsPerPage,
-  handleCheckboxChange,
-  setSelectedLead,
-  user,
-  onEdit
-}) => {
-
-
-    
-    console.log(user)
+const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPage, handleCheckboxChange, setSelectedLead, user, onEdit }) => {
+    console.log(user);
 
     const getUserName = (email) => {
-      const filteredUser = user.find(item => item.email == email)
+        const filteredUser = user.find((item) => item.email == email);
 
-      console.log(filteredUser)
-      return filteredUser?.name
-    }
+        console.log(filteredUser);
+        return filteredUser?.name;
+    };
 
-    
-
-
-
-
-  return (
-    <div className="rounded-sm  h-[calc(100vh-390px)] lg:h-[calc(100vh-160px)] overflow-scroll  border border-base-content/10 bg-base-200/10 shadow overflow-x-auto">
-
-      {
-        leads?.length == 0 ? <div className=" flex gap-2 text-center my-20 justify-center text-sm text-white/70">
-          <p>No Leads Found.</p>
-          <Link href={"/admin/upload"} className="text-blue-500">Clck here to upload leads</Link>
-        </div> : <table className="table  min-w-[1500px] lg:min-w-auto table-xs 3xl:table-sm  table-pin-rows lg:table-pin-cols table-zebra w-full">
-
-          <thead className="text-base-content/70  text-sm uppercase tracking-wide bg-base-300">
-            <tr>
-              <th className="sticky pl-4 top-0 bg-base-300 z-10 px-2">
-                <div className="flex  items-start gap-1">
-                  <input
-                    type="checkbox"
-                    className="checkbox checkbox-sm rounded-sm checkbox-primary border-blue-600 checked:bg-blue-600"
-                    onChange={(e) => {
-                      const checked = e.target.checked;
-                      const newSet = new Set(selectedIds);
-                      leads.forEach((lead) => {
-                        checked ? newSet.add(lead._id) : newSet.delete(lead._id);
-                      });
-                      setSelectedIds(newSet);
-                    }}
-                    checked={leads.every((lead) => selectedIds.has(lead._id))}
-                  />
-
+    return (
+        <div className="rounded-sm  h-[calc(100vh-390px)] lg:h-[calc(100vh-160px)] overflow-scroll  border border-base-content/10 bg-base-200/10 shadow overflow-x-auto">
+            {leads?.length == 0 ? (
+                <div className=" flex gap-2 text-center my-20 justify-center text-sm text-white/70">
+                    <p>No Leads Found.</p>
+                    <Link href={"/admin/upload"} className="text-blue-500">
+                        Clck here to upload leads
+                    </Link>
                 </div>
-              </th>
+            ) : (
+                <table className="table  min-w-[1500px] lg:min-w-auto table-xs 3xl:table-sm  table-pin-rows lg:table-pin-cols table-zebra w-full">
+                    <thead className="text-base-content/70  text-sm uppercase tracking-wide bg-base-300">
+                        <tr>
+                            <th className="sticky pl-4 top-0 bg-base-300 z-10 px-2">
+                                <div className="flex  items-start gap-1">
+                                    <input
+                                        type="checkbox"
+                                        className="checkbox checkbox-sm rounded-sm checkbox-primary border-blue-600 checked:bg-blue-600"
+                                        onChange={(e) => {
+                                            const checked = e.target.checked;
+                                            const newSet = new Set(selectedIds);
+                                            leads.forEach((lead) => {
+                                                checked ? newSet.add(lead._id) : newSet.delete(lead._id);
+                                            });
+                                            setSelectedIds(newSet);
+                                        }}
+                                        checked={leads.every((lead) => selectedIds.has(lead._id))}
+                                    />
+                                </div>
+                            </th>
 
+                            <th className="sticky top-0 bg-base-300 z-10"></th>
+                            <th className="sticky top-0 bg-base-300 pl-5! z-10">Date</th>
+                            <th className="sticky top-0 bg-base-300 z-10">Name</th>
+                            <th className="sticky top-0 bg-base-300 z-10">Email</th>
+                            <th className="sticky top-0 bg-base-300 z-10">Number</th>
+                            <th className="sticky top-0 bg-base-300 z-10">Address</th>
+                            <th className="sticky top-0 bg-base-300 z-10">Internsted Course </th>
+                            <th className="sticky top-0 bg-base-300 z-10">Assign To</th>
+                            <th className="sticky top-0 bg-base-300 z-10">Lead Status</th>
+                            <th className="sticky top-0 bg-base-300 z-10">Order No.</th>
+                        </tr>
+                    </thead>
 
-              <th className="sticky top-0 bg-base-300 z-10"></th>
-              <th className="sticky top-0 bg-base-300 pl-5! z-10">Date</th>
-              <th className="sticky top-0 bg-base-300 z-10">Name</th>
-              <th className="sticky top-0 bg-base-300 z-10">Email</th>
-              <th className="sticky top-0 bg-base-300 z-10">Number</th>
-              <th className="sticky top-0 bg-base-300 z-10">Address</th>
-              <th className="sticky top-0 bg-base-300 z-10">Internsted Course </th>
-              <th className="sticky top-0 bg-base-300 z-10">Assign To</th>
-              <th className="sticky top-0 bg-base-300 z-10">Lead Status</th>
-              <th className="sticky top-0 bg-base-300 z-10">Order No.</th>
-            </tr>
-          </thead>
+                    <tbody className="text-base-content/80 ">
+                        {leads.map((lead, index) => {
+                            const actualIndex = (currentPage - 1) * leadsPerPage + index;
+                            console.log(lead?.courses?.[0]?.courseName);
+                            return (
+                                <tr
+                                    onClick={() => {
+                                        setSelectedLead(lead);
+                                    }}
+                                    key={actualIndex}
+                                    className={`${selectedIds.has(lead._id) ? "bg-blue-900/50!" : ""}`}
+                                >
+                                    <td onClick={(e) => e.stopPropagation()} className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            className="checkbox checkbox-sm rounded-sm checkbox-primary border-blue-600 checked:bg-blue-600"
+                                            checked={selectedIds.has(lead._id)}
+                                            onChange={(e) => {
+                                                handleCheckboxChange(index, lead._id, e.target.checked, e.nativeEvent.shiftKey);
+                                            }}
+                                        />
 
+                                        <span className="text-xs opacity-60">{actualIndex + 1}</span>
+                                    </td>
 
-          <tbody className="text-base-content/80 "> 
-
-            {leads.map((lead, index) => {
-              const actualIndex =
-                (currentPage - 1) * leadsPerPage + index;
-              return (
-                <tr
-                  onClick={() => { setSelectedLead(lead); }}
-                  key={actualIndex}
-                  className={`${selectedIds.has(lead._id) ? "bg-blue-900/50!" : ""}`}>
-
-                  <td onClick={(e) => e.stopPropagation()} className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-sm rounded-sm checkbox-primary border-blue-600 checked:bg-blue-600"
-                      checked={selectedIds.has(lead._id)}
-                      onChange={(e) => {
-
-                        handleCheckboxChange(
-                          index,
-                          lead._id,
-                          e.target.checked,
-                          e.nativeEvent.shiftKey
-                        );
-                      }}
-
-                    />
-
-                    <span className="text-xs opacity-60">
-                      {actualIndex + 1}
-                    </span>
-                  </td>
-
-                  <td onClick={e => e.stopPropagation()}>
-                    <button
-                      onClick={() => onEdit(lead)}
-                      className="hover:text-blue-500  cursor-pointer"
-                      title="Edit Lead"
-                    >
-                      <FaEdit className="text-md -ml-2! font-semibold" />
-                    </button>
-                  </td>
-                  <td className="pl-5!"> <span className="relative   ">{lead?.isLocked && <BiSolidLockAlt title="Agent will not be able modify these lease leads" className="text-[#F7BB07] absolute -left-4 top-1/2 -translate-y-1/2" />} {formateDate(lead?.createdAt)}</span> </td>
-                  <td title={lead.name} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.name}</td>
-                  <td title={lead.email} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.email}</td>
-                  <td title={lead.phone} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis" > <span className="text-nowrap">{lead.phone}</span></td>
-                  <td title={lead.address} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis" >{lead.address}</td>
-                  <td>
-                    <span className="badge badge-neutral badge-sm">
-                      {lead.interstedCourse}
-                    </span>
-                  </td>
-                  <td>
-                    <span
-                      className={`badge badge-sm ${lead.assignStatus
-                        ? "badge-success text-white"
-                        : "badge-warning text-white text-nowrap"
-                        }`}
-                    >
-                      {lead.assignStatus ? getUserName(lead?.assignTo ): "Not Assigned"}
-                    </span>
-                  </td>
-                  <td>
-                    <span
-                      className={`badge badge-sm text-white text-nowrap ${statusColors[lead.leadStatus] || "badge-neutral"
-                        }`}
-                    >
-                      {lead.leadStatus}
-                    </span>
-                  </td>
-                  <td>
-                  {lead?.orderNumber ?? lead.orderNumber}
-                  </td>
-
-                </tr>
-              );
-            })}
-          </tbody>
-
-        </table>
-      }
-
-
-
-    </div>
-  );
+                                    <td onClick={(e) => e.stopPropagation()}>
+                                        <button onClick={() => onEdit(lead)} className="hover:text-blue-500  cursor-pointer" title="Edit Lead">
+                                            <FaEdit className="text-md -ml-2! font-semibold" />
+                                        </button>
+                                    </td>
+                                    <td className="pl-5!">
+                                        {" "}
+                                        <span className="relative   ">
+                                            {lead?.isLocked && (
+                                                <BiSolidLockAlt
+                                                    title="Agent will not be able modify these lease leads"
+                                                    className="text-[#F7BB07] absolute -left-4 top-1/2 -translate-y-1/2"
+                                                />
+                                            )}{" "}
+                                            {formateDate(lead?.createdAt)}
+                                        </span>{" "}
+                                    </td>
+                                    <td title={lead.name} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">
+                                        {lead.name}
+                                    </td>
+                                    <td title={lead.email} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">
+                                        {lead.email}
+                                    </td>
+                                    <td title={lead.phone} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">
+                                        {" "}
+                                        <span className="text-nowrap">{lead.phone}</span>
+                                    </td>
+                                    <td title={lead.address} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">
+                                        {lead.address}
+                                    </td>
+                                    <td>
+                                        <span className="badge badge-neutral badge-sm">{lead?.courses?.length > 0 ? (lead?.courses?.[0]?.courseName) + ` ${lead?.courses?.length > 1 ? ` + ${lead?.courses?.length - 1}` : " "}` : "" }</span>
+                                    </td>
+                                    <td>
+                                        <span
+                                            className={`badge badge-sm ${
+                                                lead.assignStatus ? "badge-success text-white" : "badge-warning text-white text-nowrap"
+                                            }`}
+                                        >
+                                            {lead.assignStatus ? getUserName(lead?.assignTo) : "Not Assigned"}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span className={`badge badge-sm text-white text-nowrap ${statusColors[lead.leadStatus] || "badge-neutral"}`}>
+                                            {lead.leadStatus}
+                                        </span>
+                                    </td>
+                                    <td>{lead?.orderNumber ?? lead.orderNumber}</td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            )}
+        </div>
+    );
 };
 
 export default LeadTable;

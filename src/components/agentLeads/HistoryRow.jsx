@@ -52,7 +52,7 @@ const HistoryRow = ({ item, originalItem, onUpdate }) => {
             </h2>
             
             {/* Show Unsaved Indicator */}
-            {isUnsaved && <span className="text-yellow-500 text-xs font-bold">(Unsaved)</span>}
+            {/* {isUnsaved && <span className="text-yellow-500 text-xs font-bold">(Unsaved)</span>} */}
 
             {/* Edit Button */}
             <button 

@@ -97,6 +97,18 @@ function parseOrderNumber(val) {
     return isNaN(parsed) ? null : parsed;
 }
 
+const isValidLeadRow = (row) => {
+    if (!row || typeof row !== "object") return false;
+
+    // A valid lead MUST have at least a phone number, name, email, or course
+    const hasPhone = row.phone && String(row.phone).trim() !== "";
+    const hasName = row.name && String(row.name).trim() !== "";
+    const hasEmail = row.email && String(row.email).trim() !== "";
+    const hasCourse = row.interstedCourse && String(row.interstedCourse).trim() !== "";
+
+    return hasPhone || hasName || hasEmail || hasCourse;
+};
+
 const Page = () => {
     const [dragActive, setDragActive] = useState(false);
     const [uploadStatus, setUploadStatus] = useState({});
@@ -109,11 +121,12 @@ const Page = () => {
     const data = fileList?.filter((item) => item.type == uploadMode);
 
     // Any active upload? (for the big box indicator only)
-    const hasActiveUploads = useMemo(
-        () => Object.values(uploadStatus).some((s) => s.state === STATUS.PENDING || s.state === STATUS.PARSING || s.state === STATUS.SAVING),
-        [uploadStatus],
-    );
+    // Get active upload object (to show live progress text in big drop box)
+    const activeUpload = useMemo(() => {
+        return Object.values(uploadStatus).find((s) => s.state === STATUS.PENDING || s.state === STATUS.PARSING || s.state === STATUS.SAVING);
+    }, [uploadStatus]);
 
+    const hasActiveUploads = Boolean(activeUpload);
     // Helper to set status for a file
     const setStatus = (fileName, state, message = "") => {
         setUploadStatus((prev) => ({
@@ -179,7 +192,7 @@ const Page = () => {
     });
 
     const handleCompleteLeadCSVUpload = async (results, fileName) => {
-        results.data = results.data.filter(isRowNotEmpty);
+        results.data = (results.data || []).filter(isValidLeadRow);
 
         const rows = results.data;
         const headers = Object.keys(rows[0] || {});
@@ -197,7 +210,6 @@ const Page = () => {
         }
 
         const questionWiseData = rows.map((item) => {
-            console.log(item);
             const {
                 date,
                 name,
@@ -215,20 +227,36 @@ const Page = () => {
                 orderNumber,
                 followUpDate,
                 callCount,
+                assignTo,
+                assignDate,
                 note,
                 ...questions
             } = item;
 
-            console.log(date);
+            const parsedAssignTo = assignTo?.trim() || "N/A";
+            const parsedAssignDate = parseCustomDate(assignDate);
+
             return {
                 createdAt: parseCustomDate(date),
                 name: name || "",
                 email: email || "",
                 address: address || "",
                 phone: phone || "",
-                interstedCourse: interstedCourse || "",
-                leadSource: leadSource || "",
-                interstedCourseType: interstedCourseType || "Not Specified",
+                // 🔹 NEW: Construct initial courses array from CSV row
+                courses: interstedCourse
+                    ? [
+                          {
+                              courseName: interstedCourse,
+                              courseType: interstedCourseType || "Not Specified",
+                              originalPrice: 0,
+                              leadDiscount: 0,
+                              discountUnit: "flat",
+                              totalPaid: 0,
+                              totalDue: 0,
+                              history: [],
+                          },
+                      ]
+                    : [],
                 callCount: parseCallCount(callCount),
                 questions,
                 sourceFileName: fileName,
@@ -241,6 +269,9 @@ const Page = () => {
                 firstContacted: parseCustomDate(firstContacted),
                 lastContacted: parseCustomDate(lastContacted),
                 followUpDate: parseCustomDate(followUpDate),
+                assignTo: parsedAssignTo,
+                assignStatus: parsedAssignTo !== "N/A" ? true : false, // Sets true if assignTo is provided
+                assignDate: parsedAssignDate,
             };
         });
 
@@ -262,78 +293,69 @@ const Page = () => {
                 setStatus(fileName, STATUS.SAVING, `Fetching Order #${lead.orderNumber} (${currentCount}/${leadsWithOrders.length})`);
 
                 try {
-                    const searchInput = encodeURIComponent(lead.interstedCourse || "");
+                    // 🔹 FIX 3: Read course name from lead.courses[0]
+                    const initialCourseName = lead.courses?.[0]?.courseName || "";
+                    const searchInput = encodeURIComponent(initialCourseName);
                     const userEmail = encodeURIComponent(user?.email || "");
 
                     // Call API one at a time
                     const res = await axiosPublic.get(`/leads/order/${lead.orderNumber}?searchInput=${searchInput}&email=${userEmail}`);
-
-                    // Attach fetched order data to the lead object
                     const orderData = res?.data;
 
                     if (orderData) {
-                        // A. Phone Matching Rule
-                        console.log(orderData.customerPhone + "-" + lead.phone)
+                        // 🔹 FIX 2: Phone Matching & leadStatus Rule
                         const matchedPhone = formatForWhatsApp(orderData.customerPhone) === formatForWhatsApp(lead.phone);
                         lead.leadStatus = matchedPhone ? "Enrolled" : "Enrolled with Other Number";
 
-                        // B. Course Name Matching
-                        const matchedCourse = findBestCourse(orderData.courseName, rawCourses);
-                        lead.interstedCourse = matchedCourse?.name || orderData.courseName || lead.interstedCourse;
-
-                        // C. Course Type, Prices & Dates
-                        lead.interstedCourseType = orderData.type;
-                        const originalPrice = Number(orderData.originalPrice || 0);
-                        const discount = Number(orderData.discount || 0);
-                        const totalPaid = Number(orderData.total || 0);
-
-                        lead.originalPrice = originalPrice;
-                        lead.leadDiscount = discount;
-                        lead.discountUnit = "flat";
-
+                        // 🔹 FIX 1: Declare completionDate
                         const completionDate = orderData.orderCompletionDate ? new Date(orderData.orderCompletionDate) : new Date();
-                        lead.enrolledAt = completionDate;
 
-                        const isOnline = orderData.type === "Online";
+                        // Map all courses from orderData.courses array
+                        if (Array.isArray(orderData.courses) && orderData.courses.length > 0) {
+                            lead.courses = orderData.courses.map((courseItem) => {
+                                const matchedCourse = findBestCourse(courseItem.courseName, rawCourses);
+                                const finalCourseName = matchedCourse?.name || courseItem.courseName || courseItem.cleanedName;
+                                const isOnline = courseItem.type === "Online";
+                                const origPrice = Number(courseItem.originalPrice || 0);
+                                const disc = Number(courseItem.discount || 0);
+                                const totPaid = Number(courseItem.total || 0);
 
-                        if (isOnline) {
-                            lead.totalPaid = totalPaid;
-                            lead.totalDue = Math.max(0, originalPrice - discount - totalPaid);
-                            lead.history = [
-                                {
-                                    date: completionDate,
-                                    paidAmount: totalPaid,
-                                },
-                            ];
-                        } else {
-                            // Offline Order
-                            lead.totalDue = Math.max(0, originalPrice - discount);
-                            // totalPaid and history remain default (0 and [])
+                                return {
+                                    courseName: finalCourseName,
+                                    courseType: courseItem.type || "Online",
+                                    originalPrice: origPrice,
+                                    leadDiscount: disc,
+                                    discountUnit: "flat",
+                                    totalPaid: isOnline ? totPaid : 0,
+                                    totalDue: isOnline ? Math.max(0, origPrice - disc - totPaid) : Math.max(0, origPrice - disc),
+                                    enrolledAt: completionDate,
+                                    history: isOnline ? [{ date: completionDate, paidAmount: totPaid }] : [],
+                                };
+                            });
+
+                            // 🔹 NEW: Calculate top-level sum of totalPaid and totalDue for the lead
+                            lead.totalPaid = lead.courses.reduce((sum, c) => sum + (Number(c.totalPaid) || 0), 0);
+                            lead.totalDue = lead.courses.reduce((sum, c) => sum + (Number(c.totalDue) || 0), 0);
                         }
                     }
                 } catch (error) {
                     console.error(`Failed to fetch order #${lead.orderNumber}:`, error);
-                    // Keep going for remaining leads even if one order fails
                 }
             }
         }
 
-        
-
-       
-
         // ---- Save leads first ----
-        setStatus(fileName, STATUS.SAVING);
+        setStatus(fileName, STATUS.SAVING, "Saving leads to database...");
 
         try {
             const res = await axiosPublic.post("/leads", questionWiseData);
             console.log(res.data);
 
             // ✅ Only if lead  s save succeeds → save file in history
-            setStatus(fileName, STATUS.REGISTERING);
+            setStatus(fileName, STATUS.REGISTERING, "Registering file...");
             await axiosPublic.post("/file", { fileName, type: uploadMode });
 
-            setStatus(fileName, STATUS.COMPLETED);
+            setStatus(fileName, STATUS.COMPLETED, "");
             refetch(); // refresh server-side history list
 
             if (res.data.ok == false) {
@@ -376,6 +398,9 @@ const Page = () => {
         if (["call count", "callcount", "calls", "call_count"].includes(normalized)) return "callCount";
         if (["notes", "note", "comment", "comments", "comment/note"].includes(normalized)) return "note";
         if (["order number", "order", "order #", "order_number", "order no", "ordernumber"].includes(normalized)) return "orderNumber";
+
+        if (["assign to", "assignto", "assigned to"].includes(normalized)) return "assignTo";
+        if (["assign date", "assigndate", "assigned date"].includes(normalized)) return "assignDate";
 
         return header;
     };
@@ -460,7 +485,7 @@ const Page = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-[4fr_5fr] gap-6">
                     {/* Upload Box */}
                     <div
                         className={`border-2 h-[350px] flex flex-col justify-center items-center border-dashed transition-all rounded-xl p-6 text-center cursor-pointer ${
@@ -469,10 +494,13 @@ const Page = () => {
                         onClick={() => fileInputRef.current?.click()}
                     >
                         {hasActiveUploads ? (
-                            <div className="animate-pulse text-blue-400 text-xl">Uploading...</div>
+                            <div className="animate-pulse flex flex-col items-center justify-center gap-2">
+                                <RiUpload2Fill className="text-blue-400 text-5xl animate-bounce" />
+                                <p className="text-blue-400 text-lg font-semibold">{activeUpload?.message || "Uploading..."}</p>
+                            </div>
                         ) : (
                             <>
-                                <RiUpload2Fill className="text-blue-600  dark:hover:text-blue-500 transition mb-5 text-4xl" />
+                                <RiUpload2Fill className="text-blue-600 dark:hover:text-blue-500 transition mb-5 text-4xl" />
                                 <p className="text-gray-300">
                                     Drop or click to upload <span className="font-medium">CSV file</span>
                                 </p>
@@ -499,14 +527,14 @@ const Page = () => {
                                     <div key={`live-${fileName}`} className="grid grid-cols-3 items-center text-sm py-2 border-b border-gray-700">
                                         <div className="text-gray-200 truncate">{fileName}</div>
                                         <div className="text-gray-400">—</div>
-                                        <div>{statusBadge(s.state)}</div>
+                                        <div>{statusBadge(s)}</div>
                                     </div>
                                 ))}
                             {rows.length > 0 ? (
                                 rows.map((upload, index) => (
                                     <div
                                         key={`${upload.fileName}-${index}`}
-                                        className="grid grid-cols-3 items-center text-sm py-2 border-b border-gray-700"
+                                        className="grid grid-cols-3 gap-5 items-center text-sm py-2 border-b border-gray-700"
                                     >
                                         <div className="text-gray-200   ">{upload.fileName}</div>
                                         <div className="text-gray-400">{upload.date ? formateDate(upload.date) : "—"}</div>

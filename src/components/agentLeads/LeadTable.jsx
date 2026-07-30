@@ -46,8 +46,7 @@ const LeadTable = ({ leads, setSelectedLead, currentPage, leadsPerPage, followUp
                         <th>Phone</th>
                         <th>Address</th>
                         <th>Intersted Course</th>
-                        <th>Intersted Seminar</th>
-                        <th>Type</th>
+                        {/* <th>Intersted Seminar</th> */}
                         <th>Lead Source</th>
                         <th>Status</th>
                                       <th className="sticky top-0 bg-base-300 z-10">Order No.</th>
@@ -70,9 +69,9 @@ const LeadTable = ({ leads, setSelectedLead, currentPage, leadsPerPage, followUp
                             <td className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.email}</td>
                             <td className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.phone}</td>
                             <td className="max-w-[250px] whitespace-normal break-words">{lead.address}</td>
-                            <td className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.interstedCourse}</td>
-                            <td className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.interstedSeminar}</td>
-                            <td className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.interstedCourseType}</td>
+                            <td className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">     <span className="badge badge-neutral badge-sm">{lead?.courses?.length > 0 ? (lead?.courses?.[0]?.courseName) + ` ${lead?.courses?.length > 1 ? ` + ${lead?.courses?.length - 1}` : " "}` : "" }</span></td>
+                            {/* <td className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.interstedSeminar}</td> */}
+                            {/* <td className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">{lead.interstedCourseType}</td> */}
                             <td>{lead.leadSource}</td>
                             <td>
                                 <span

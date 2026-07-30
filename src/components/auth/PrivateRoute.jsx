@@ -6,21 +6,38 @@ import { AuthContext } from "@/context/AuthContext";
 import useFetch from "@/hooks/useFetch";
 
 export default function PrivateRoute({ children, fallback = null }) {
-  const { user } = useContext(AuthContext);
+  const { user, authLoading } = useContext(AuthContext); // assumes AuthContext exposes a loading flag
 
-   const {data : backendUser , error} = useFetch(`/user/${user?._id}`)
+  const {
+    data: backendUser,
+    error,
+    loading: backendLoading,
+  } = useFetch(user?._id ? `/user/${user._id}` : null); // don't fetch until we have an id
+
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    // Not logged in → send to login with redirect back
-    if (backendUser === null || error?.includes("401")) {
-      const next = encodeURIComponent(pathname || "/");
-      router.replace(`/?next=${next}`);
-    }
-  }, [user, router, pathname]);
+    // Still resolving auth state — don't decide anything yet
+    if (authLoading || backendLoading) return;
 
-  if (!user) return fallback; // or a spinner
+    const next = encodeURIComponent(pathname || "/");
+
+    // No user in context at all → not logged in
+    if (!user?._id) {
+      router.replace(`/?next=${next}`);
+      return;
+    }
+
+    // Token expired / rejected by backend
+    if (error?.includes("401")) {
+      router.replace(`/?next=${next}`);
+      return;
+    }
+  }, [authLoading, backendLoading, user, backendUser, error, router, pathname]);
+
+  // While resolving, or if we've determined there's no valid backend user, show fallback
+  if (authLoading || backendLoading || !backendUser) return fallback;
 
   return children;
 }
