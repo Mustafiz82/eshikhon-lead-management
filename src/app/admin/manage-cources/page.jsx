@@ -50,26 +50,6 @@ export default function ManageCoursePage() {
 
   const { handleDelete } = useDelete(refetch, "course");
 
-  /* ====================================================================
-   * SYNC FEATURE STATES & HANDLER (COMMENTED OUT)
-   * ==================================================================== */
-  // const [syncResult, setSyncResult] = useState(null);
-  // const [showSyncModal, setShowSyncModal] = useState(false);
-  // const [syncing, setSyncing] = useState(false);
-
-  // const handleSync = async () => {
-  //   setSyncing(true);
-  //   try {
-  //     const res = await axiosPublic.get("/course/sync");
-  //     setSyncResult(res.data);
-  //     setSyncing(false);
-  //     refetch();
-  //   } catch (err) {
-  //     setSyncing(false);
-  //     console.log(err);
-  //   }
-  // };
-
   const { user: authUser } = useContext(AuthContext);
 
   useEffect(() => {
@@ -89,12 +69,10 @@ export default function ManageCoursePage() {
     e.preventDefault();
     const form = e.target;
 
-    // Payload constructed with NO price fields
     const payload = {
       name: form.course_name.value.trim(),
       type: courseTypes,
-      /* price: form.price?.value ? Number(form.price.value) : null, */ // 👈 COMMENTED OUT
-      /* regularPrice: form.regularPrice?.value ? Number(form.regularPrice.value) : null, */ // 👈 COMMENTED OUT
+      allowedTypes: courseTypes, // 👈 Send both allowedTypes and type
       code: form?.code?.value ? form.code.value.trim().toUpperCase() : null,
     };
 
@@ -125,13 +103,26 @@ export default function ManageCoursePage() {
     </div>
   );
 
+  // Helper function to extract types from allowedTypes or fallback to type
+  const getRowTypes = (row) => {
+    if (Array.isArray(row?.allowedTypes) && row.allowedTypes.length > 0) {
+      return row.allowedTypes;
+    }
+    if (Array.isArray(row?.type) && row.type.length > 0) {
+      return row.type;
+    }
+    if (row?.type) return [row.type];
+    return [];
+  };
+
   const courseConfig = {
-    header: ["Name", "Type", /* "Regular Price", */ /* "Sell Price", */ "Code", "Action"],
+    header: ["Name", "Type", "Code", "Action"],
     body: [
       "name",
-      (row) => (Array.isArray(row.type) ? row.type.join(", ") : row.type),
-      /* "regularPrice", */ // 👈 COMMENTED OUT
-      /* "price", */        // 👈 COMMENTED OUT
+      (row) => {
+        const types = getRowTypes(row);
+        return types.length > 0 ? types.join(", ") : "N/A"; // 👈 Renders allowedTypes correctly
+      },
       "code",
       actionsCell,
     ],
@@ -139,12 +130,8 @@ export default function ManageCoursePage() {
 
   useEffect(() => {
     if (editCourse) {
-      const types = Array.isArray(editCourse?.type)
-        ? editCourse.type
-        : editCourse?.type
-        ? [editCourse.type]
-        : ["Online"];
-      setCourseTypes(types);
+      const types = getRowTypes(editCourse);
+      setCourseTypes(types.length > 0 ? types : ["Online"]);
     } else {
       setCourseTypes(["Online"]);
     }
@@ -157,21 +144,23 @@ export default function ManageCoursePage() {
     return () => clearTimeout(delay);
   }, [searchText]);
 
-  const list = Array.isArray(courses?.items) ? courses.items : courses;
+  const list = Array.isArray(courses?.items)
+    ? courses.items
+    : Array.isArray(courses)
+    ? courses
+    : [];
+
+  const totalCourses = courses?.total ?? list.length;
 
   const online =
-    list?.filter((i) =>
-      Array.isArray(i?.type)
-        ? i.type.some((t) => t.toLowerCase() === "online")
-        : i?.type?.toLowerCase() === "online"
-    )?.length || 0;
+    list.filter((i) =>
+      getRowTypes(i).some((t) => t.toLowerCase() === "online")
+    ).length || 0;
 
   const offline =
-    list?.filter((i) =>
-      Array.isArray(i?.type)
-        ? i.type.some((t) => t.toLowerCase() === "offline")
-        : i?.type?.toLowerCase() === "offline"
-    )?.length || 0;
+    list.filter((i) =>
+      getRowTypes(i).some((t) => t.toLowerCase() === "offline")
+    ).length || 0;
 
   return (
     <div className="flex min-h-[calc(100vh-200px)] lg:h-screen overflow-hidden">
@@ -191,7 +180,7 @@ export default function ManageCoursePage() {
               <div className="hidden lg:block">
                 <p className="text-sm font-medium text-gray-400">
                   Total courses:{" "}
-                  <span className="text-white">{courses?.length}</span>
+                  <span className="text-white">{totalCourses}</span>
                   <span className="mx-2 text-gray-700">|</span>
                   <span className="text-blue-400">{online}</span> Online
                   <span className="mx-2 text-gray-600">•</span>
@@ -324,37 +313,6 @@ export default function ManageCoursePage() {
                     }}
                   />
                 </div>
-
-                {/* 🔹 ALL PRICE INPUTS COMMENTED OUT */}
-                {/*
-                <input
-                  type="number"
-                  name="price"
-                  placeholder="Price (৳)"
-                  defaultValue={editCourse?.price ?? ""}
-                  key={editCourse ? `price-${editCourse._id}` : "new-price"}
-                  className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
-                  disabled={isSubmitting}
-                  min={0}
-                  step="1"
-                />
-
-                <input
-                  type="number"
-                  name="regularPrice"
-                  placeholder="Regular Price (৳)"
-                  defaultValue={editCourse?.regularPrice ?? ""}
-                  key={
-                    editCourse
-                      ? `regularPrice-${editCourse._id}`
-                      : "new-reg-price"
-                  }
-                  className="input bg-gray-900 input-bordered w-full focus:outline-0 focus:border-blue-500"
-                  disabled={isSubmitting}
-                  min={0}
-                  step="1"
-                />
-                */}
 
                 <input
                   type="text"

@@ -2930,11 +2930,17 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
     const handleSaveChanges = async () => {
         setSaving(true);
-        console.log(modelStatus)
+        console.log(modelStatus);
 
         if (!selectedCourses || selectedCourses.length === 0) {
             setSaving(false);
             return setError("Please select at least one course");
+        }
+
+        // 🔹 CHECK 1: Prevent changing "Enrolled with Other Number" -> "Enrolled"
+        if (selectedLead?.leadStatus === "Enrolled with Other Number" && modelStatus === "Enrolled" && user?.role === "user") {
+            setSaving(false);
+            return setError("You cannot change the status of this lead from 'Enrolled with Other Number' to 'Enrolled'.");
         }
 
         if (orderNumber) {
@@ -2945,18 +2951,24 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
             if (orderStatus === "on-hold") {
                 setSaving(false);
-                return setError("On Hold Orders can't be marked as Enrolled ");
+                return setError("On Hold Orders can't be marked as Enrolled");
             }
 
+            // 🔹 CHECK 2: If order number is present but order details were not fetched (didn't press Enter)
+            if (!customerPhone && modelStatus === "Enrolled" && user?.role === "user") {
+                setSaving(false);
+                return setError("Please press Enter inside the Order Number box to verify the order before marking as Enrolled.");
+            }
+
+            // 🔹 CHECK 3: Standard phone mismatch check (if order details were fetched)
             if (
                 customerPhone &&
                 formatForWhatsApp(customerPhone) !== formatForWhatsApp(selectedLead?.phone) &&
                 modelStatus?.trim().toLowerCase() !== "enrolled with other number" &&
-                user?.role == "user"
+                user?.role === "user"
             ) {
-              
                 setSaving(false);
-                return setError("The order number must match the phone number associated with this lead ");
+                return setError("The order number must match the phone number associated with this lead.");
             } else {
                 setError("");
             }
@@ -2971,7 +2983,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             if (Number(item.newPayment) > 0) {
                 finalPaid += Number(item.newPayment);
                 courseHistory.push({
-                    date: new Date(),
+                    date: item.newPaymentDate ? new Date(item.newPaymentDate) : new Date(),
                     paidAmount: Number(item.newPayment),
                 });
             }
@@ -2991,6 +3003,9 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                 totalDue: finalDue,
                 history: courseHistory,
                 ...(modelStatus === "Enrolled" && !existingCourse?.enrolledAt ? { enrolledAt: Date.now() } : {}),
+                enrolledAt: item.newPaymentDate
+                    ? new Date(item.newPaymentDate)
+                    : existingCourse?.enrolledAt || (modelStatus === "Enrolled" ? Date.now() : null),
             };
         });
 
@@ -3008,7 +3023,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             paidAmount: overallTotalPaid,
             totalPaid: overallTotalPaid,
             totalDue: overallTotalDue,
-            callCount: Number(callCount) || 0, 
+            callCount: Number(callCount) || 0,
             refundAmount: Number(refundAmount) || 0,
             followUpDate: followUpDate,
             firstContacted: firstContactedDate ? new Date(firstContactedDate) : null,
@@ -3064,6 +3079,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                     totalDue: Number(c.totalDue || 0),
                     history: c.history || [],
                     newPayment: 0,
+                    newPaymentDate: "",
                 })) || [];
 
             setSelectedCourses(initialCourses);
@@ -3141,6 +3157,11 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
     const handlePaymentInputChange = (courseName, val) => {
         setSelectedCourses((prev) => prev.map((c) => (c.courseName === courseName ? { ...c, newPayment: val } : c)));
+    };
+
+    // ADD THIS HANDLER FUNCTION:
+    const handlePaymentDateChange = (courseName, dateVal) => {
+        setSelectedCourses((prev) => prev.map((c) => (c.courseName === courseName ? { ...c, newPaymentDate: dateVal } : c)));
     };
 
     const applyCoursePayment = (courseName) => {
@@ -3241,36 +3262,36 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                 <div className="font-medium truncate max-w-[160px]" title={selectedLead.createdBy}>
                                     {selectedLead.createdBy || "N/A"}
                                 </div>
-                           
-                                <div className="text-white/50 flex items-center">Call Count</div>
-<div className="font-medium flex items-center justify-between">
-    <div className="flex items-center gap-1.5">
-        <span>x{callCount}</span>
-        {Number(callCount) !== Number(selectedLead?.callCount || 0) && (
-            <span className="text-yellow-500 font-semibold text-xs">(Unsaved)</span>
-        )}
-    </div>
 
-    {/* 🔹 Decrement (-) & Increment (+) Buttons */}
-    <div className="flex items-center gap-1">
-        <button
-            type="button"
-            onClick={() => setCallCount((prev) => Math.max(0, Number(prev || 0) - 1))}
-            className="w-5 h-5 flex items-center justify-center bg-gray-800 hover:bg-gray-700 text-white rounded border border-gray-600 text-xs font-bold transition-colors"
-            title="Decrease Call Count"
-        >
-            -
-        </button>
-        <button
-            type="button"
-            onClick={() => setCallCount((prev) => Number(prev || 0) + 1)}
-            className="w-5 h-5 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-bold transition-colors"
-            title="Increase Call Count"
-        >
-            +
-        </button>
-    </div>
-</div>
+                                <div className="text-white/50 flex items-center">Call Count</div>
+                                <div className="font-medium flex items-center justify-between">
+                                    <div className="flex items-center gap-1.5">
+                                        <span>x{callCount}</span>
+                                        {Number(callCount) !== Number(selectedLead?.callCount || 0) && (
+                                            <span className="text-yellow-500 font-semibold text-xs">(Unsaved)</span>
+                                        )}
+                                    </div>
+
+                                    {/* 🔹 Decrement (-) & Increment (+) Buttons */}
+                                    <div className="flex items-center gap-1">
+                                        <button
+                                            type="button"
+                                            onClick={() => setCallCount((prev) => Math.max(0, Number(prev || 0) - 1))}
+                                            className="w-5 h-5 flex items-center justify-center bg-gray-800 hover:bg-gray-700 text-white rounded border border-gray-600 text-xs font-bold transition-colors"
+                                            title="Decrease Call Count"
+                                        >
+                                            -
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setCallCount((prev) => Number(prev || 0) + 1)}
+                                            className="w-5 h-5 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-bold transition-colors"
+                                            title="Increase Call Count"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
                                 <div className="text-white/50 flex items-center">Lead Source</div>
                                 <div className="flex w-full items-center justify-between font-medium">
                                     {leadSource || "N/A"}
@@ -3339,17 +3360,24 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                     <div className="flex items-center justify-between gap-1  w-full">
                                         <span>{firstContactedDate ? formateDate(firstContactedDate) : "N/A"}</span>
                                         {firstContactedDate !== initialFirstContact && (
-                                            <span title="Unsaved" className="text-yellow-500 border-2 border-yellow-500 rounded-full p-0.5  font-semibold text-xs"><FaInfo/></span>
+                                            <span
+                                                title="Unsaved"
+                                                className="text-yellow-500 border-2 border-yellow-500 rounded-full p-0.5  font-semibold text-xs"
+                                            >
+                                                <FaInfo />
+                                            </span>
                                         )}
                                     </div>
 
                                     {/* Edit Icon triggers hidden date input calendar directly */}
-                                    <div
-                                        className="cursor-pointer text-blue-400 hover:text-white ml-2"
-                                        onClick={() => openDatePicker(firstContactedRef)}
-                                    >
-                                        <FaEdit />
-                                    </div>
+                                    {!initialFirstContact && (
+                                        <div
+                                            className="cursor-pointer text-blue-400 hover:text-white ml-2"
+                                            onClick={() => openDatePicker(firstContactedRef)}
+                                        >
+                                            <FaEdit />
+                                        </div>
+                                    )}
 
                                     {/* Hidden Date Input */}
                                     <input
@@ -3367,7 +3395,12 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                     <div className="flex items-center justify-between gap-1  w-full">
                                         <span>{lastContactedDate ? formateDate(lastContactedDate) : "N/A"}</span>
                                         {lastContactedDate !== initialLastContact && (
-                                            <span title="Unsaved" className="text-yellow-500 border-2 border-yellow-500 rounded-full p-0.5  font-semibold text-xs"><FaInfo/></span>
+                                            <span
+                                                title="Unsaved"
+                                                className="text-yellow-500 border-2 border-yellow-500 rounded-full p-0.5  font-semibold text-xs"
+                                            >
+                                                <FaInfo />
+                                            </span>
                                         )}
                                     </div>
 
@@ -3512,24 +3545,38 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                                 </div>
 
                                                 {c.courseType === "Offline" && (
-                                                    <div className="pt-1.5 border-t border-gray-700/60 flex items-center justify-between gap-2">
-                                                        <label className="text-[11px] text-yellow-400 font-medium whitespace-nowrap">
-                                                            + Add Payment (৳):
-                                                        </label>
-                                                        <input
-                                                            type="number"
-                                                            value={c.newPayment || ""}
-                                                            onChange={(e) => handlePaymentInputChange(c.courseName, e.target.value)}
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === "Enter") {
-                                                                    e.preventDefault();
-                                                                    applyCoursePayment(c.courseName);
-                                                                }
-                                                            }}
-                                                            onBlur={() => applyCoursePayment(c.courseName)}
-                                                            placeholder="0"
-                                                            className="input input-xs bg-gray-900 border-yellow-500/50 text-yellow-300 font-bold w-24 text-right focus:outline-none focus:border-yellow-500 rounded"
-                                                        />
+                                                    <div className="pt-2 border-t border-gray-700/60 space-y-2">
+                                                        <div className="flex items-center justify-between gap-2">
+                                                            <label className="text-[11px] text-yellow-400 font-medium whitespace-nowrap">
+                                                                Enrolled / Payment Date:
+                                                            </label>
+                                                            <input
+                                                                type="date"
+                                                                value={c.newPaymentDate || ""}
+                                                                onChange={(e) => handlePaymentDateChange(c.courseName, e.target.value)}
+                                                                className="input input-xs bg-gray-900 border-gray-600 text-white rounded focus:outline-none focus:border-yellow-500 text-xs"
+                                                            />
+                                                        </div>
+
+                                                        <div className="flex items-center justify-between gap-2">
+                                                            <label className="text-[11px] text-yellow-400 font-medium whitespace-nowrap">
+                                                                + Add Payment (৳):
+                                                            </label>
+                                                            <input
+                                                                type="number"
+                                                                value={c.newPayment || ""}
+                                                                onChange={(e) => handlePaymentInputChange(c.courseName, e.target.value)}
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === "Enter") {
+                                                                        e.preventDefault();
+                                                                        applyCoursePayment(c.courseName);
+                                                                    }
+                                                                }}
+                                                                onBlur={() => applyCoursePayment(c.courseName)}
+                                                                placeholder="0"
+                                                                className="input input-xs bg-gray-900 border-yellow-500/50 text-yellow-300 font-bold w-24 text-right focus:outline-none focus:border-yellow-500 rounded"
+                                                            />
+                                                        </div>
                                                     </div>
                                                 )}
                                             </div>

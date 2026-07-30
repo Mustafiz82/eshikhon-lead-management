@@ -90,7 +90,7 @@ const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPa
                                     </td>
                                     <td className="pl-5!">
                                         {" "}
-                                        <span className="relative   ">
+                                        <span className="relative text-nowrap   ">
                                             {lead?.isLocked && (
                                                 <BiSolidLockAlt
                                                     title="Agent will not be able modify these lease leads"
@@ -100,10 +100,10 @@ const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPa
                                             {formateDate(lead?.createdAt)}
                                         </span>{" "}
                                     </td>
-                                    <td title={lead.name} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">
+                                    <td title={lead.name} className="max-w-[200px] line-clamp-1 whitespace-nowrap overflow-hidden text-ellipsis">
                                         {lead.name}
                                     </td>
-                                    <td title={lead.email} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">
+                                    <td title={lead.email} className="max-w-[200px] line whitespace-nowrap overflow-hidden text-ellipsis">
                                         {lead.email}
                                     </td>
                                     <td title={lead.phone} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">
@@ -118,7 +118,7 @@ const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPa
                                     </td>
                                     <td>
                                         <span
-                                            className={`badge badge-sm ${
+                                            className={`badge badge-sm line-clamp-1 ${
                                                 lead.assignStatus ? "badge-success text-white" : "badge-warning text-white text-nowrap"
                                             }`}
                                         >

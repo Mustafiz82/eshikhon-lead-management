@@ -272,6 +272,7 @@ const Page = () => {
                 assignTo: parsedAssignTo,
                 assignStatus: parsedAssignTo !== "N/A" ? true : false, // Sets true if assignTo is provided
                 assignDate: parsedAssignDate,
+                
             };
         });
 
@@ -336,6 +337,7 @@ const Page = () => {
                             // 🔹 NEW: Calculate top-level sum of totalPaid and totalDue for the lead
                             lead.totalPaid = lead.courses.reduce((sum, c) => sum + (Number(c.totalPaid) || 0), 0);
                             lead.totalDue = lead.courses.reduce((sum, c) => sum + (Number(c.totalDue) || 0), 0);
+                            lead.enrolledAt = orderData.orderCompletionDate ? new Date(orderData.orderCompletionDate) : null;
                         }
                     }
                 } catch (error) {
