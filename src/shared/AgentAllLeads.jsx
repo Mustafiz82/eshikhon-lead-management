@@ -164,7 +164,7 @@ const AgentAllLeads = () => {
             if (e.key === "Escape" && isSearchModalOpen) {
                 setSearchModalOpen(false);
                 setSearchText("");
-            }
+            } 
         };
 
         window.addEventListener("keydown", handleKeyDown);
@@ -423,7 +423,7 @@ const AgentAllLeads = () => {
                                     <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={goToPage} />
                                 </div>
 
-                                <button onClick={() => handleLeadExport(course, leads)} className="btn btn-primary btn-sm bg-blue-600">
+                                <button onClick={() => handleLeadExport(leads)} className="btn btn-primary btn-sm bg-blue-600">
                                     <FaFileExport /> Export selected
                                 </button>
                             </div>
