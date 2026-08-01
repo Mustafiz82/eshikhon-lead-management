@@ -50,7 +50,7 @@ const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPa
                             <th className="sticky top-0 bg-base-300 z-10">Name</th>
                             <th className="sticky top-0 bg-base-300 z-10">Email</th>
                             <th className="sticky top-0 bg-base-300 z-10">Number</th>
-                            <th className="sticky top-0 bg-base-300 z-10">Address</th>
+                            {/* <th className="sticky top-0 bg-base-300 z-10">Address</th> */}
                             <th className="sticky top-0 bg-base-300 z-10">Internsted Course </th>
                             <th className="sticky top-0 bg-base-300 z-10">Assign To</th>
                             <th className="sticky top-0 bg-base-300 z-10">Lead Status</th>
@@ -110,9 +110,9 @@ const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPa
                                         {" "}
                                         <span className="text-nowrap">{lead.phone}</span>
                                     </td>
-                                    <td title={lead.address} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">
+                                    {/* <td title={lead.address} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">
                                         {lead.address}
-                                    </td>
+                                    </td> */}
                                     <td>
                                         <span className="badge badge-neutral badge-sm">{lead?.courses?.length > 0 ? (lead?.courses?.[0]?.courseName) + ` ${lead?.courses?.length > 1 ? ` + ${lead?.courses?.length - 1}` : " "}` : "" }</span>
                                     </td>
