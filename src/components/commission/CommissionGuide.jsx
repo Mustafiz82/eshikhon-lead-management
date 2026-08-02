@@ -1,239 +1,171 @@
-import React from 'react';
+"use client";
+import React, { useState } from "react";
+
+const commissionSlabs = [
+    { min: 50, max: 99, range: "৳50,000 – ৳99,999", rate: 1000, bonus: 0 },
+    { min: 100, max: 199, range: "৳100,000 – ৳199,999", rate: 1100, bonus: 500 },
+    { min: 200, max: 299, range: "৳200,000 – ৳299,999", rate: 1200, bonus: 1500 },
+    { min: 300, max: 399, range: "৳300,000 – ৳399,999", rate: 1300, bonus: 3000 },
+    { min: 400, max: 499, range: "৳400,000 – ৳499,999", rate: 1400, bonus: 4000 },
+    { min: 500, max: 599, range: "৳500,000 – ৳599,999", rate: 1500, bonus: 6000 },
+    { min: 600, max: 699, range: "৳600,000 – ৳699,999", rate: 1600, bonus: 6000 },
+    { min: 700, max: 799, range: "৳700,000 – ৳799,999", rate: 1700, bonus: 10000 },
+    { min: 800, max: 899, range: "৳800,000 – ৳899,999", rate: 1800, bonus: 10000 },
+    { min: 900, max: 999, range: "৳900,000 – ৳999,999", rate: 1900, bonus: 10000 },
+    { min: 1000, max: 1099, range: "৳1,000,000 – ৳1,099,999", rate: 2000, bonus: 15000 },
+    { min: 1100, max: 1199, range: "৳1,100,000 – ৳1,199,999", rate: 2100, bonus: 15000 },
+    { min: 1200, max: 1299, range: "৳1,200,000 – ৳1,299,999", rate: 2200, bonus: 15000 },
+    { min: 1300, max: 1399, range: "৳1,300,000 – ৳1,399,999", rate: 2300, bonus: 15000 },
+    { min: 1400, max: 1499, range: "৳1,400,000 – ৳1,499,999", rate: 2400, bonus: 15000 },
+    { min: 1500, max: 1599, range: "৳1,500,000 – ৳1,599,999", rate: 2500, bonus: 25000 },
+    { min: 1600, max: 1699, range: "৳1,600,000 – ৳1,699,999", rate: 2600, bonus: 25000 },
+    { min: 1700, max: 1799, range: "৳1,700,000 – ৳1,799,999", rate: 2700, bonus: 25000 },
+    { min: 1800, max: 1899, range: "৳1,800,000 – ৳1,899,999", rate: 2800, bonus: 25000 },
+    { min: 1900, max: 1999, range: "৳1,900,000 – ৳1,999,999", rate: 2900, bonus: 25000 },
+    { min: 2000, max: Infinity, range: "৳2,000,000+", rate: 2900, bonus: 40000 },
+];
 
 const CommissionGuide = () => {
+    const [inputSales, setInputSales] = useState(350000);
+
+    const calculateCommission = (sales) => {
+        const numSales = Number(sales) || 0;
+        if (numSales < 50000) {
+            return { base: 0, bonus: 0, total: 0, rate: 0 };
+        }
+
+        const salesInK = numSales / 1000;
+        const matchedSlab = commissionSlabs.find(
+            (s) => salesInK >= s.min && salesInK <= s.max
+        ) || commissionSlabs[commissionSlabs.length - 1];
+
+        const rate = matchedSlab.rate;
+        const base = Math.round(numSales * (rate / 100000));
+        const bonus = matchedSlab.bonus;
+        const total = base + bonus;
+
+        return { base, bonus, total, rate };
+    };
+
+    const currentResult = calculateCommission(inputSales);
+
     return (
-        <div className="min-h-screen bg-[#1a1d27] text-gray-300 font-sans p-6 md:p-10  selection:bg-blue-600 selection:text-white">
-            {/* Page Header */}
-            <div className='max-w-screen-xl mx-auto'>
-                <div className="mb-8 border-b border-gray-700 pb-5">
-                    <h1 className="text-3xl font-bold text-white mb-2">Commission Calculation Guide</h1>
+        <div className="min-h-screen bg-[#1a1d27] text-gray-300 font-sans p-6 md:p-10 selection:bg-blue-600 selection:text-white">
+            <div className="max-w-screen-xl mx-auto space-y-8">
+                
+                {/* Header */}
+                <div className="border-b border-gray-700 pb-5">
+                    <h1 className="text-3xl font-bold text-white mb-2">Commission & Bonus Chart</h1>
                     <p className="text-gray-400 text-sm">
-                        A complete breakdown of how the monthly total commission is calculated based on sales, target completions, and self-generated leads.
+                        Easily check your base commission rates and extra cash bonuses based on your total monthly sales.
                     </p>
                 </div>
 
-                {/* Main Content Layout - Full Width */}
-                <div className="space-y-8 w-full">
-
-                    {/* Introduction Panel */}
-                    <div className="bg-[#222736] border border-gray-700 rounded-lg p-6 shadow-sm">
-                        <h2 className="text-xl font-semibold text-white mb-3 flex items-center">
-                            <span className="bg-blue-600 text-white w-8 h-8 flex items-center justify-center rounded-md mr-3 text-sm font-bold">
-                                1
-                            </span>
-                            How is the Commission Calculated?
-                        </h2>
-                        <p className="text-sm leading-relaxed mb-4">
-                            The final monthly commission is a combination of two separate parts:
-                        </p>
-                        <div className="flex flex-col md:flex-row gap-4">
-                            <div className="flex-1 bg-[#1a1d27] p-4 rounded border border-gray-700">
-                                <span className="block text-blue-500 font-bold mb-1">Part A: Self-Created Commission</span>
-                                <p className="text-xs text-gray-400">Earned from leads that are directly created and successfully enrolled by the agent.</p>
-                            </div>
-                            <div className="flex items-center justify-center text-gray-500 font-bold text-xl">+</div>
-                            <div className="flex-1 bg-[#1a1d27] p-4 rounded border border-gray-700">
-                                <span className="block text-green-500 font-bold mb-1">Part B: Assigned Commission</span>
-                                <p className="text-xs text-gray-400">Earned from system-assigned leads, based on achieving the required target completion rate.</p>
-                            </div>
-                        </div>
-                        <p className="mt-4 text-xs text-gray-400 italic">
-                            * Note: All calculations are strictly based on the payments successfully collected within the selected month.
-                        </p>
+                {/* Interactive Live Calculator */}
+                <div className="bg-[#222736] border border-blue-600/50 rounded-xl p-6 shadow-lg relative overflow-hidden">
+                    <div className="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
+                        Live Estimator
                     </div>
 
-                    {/* Self Created Commission Section */}
-                    <div className="bg-[#222736] border border-gray-700 rounded-lg p-6 shadow-sm">
-                        <h2 className="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">
-                            Part A: Self-Created Lead Commission
-                        </h2>
-                        <p className="text-sm mb-4">
-                            For self-created leads, the commission rate increases based on the <strong>total number of those leads that successfully enroll</strong> during the month. The percentage is applied to the total sales (paid amount) generated from those specific leads.
-                        </p>
-
-                        <div className="overflow-x-auto rounded border border-gray-700">
-                            <table className="w-full text-left text-sm whitespace-nowrap">
-                                <thead className="bg-[#2a3042] text-white">
-                                    <tr>
-                                        <th className="px-6 py-3 border-b border-gray-700">Total Enrolled Leads (Self-Created)</th>
-                                        <th className="px-6 py-3 border-b border-gray-700">Commission Percentage</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-700">
-                                    <tr className="hover:bg-[#2a3042] transition-colors">
-                                        <td className="px-6 py-4">1 to 50 Leads</td>
-                                        <td className="px-6 py-4 text-blue-400 font-medium">0.50%</td>
-                                    </tr>
-                                    <tr className="hover:bg-[#2a3042] transition-colors">
-                                        <td className="px-6 py-4">51 to 100 Leads</td>
-                                        <td className="px-6 py-4 text-blue-400 font-medium">0.75%</td>
-                                    </tr>
-                                    <tr className="hover:bg-[#2a3042] transition-colors">
-                                        <td className="px-6 py-4">101 to 200 Leads</td>
-                                        <td className="px-6 py-4 text-blue-400 font-medium">1.00%</td>
-                                    </tr>
-                                    <tr className="hover:bg-[#2a3042] transition-colors">
-                                        <td className="px-6 py-4">More than 200 Leads</td>
-                                        <td className="px-6 py-4 text-blue-400 font-medium">1.50%</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    {/* Assigned Commission Section */}
-                    <div className="bg-[#222736] border border-gray-700 rounded-lg p-6 shadow-sm">
-                        <h2 className="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2">
-                            Part B: Assigned Lead Commission
-                        </h2>
-                        <p className="text-sm mb-6">
-                            For leads assigned by the system or administration, the commission depends entirely on the <strong>Target Completion Rate</strong>. This requires determining a base target amount first.
-                        </p>
-
-                        <div className="flex flex-col lg:flex-row gap-6 mb-8">
-                            {/* Step 1: Base Target Amount */}
-                            <div className="flex-1 bg-[#1a1d27] rounded border border-blue-900/50 p-5">
-                                <h3 className="text-white text-sm font-semibold mb-3 flex items-center">
-                                    <span className=" w-fit  text-blue-400 p-1 h-6 flex items-center justify-center rounded-full  text-xs font-bold">
-                                        Step 1 :</span>Calculating the Target Amount
-                                </h3>
-                                <p className="text-xs text-gray-400 mb-3 leading-relaxed">
-                                    Every assigned lead is associated with an interested or enrolled course, which has a specific base price. The system calculates the total sum of the course prices for all enrolled assigned leads. The <strong>Target Amount</strong> is exactly 10% of this total sum.
-                                </p>
-                                <code className="block bg-[#11131a] p-3 rounded text-blue-400 text-xs text-center border border-gray-800 font-mono mt-auto">
-                                    Target Amount = (Sum of Assigned Course Prices) × 10%
-                                </code>
-                            </div>
-
-                            {/* Step 2: Target Completion */}
-                            <div className="flex-1 bg-[#1a1d27] rounded border border-green-900/50 p-5">
-                                <h3 className="text-white text-sm font-semibold mb-3 flex items-center">
-
-                                    <span className=" w-fit  text-green-400 p-1 h-6 flex items-center justify-center rounded-full  text-xs font-bold">
-                                        Step 2 :</span> Calculating Target Completion
-                                </h3>
-                                <p className="text-xs text-gray-400 mb-3 leading-relaxed">
-                                    Once the Target Amount is established, the completion rate is determined by comparing the actual <strong>Assigned Sales</strong> (payments successfully collected from assigned leads) against the calculated Target Amount.
-                                </p>
-                                <code className="block bg-[#11131a] p-3 rounded text-green-400 text-xs text-center border border-gray-800 font-mono mt-auto">
-                                    Completion Rate = (Total Assigned Sales / Target Amount) × 100
-                                </code>
-                            </div>
-                        </div>
-
-                        <h3 className="text-white text-sm font-semibold mb-3">Commission Percentage Tiers</h3>
-                        <p className="text-xs text-gray-400 mb-4">
-                            Based on the calculated Completion Rate (Step 2), a percentage is selected and multiplied by the Total Assigned Sales to find the final Assigned Commission.
-                        </p>
-
-                        <div className="overflow-x-auto rounded border border-gray-700">
-                            <table className="w-full text-left text-sm whitespace-nowrap">
-                                <thead className="bg-[#2a3042] text-white">
-                                    <tr>
-                                        <th className="px-6 py-3 border-b border-gray-700">Target Completion Rate</th>
-                                        <th className="px-6 py-3 border-b border-gray-700">Commission Percentage</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-700">
-                                    <tr className="hover:bg-[#2a3042] transition-colors">
-                                        <td className="px-6 py-4">Less than 40%</td>
-                                        <td className="px-6 py-4 text-gray-500 font-medium">0% (No commission)</td>
-                                    </tr>
-                                    <tr className="hover:bg-[#2a3042] transition-colors">
-                                        <td className="px-6 py-4">40% to 60%</td>
-                                        <td className="px-6 py-4 text-green-400 font-medium">1.00%</td>
-                                    </tr>
-                                    <tr className="hover:bg-[#2a3042] transition-colors">
-                                        <td className="px-6 py-4">61% to 80%</td>
-                                        <td className="px-6 py-4 text-green-400 font-medium">1.25%</td>
-                                    </tr>
-                                    <tr className="hover:bg-[#2a3042] transition-colors">
-                                        <td className="px-6 py-4">81% to 90%</td>
-                                        <td className="px-6 py-4 text-green-400 font-medium">1.50%</td>
-                                    </tr>
-                                    <tr className="hover:bg-[#2a3042] transition-colors">
-                                        <td className="px-6 py-4">91% to 100%</td>
-                                        <td className="px-6 py-4 text-green-400 font-medium">1.75%</td>
-                                    </tr>
-                                    <tr className="hover:bg-[#2a3042] transition-colors">
-                                        <td className="px-6 py-4">Over 100%</td>
-                                        <td className="px-6 py-4 text-green-400 font-medium">2.00%</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    {/* Final Formula */}
-                    <div className="bg-gradient-to-r from-blue-900/40 to-[#222736] border border-blue-800/50 rounded-lg p-6 text-center">
-                        <h2 className="text-xl font-bold text-white mb-2">Total Monthly Commission</h2>
-                        <p className="text-sm text-gray-300">
-                            At the end of the month, the total payout is calculated precisely as:
-                        </p>
-                        <div className="mt-4 text-lg md:text-2xl font-mono text-white tracking-wider flex flex-wrap items-center justify-center gap-3">
-                            <span className="text-blue-400 bg-blue-900/30 px-4 py-2 rounded border border-blue-800/50">Self-Created Commission</span>
-                            <span>+</span>
-                            <span className="text-green-400 bg-green-900/30 px-4 py-2 rounded border border-green-800/50">Assigned Commission</span>
-                        </div>
-                    </div>
-
-                </div>
-
-
-
-                {/* Comprehensive Example Section */}
-                <div className="bg-[#222736] mt-10 border border-gray-700 rounded-lg p-6 shadow-sm">
-                    <h2 className="text-xl font-semibold text-white mb-4 border-b border-gray-700 pb-2 flex items-center">
-                        <svg className="w-5 h-5 mr-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                        </svg>
-                        Practical Calculation Example
+                    <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <span className="text-xl">🧮</span> Test Your Earnings
                     </h2>
-                    <p className="text-sm text-gray-400 mb-6">
-                        Below is a practical scenario using dashboard numbers to demonstrate how the formulas are applied.
-                    </p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        {/* Example: Part A */}
-                        <div className="bg-[#1a1d27] rounded border border-gray-700 p-5">
-                            <h3 className="text-white text-sm font-semibold mb-3 text-blue-400">Scenario A: Self-Created Leads</h3>
-                            <ul className="text-sm text-gray-300 space-y-2 mb-4">
-                                <li><span className="text-gray-500">Total Enrolled Leads:</span> 55 Leads</li>
-                                <li><span className="text-gray-500">Total Sales Collected:</span> ৳50,000</li>
-                            </ul>
-                            <div className="bg-[#11131a] p-3 rounded text-xs border border-gray-800 space-y-2">
-                                <p><strong className="text-gray-400">1. Identify Tier:</strong> 55 leads falls into the 51-100 tier (0.75%).</p>
-                                <p><strong className="text-gray-400">2. Calculate:</strong> ৳50,000 × 0.75% = <strong className="text-white text-sm inline-block ml-1">৳375.00</strong></p>
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                        {/* Input Box & Quick Presets */}
+                        <div className="lg:col-span-5 space-y-3">
+                            <label className="text-xs text-gray-400 font-medium block">
+                                Enter Expected Monthly Sales (৳):
+                            </label>
+                            <input
+                                type="number"
+                                value={inputSales}
+                                onChange={(e) => setInputSales(e.target.value)}
+                                className="w-full bg-[#1a1d27] border border-gray-600 rounded-lg px-4 py-3 text-white text-xl font-bold font-mono focus:outline-none focus:border-blue-500"
+                                placeholder="e.g. 350000"
+                            />
+                            <div className="flex flex-wrap gap-2 pt-1">
+                                {[100000, 350000, 500000, 1000000, 2000000].map((preset) => (
+                                    <button
+                                        key={preset}
+                                        onClick={() => setInputSales(preset)}
+                                        className="text-xs bg-[#1a1d27] hover:bg-blue-600 hover:text-white border border-gray-700 text-gray-300 px-2.5 py-1.5 rounded transition-colors"
+                                    >
+                                        {(preset / 1000)}K
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
-                        {/* Example: Part B */}
-                        <div className="bg-[#1a1d27] rounded border border-gray-700 p-5">
-                            <h3 className="text-white text-sm font-semibold mb-3 text-green-400">Scenario B: Assigned Leads</h3>
-                            <ul className="text-sm text-gray-300 space-y-2 mb-4">
-                                <li><span className="text-gray-500">Total Target Amount:</span> ৳246,295 <span className="text-[10px] text-gray-600">(10% of total assigned course prices)</span></li>
-                                <li><span className="text-gray-500">Total Sales Collected:</span> ৳212,169</li>
-                            </ul>
-                            <div className="bg-[#11131a] p-3 rounded text-xs border border-gray-800 space-y-2">
-                                <p><strong className="text-gray-400">1. Completion Rate:</strong> (৳212,169 / ৳246,295) × 100 = <strong>86%</strong>.</p>
-                                <p><strong className="text-gray-400">2. Identify Tier:</strong> 86% falls into the 81% to 90% tier (2.00%).</p>
-                                <p><strong className="text-gray-400">3. Calculate:</strong> ৳212,169 × 2.00% = <strong className="text-white text-sm inline-block ml-1">৳4,243.38</strong></p>
+                        {/* Result Cards */}
+                        <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div className="bg-[#1a1d27] p-4 rounded-lg border border-gray-700">
+                                <span className="text-xs text-gray-400 block mb-1">Base Commission</span>
+                                <span className="text-lg font-bold font-mono text-blue-400">
+                                    ৳{currentResult.base.toLocaleString()}
+                                </span>
                             </div>
-                        </div>
-                    </div>
 
-                    {/* Example: Final Result */}
-                    <div className="bg-gray-800/50 rounded border border-gray-600 p-4 flex flex-col md:flex-row items-center justify-between">
-                        <span className="text-white font-medium mb-2 md:mb-0">Total Final Commission for the Month:</span>
-                        <div className="font-mono text-lg flex items-center space-x-2">
-                            <span className="text-blue-400">৳375.00</span>
-                            <span className="text-gray-500">+</span>
-                            <span className="text-green-400">৳4,243.38</span>
-                            <span className="text-gray-500">=</span>
-                            <span className="text-white font-bold bg-green-600 px-3 py-1 rounded shadow">৳4,618.38</span>
+                            <div className="bg-[#1a1d27] p-4 rounded-lg border border-gray-700">
+                                <span className="text-xs text-gray-400 block mb-1">Extra Bonus</span>
+                                <span className="text-lg font-bold font-mono text-yellow-400">
+                                    +৳{currentResult.bonus.toLocaleString()}
+                                </span>
+                            </div>
+
+                            <div className="bg-gradient-to-br from-green-600 to-green-700 p-4 rounded-lg text-white shadow">
+                                <span className="text-xs opacity-90 block mb-1">Total Payable</span>
+                                <span className="text-xl font-bold font-mono">
+                                    ৳{currentResult.total.toLocaleString()}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                {/* Master Commission Table */}
+                <div className="bg-[#222736] border border-gray-700 rounded-xl p-6 shadow-sm">
+                    <h2 className="text-xl font-bold text-white mb-4 border-b border-gray-700 pb-3 flex items-center gap-2">
+                        <span>📊</span> Complete Sales & Bonus Table
+                    </h2>
+
+                    <div className="overflow-x-auto rounded-lg border border-gray-700">
+                        <table className="w-full text-left text-sm whitespace-nowrap">
+                            <thead className="bg-[#2a3042] text-white font-semibold">
+                                <tr>
+                                    <th className="px-6 py-3.5 border-b border-gray-700">Sales Tier Range</th>
+                                    <th className="px-6 py-3.5 border-b border-gray-700 text-center">Commission Rate / 100K</th>
+                                    <th className="px-6 py-3.5 border-b border-gray-700 text-right">Extra Cash Bonus</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-700/70">
+                                {commissionSlabs.map((slab, idx) => (
+                                    <tr
+                                        key={idx}
+                                        className="hover:bg-[#2a3042]/60 transition-colors"
+                                    >
+                                        <td className="px-6 py-3.5 font-medium text-white">
+                                            {slab.range}
+                                        </td>
+                                        <td className="px-6 py-3.5 text-center font-mono text-blue-400 font-bold">
+                                            ৳{slab.rate.toLocaleString()}
+                                        </td>
+                                        <td className="px-6 py-3.5 text-right font-mono">
+                                            {slab.bonus > 0 ? (
+                                                <span className="inline-block bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 px-3 py-1 rounded font-bold">
+                                                    +৳{slab.bonus.toLocaleString()}
+                                                </span>
+                                            ) : (
+                                                <span className="text-gray-600">—</span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </div>
     );
