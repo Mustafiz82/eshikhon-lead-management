@@ -2810,7 +2810,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         if (e.key === "Enter" || e.type === "click") {
             if (!orderNumber) return;
             try {
-                const res = await axiosPublic.get(`/leads/order/${orderNumber}?email=${user?.email}`);
+                const res = await axiosPublic.get(`/leads/order/${orderNumber}?phone=${user?.phone}&leadId=${selectedLead?._id}`);
 
                 if (res?.data) {
                     setOrderStatus(res?.data?.status);
