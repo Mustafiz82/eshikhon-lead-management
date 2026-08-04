@@ -272,7 +272,6 @@ const Page = () => {
                 assignTo: parsedAssignTo,
                 assignStatus: parsedAssignTo !== "N/A" ? true : false, // Sets true if assignTo is provided
                 assignDate: parsedAssignDate,
-                
             };
         });
 
@@ -300,19 +299,27 @@ const Page = () => {
                     const userEmail = encodeURIComponent(user?.email || "");
 
                     // Call API one at a time
-                    const res = await axiosPublic.get(`/leads/order/${lead.orderNumber}?searchInput=${searchInput}&email=${userEmail}`);
+                    const res = await axiosPublic.get(`/leads/order/${lead.orderNumber}?searchInput=${searchInput}&phone=${user?.phone}&leadId=${lead._id}}`);
                     const orderData = res?.data;
 
                     if (orderData) {
                         // 🔹 FIX 2: Phone Matching & leadStatus Rule
-                        const matchedPhone = formatForWhatsApp(orderData.customerPhone) === formatForWhatsApp(lead.phone);
-                        lead.leadStatus = matchedPhone ? "Enrolled" : "Enrolled with Other Number";
 
-                        // 🔹 FIX 1: Declare completionDate
-                        const completionDate = orderData.orderCompletionDate ? new Date(orderData.orderCompletionDate) : new Date();
+                        const orderStatusClean = String(orderData.status || "").toLowerCase();
+
+                        if (orderStatusClean !== "completed") {
+                            lead.leadStatus = "On hold";
+                        } else {
+                            const matchedPhone = formatForWhatsApp(orderData.customerPhone) === formatForWhatsApp(lead.phone);
+                            lead.leadStatus = matchedPhone ? "Enrolled" : "Enrolled with Other Number";
+                        }
+
+                      
+                     
+                        const completionDate = orderData.orderCompletionDate ? new Date(orderData.orderCompletionDate) : new Date(orderData.ordercreationDate);
 
                         // Map all courses from orderData.courses array
-                        if (Array.isArray(orderData.courses) && orderData.courses.length > 0) {
+                        if (Array.isArray(orderData.courses) && orderData.courses.length > 0) { 
                             lead.courses = orderData.courses.map((courseItem) => {
                                 const matchedCourse = findBestCourse(courseItem.courseName, rawCourses);
                                 const finalCourseName = matchedCourse?.name || courseItem.courseName || courseItem.cleanedName;
@@ -340,6 +347,7 @@ const Page = () => {
                             lead.enrolledAt = orderData.orderCompletionDate ? new Date(orderData.orderCompletionDate) : null;
                         }
                     }
+
                 } catch (error) {
                     console.error(`Failed to fetch order #${lead.orderNumber}:`, error);
                 }

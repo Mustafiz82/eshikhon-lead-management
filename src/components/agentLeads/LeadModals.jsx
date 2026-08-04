@@ -3210,7 +3210,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             <div className="fixed inset-0 !z-99 bg-black/40 flex items-center justify-center">
                 <div
                     className={`bg-base-100 w-full scale-90 rounded-lg shadow-lg p-6 relative grid grid-cols-1 ${
-                        modelStatus == "Enrolled" || modelStatus == "Refunded" || modelStatus == "Enrolled with Other Number"
+                        modelStatus == "Enrolled" || modelStatus == "Refunded" || modelStatus == "Enrolled with Other Number"  || modelStatus == "On hold"
                             ? "md:grid-cols-2 lg:grid-cols-4 max-w-[1350px]"
                             : "md:grid-cols-3 lg:grid-cols-[340px_1fr_1fr] max-w-[1050px]"
                     } gap-4 max-h-[90vh] overflow-y-visible`}
@@ -3487,7 +3487,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                     </div>
 
                     {/* Column 3: Payment Details */}
-                    {(modelStatus == "Enrolled" || modelStatus == "Refunded" || modelStatus == "Enrolled with Other Number") && (
+                    {(modelStatus == "Enrolled" || modelStatus == "Refunded" || modelStatus == "Enrolled with Other Number" || modelStatus == "On hold") && (
                         <div className="space-y-3 flex flex-col text-sm max-h-[550px] overflow-y-auto pr-1">
                             <h3 className="text-lg font-semibold">Payment Details</h3>
 
