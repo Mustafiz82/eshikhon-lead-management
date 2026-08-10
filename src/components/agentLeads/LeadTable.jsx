@@ -28,6 +28,7 @@ export const statusColors = {
 
     // ❌ Negative (Red) - Rejections or bad data
     "Not Interested": "badge-error",
+    "Not Ready - PC/Basic": "badge-error",
     "Wrong Number": "badge-error"
 };
 const LeadTable = ({ leads, setSelectedLead, currentPage, leadsPerPage, followUpActive, missedFUActive , upcActive}) => {

@@ -27,6 +27,7 @@ export const statusOptions = [
     "Will Register",
     "On hold",
     "Already Enrolled",
+    "Not Ready - PC/Basic",
     "Not Interested",
     "Enrolled in Other Institute",
     "Call later",
@@ -94,6 +95,14 @@ const AgentAllLeads = () => {
         },
     ]);
 
+    const [followUpDateRange, setFollowUpDateRange] = useState([
+        {
+            startDate: minDate,
+            endDate: maxDate,
+            key: "selection",
+        },
+    ]);
+
     console.log(upcomingPaymentsDate);
 
     console.log(user.email, "user email");
@@ -110,6 +119,8 @@ const AgentAllLeads = () => {
         assignEndDate: assignDateRange[0].endDate,
         paymentStartDate: paymentDateRange[0].startDate,
         paymentEndDate: paymentDateRange[0].endDate,
+        followupStartDate: followUpDateRange[0].startDate,
+        followupEndDate: followUpDateRange[0].endDate,
         assignTo: !includeGlobalSearch ? (decodedEmail ? decodedEmail : user.email) : "All",
         sort: selectedSortMethod,
         showOnlyFollowups: followUpActive,
@@ -130,7 +141,7 @@ const AgentAllLeads = () => {
     const { data: courseOption } = useFetch(`/leads/intersted-course?agentEmail=${user?.email}`);
 
     const assignedDateOptions = ["All", "DateRange"];
-    const followedOptions = ["All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"];
+    const followedOptions = ["All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year" , "DateRange"];
     const upcOptions = ["None", "All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"];
     const missedFUOption = ["All", "Last 3 Days", "Last 7 Days", "Last 15 Days", "Last 30 Days"];
     const totalPages = Math.ceil(leadsCount?.count / leadsPerPage) || 1;
@@ -141,7 +152,7 @@ const AgentAllLeads = () => {
     const leadCountStart = totalLeads > 0 ? (currentPage - 1) * leadsPerPage + 1 : 0;
     const leadCountEnd = Math.min(currentPage * leadsPerPage, totalLeads);
 
-    const handleSearch = (term) => {
+    const handleSearch = (term) => {    
         setSearchQuery(term);
         setCurrentPage(1);
     };
@@ -164,7 +175,7 @@ const AgentAllLeads = () => {
             if (e.key === "Escape" && isSearchModalOpen) {
                 setSearchModalOpen(false);
                 setSearchText("");
-            } 
+            }
         };
 
         window.addEventListener("keydown", handleKeyDown);
@@ -191,7 +202,10 @@ const AgentAllLeads = () => {
             <div
                 className={`flex ${dropdownOpen ? "h-64 md:h-42" : "h-auto"} bg-gray-900 -mt-2 fixed xl:static z-50 w-full left-0 px-5 xl:px-0 duration-300 flex-wrap justify-between gap-4 mb-4`}
             >
-                <div onClick={() => setDropDownOpen(!dropdownOpen)} className="flex xl:hidden justify-between items-center w-full px-0 cursor-pointer">
+                <div
+                    onClick={() => setDropDownOpen(!dropdownOpen)}
+                    className="flex xl:hidden justify-between items-center w-full px-0 cursor-pointer"
+                >
                     <h2 className="text-lg">Open filter</h2>
                     <IoIosArrowDown />
                 </div>
@@ -334,7 +348,10 @@ const AgentAllLeads = () => {
                             label="Followed Date"
                             options={followedOptions}
                             setCurrentPage={setCurrentPage}
-                            showDatePicker
+                            dateRange={followUpDateRange}
+                            setDateRange={setFollowUpDateRange}
+                            minDate={minDate}
+                            maxDate={maxDate}
                         />
                     )}
 

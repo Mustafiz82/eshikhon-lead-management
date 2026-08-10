@@ -2833,7 +2833,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                     paid > 0
                                         ? [
                                               {
-                                                  date: res.data.orderCompletionDate || new Date(),
+                                                  date: res.data.orderCompletionDate || res.data.ordercreationDate,
                                                   paidAmount: paid,
                                               },
                                           ]
@@ -2930,6 +2930,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
     const handleSaveChanges = async () => {
         setSaving(true);
+        setError("")
         console.log(modelStatus);
 
         if (!selectedCourses || selectedCourses.length === 0) {
@@ -2938,42 +2939,71 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         }
 
         // 🔹 CHECK 1: Prevent changing "Enrolled with Other Number" -> "Enrolled"
-        if (selectedLead?.leadStatus === "Enrolled with Other Number" && modelStatus === "Enrolled" && user?.role === "user") {
-            setSaving(false);
-            return setError("You cannot change the status of this lead from 'Enrolled with Other Number' to 'Enrolled'.");
-        }
+        const normalizedModelStatus = modelStatus?.trim().toLowerCase();
+        const isEnrolled = normalizedModelStatus === "enrolled";
+        const isEnrolledWithOther = normalizedModelStatus === "enrolled with other number";
 
-        if (orderNumber) {
+        // 🔹 CHECK 1: Prevent changing "Enrolled with Other Number" -> "Enrolled"
+        // if (selectedLead?.leadStatus === "Enrolled with Other Number" && isEnrolled && user?.role === "user") {
+        //     setSaving(false);
+        //     return setError("You cannot change the status of this lead from 'Enrolled with Other Number' to 'Enrolled'.");
+        // }
+
+        // 🔹 USER-SPECIFIC VALIDATIONS
+        if (user?.role === "user") {
             if (error) {
                 setSaving(false);
                 return;
             }
 
-            if (orderStatus === "on-hold") {
-                setSaving(false);
-                return setError("On Hold Orders can't be marked as Enrolled");
-            }
+            // Order checks only apply when trying to ENROLL the lead
+            if (isEnrolled || isEnrolledWithOther) {
+                // 1. Order number must be entered
+                if (!orderNumber) {
+                    setSaving(false);
+                    return setError("An Order Number is required to enroll this lead.");
+                }
 
-            // 🔹 CHECK 2: If order number is present but order details were not fetched (didn't press Enter)
-            if (!customerPhone && modelStatus === "Enrolled" && user?.role === "user") {
-                setSaving(false);
-                return setError("Please press Enter inside the Order Number box to verify the order before marking as Enrolled.");
-            }
+                // 2. Order details must be verified (pressing Enter is required)
+                if (!orderStatus || !customerPhone) {
+                    setSaving(false);
+                    return setError("Please press Enter inside the Order Number box to verify and load order details before enrolling.");
+                }
 
-            // 🔹 CHECK 3: Standard phone mismatch check (if order details were fetched)
-            if (
-                customerPhone &&
-                formatForWhatsApp(customerPhone) !== formatForWhatsApp(selectedLead?.phone) &&
-                modelStatus?.trim().toLowerCase() !== "enrolled with other number" &&
-                user?.role === "user"
-            ) {
-                setSaving(false);
-                return setError("The order number must match the phone number associated with this lead.");
-            } else {
-                setError("");
+                const normalizedOrderPhone = formatForWhatsApp(customerPhone);
+                const normalizedLeadPhone = formatForWhatsApp(selectedLead?.phone);
+                const normalizedOrderStatus = orderStatus?.trim().toLowerCase();
+
+                // 3. If the order status is anything but completed (e.g. failed, on-hold, pending)
+
+
+                console.log(modelStatus)
+                console.log(modelStatus === "On hold")
+                if ((normalizedOrderStatus !== "completed") && (modelStatus !== "On hold")) {
+                    console.log(modelStatus)
+                    setSaving(false);
+                    return setError("This order is not completed. You can only set the lead status to 'On hold'.");
+                }
+
+                // 4. If the order is completed, verify phone matching
+                if (normalizedOrderStatus === "completed") {
+                    // Case A: Phone number mismatch
+                    if (normalizedOrderPhone !== normalizedLeadPhone) {
+                        if (!isEnrolledWithOther) {
+                            setSaving(false);
+                            return setError("Phone number mismatch. You can only set the lead status to 'Enrolled with Other Number'.");
+                        }
+                    }
+                    // Case B: Phone numbers match
+                    else {
+                        if (!isEnrolled) {
+                            setSaving(false);
+                            return setError("Phone numbers match. You must set the lead status to 'Enrolled'.");
+                        }
+                    }
+                }
             }
         }
-
         // Construct updated courses payload
         const updatedCoursesPayload = selectedCourses.map((item) => {
             const existingCourse = selectedLead?.courses?.find((c) => c.courseName === item.courseName);
@@ -3210,7 +3240,10 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             <div className="fixed inset-0 !z-99 bg-black/40 flex items-center justify-center">
                 <div
                     className={`bg-base-100 w-full scale-90 rounded-lg shadow-lg p-6 relative grid grid-cols-1 ${
-                        modelStatus == "Enrolled" || modelStatus == "Refunded" || modelStatus == "Enrolled with Other Number"  || modelStatus == "On hold"
+                        modelStatus == "Enrolled" ||
+                        modelStatus == "Refunded" ||
+                        modelStatus == "Enrolled with Other Number" ||
+                        modelStatus == "On hold"
                             ? "md:grid-cols-2 lg:grid-cols-4 max-w-[1350px]"
                             : "md:grid-cols-3 lg:grid-cols-[340px_1fr_1fr] max-w-[1050px]"
                     } gap-4 max-h-[90vh] overflow-y-visible`}
@@ -3487,7 +3520,10 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                     </div>
 
                     {/* Column 3: Payment Details */}
-                    {(modelStatus == "Enrolled" || modelStatus == "Refunded" || modelStatus == "Enrolled with Other Number" || modelStatus == "On hold") && (
+                    {(modelStatus == "Enrolled" ||
+                        modelStatus == "Refunded" ||
+                        modelStatus == "Enrolled with Other Number" ||
+                        modelStatus == "On hold") && (
                         <div className="space-y-3 flex flex-col text-sm max-h-[550px] overflow-y-auto pr-1">
                             <h3 className="text-lg font-semibold">Payment Details</h3>
 
@@ -3681,6 +3717,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                                 <button
                                                     onClick={() => {
                                                         setModelStatus(s);
+                                                        setError("")
                                                         document.activeElement.blur();
                                                     }}
                                                     className={`capitalize ${user?.role == "user" && s == "Refunded" && "hidden"}`}
@@ -3738,7 +3775,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                             value={selectedCourses.map((c) => c.courseName)}
                                             onChange={(e) => handleMultiSelectChange(e.value)}
                                             options={
-                                                course?.map((c) => ({
+                                                [{ name: "Others" }, { name: "Counselling" }, ...course]?.map((c) => ({
                                                     label: c.name,
                                                     value: c.name,
                                                 })) || []
