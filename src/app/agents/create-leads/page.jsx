@@ -271,7 +271,7 @@ export default function ManageCoursePage() {
                                         value={selectedCourses.map((c) => c.courseName)}
                                         onChange={(e) => handleMultiSelectChange(e.value)}
                                         options={
-                                            courses?.map((c) => ({
+                                            [  { name: "Counselling" } ,...courses]?.map((c) => ({
                                                 label: c.name,
                                                 value: c.name,
                                             })) || []
