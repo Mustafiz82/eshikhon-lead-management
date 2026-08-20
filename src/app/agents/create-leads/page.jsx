@@ -138,7 +138,8 @@ export default function ManageCoursePage() {
         const payload = {
             name: form.lead_name.value.trim(),
             email: form.lead_email.value.trim(),
-            phone: form.lead_phone.value.trim(),
+            phone: form.lead_phone.value.trim(),    
+            fblink: form.lead_fblink.value.trim(),
             address: form.lead_Address.value.trim(),
             questions: formattedQuestions,
             courses: selectedCourses.map((c) => ({
@@ -195,9 +196,20 @@ export default function ManageCoursePage() {
         return row.interstedCourse ? `${row.interstedCourse} (${row.interstedCourseType || "N/A"})` : "N/A";
     };
 
+
+    const getFblink = (row) => {
+        return row.fblink ? (
+            <a href={row.fblink} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">  Messenger Link
+            </a>
+              
+        ) : (
+            "N/A"
+        );
+    };
+
     const courseConfig = {
-        header: ["Name", "Email", "Phone", "Address", "Interested Courses", "Action"],
-        body: ["name", "email", "phone", "address", getCourseDisplay, actionsCell],
+        header: ["Name", "Email", "Phone", "Messenger Link", "Interested Courses", "Action"],
+        body: ["name", "email", "phone", getFblink, getCourseDisplay, actionsCell],
     };
 
     return (
@@ -252,6 +264,13 @@ export default function ManageCoursePage() {
                                     name="lead_phone"
                                     placeholder="Phone"
                                     defaultValue={editCourse?.phone || ""}
+                                    className="input focus:outline-0 focus:border-blue-600 bg-gray-900 input-bordered w-full text-white"
+                                    disabled={isSubmitting}
+                                />
+                                <input
+                                    name="lead_fblink"
+                                    placeholder="Messenger Link"
+                                    defaultValue={editCourse?.fblink || ""}
                                     className="input focus:outline-0 focus:border-blue-600 bg-gray-900 input-bordered w-full text-white"
                                     disabled={isSubmitting}
                                 />

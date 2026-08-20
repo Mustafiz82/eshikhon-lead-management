@@ -31,9 +31,11 @@ export const statusOptions = [
     "Not Interested",
     "Enrolled in Other Institute",
     "Call later",
+    "Call Declined",
     "Call Not Received",
     "Number Off or Busy",
     "Wrong Number",
+    "Contacted via Messenger"
 ];
 
 const AgentAllLeads = () => {
@@ -105,7 +107,7 @@ const AgentAllLeads = () => {
 
     console.log(upcomingPaymentsDate);
 
-    console.log(user.email, "user email");
+    console.log(user?.email, "user email");
     const params = new URLSearchParams({
         currentPage: currentPage,
         limit: leadsPerPage,

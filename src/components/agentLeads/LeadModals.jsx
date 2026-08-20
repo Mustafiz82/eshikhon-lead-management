@@ -2759,6 +2759,9 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     const [firstContactedDate, setFirstContactedDate] = useState("");
     const [lastContactedDate, setLastContactedDate] = useState("");
 
+    const [messengerLink, setMessengerLink] = useState(selectedLead?.fblink || "");
+    const [isMessengerEditing, setIsMessengerEditing] = useState(false);
+
     const [selectedCourses, setSelectedCourses] = useState([]);
 
     const [notes, setNotes] = useState(selectedLead?.note || []);
@@ -2930,7 +2933,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
     const handleSaveChanges = async () => {
         setSaving(true);
-        setError("")
+        setError("");
         console.log(modelStatus);
 
         if (!selectedCourses || selectedCourses.length === 0) {
@@ -2976,11 +2979,10 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
                 // 3. If the order status is anything but completed (e.g. failed, on-hold, pending)
 
-
-                console.log(modelStatus)
-                console.log(modelStatus === "On hold")
-                if ((normalizedOrderStatus !== "completed") && (modelStatus !== "On hold")) {
-                    console.log(modelStatus)
+                console.log(modelStatus);
+                console.log(modelStatus === "On hold");
+                if (normalizedOrderStatus !== "completed" && modelStatus !== "On hold") {
+                    console.log(modelStatus);
                     setSaving(false);
                     return setError("This order is not completed. You can only set the lead status to 'On hold'.");
                 }
@@ -3049,6 +3051,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             courses: updatedCoursesPayload,
             interstedSeminar: InterstedSeminarStatus,
             leadSource: leadSource,
+            fblink: messengerLink,
             originalPrice: overallOriginalPrice,
             paidAmount: overallTotalPaid,
             totalPaid: overallTotalPaid,
@@ -3126,6 +3129,9 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             setCallCount(selectedLead?.callCount || 0);
 
             setEstimatedPaymentDate(selectedLead?.nextEstimatedPaymentDate ? selectedLead.nextEstimatedPaymentDate.split("T")[0] : "");
+
+            setMessengerLink(selectedLead.fblink || "");
+            setIsMessengerEditing(false);
         }
     }, [selectedLead]);
 
@@ -3287,6 +3293,45 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                 </div>
                                 <div className="text-white/50">Phone</div>
                                 <div className="font-medium">{selectedLead.phone || "N/A"}</div>
+                                <div className="text-white/50 flex items-center">Messenger</div>
+                                <div className="flex w-full items-center justify-between font-medium">
+                                    {isMessengerEditing ? (
+                                        <div className="flex items-center gap-1 w-full">
+                                            <input
+                                                type="text"
+                                                value={messengerLink}
+                                                onChange={(e) => setMessengerLink(e.target.value)}
+                                                className="input input-xs bg-gray-900 border border-gray-600 text-white rounded w-full focus:outline-none focus:border-blue-500 text-xs py-1 px-1.5"
+                                                placeholder="Paste Messenger link..."
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsMessengerEditing(false)}
+                                                className="btn btn-xs btn-ghost text-green-400 font-bold"
+                                                title="Confirm text changes"
+                                            >
+                                                ✓
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="flex w-full items-center justify-between font-medium">
+                                            <span className="truncate max-w-[140px]" title={messengerLink}>
+                                                {messengerLink || "N/A"}
+                                            </span>
+
+                                            {messengerLink !== (selectedLead?.fblink || "") && (
+                                                <span className="ml-2 text-yellow-500 font-semibold text-xs whitespace-nowrap">(Unsaved)</span>
+                                            )}
+
+                                            <div
+                                                className="cursor-pointer text-blue-400 hover:text-white ml-2"
+                                                onClick={() => setIsMessengerEditing(true)}
+                                            >
+                                                <FaEdit />
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="text-white/50">Address</div>
                                 <div className="font-medium">{selectedLead.address || "N/A"}</div>
                                 <div className="text-white/50">Entry By</div>
@@ -3501,7 +3546,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                         <span>{(note.date || note.createdAt) && formateDate(note.date || note.createdAt) + ` • ${note.by}`} </span>
                                         {note?.status == "unsaved" && <span className="ml-2 text-yellow-500 font-semibold">(Unsaved)</span>}
                                     </p>
-                                    <pre className="text-wrap">{note.text}</pre>
+                                    <div className="whitespace-pre-wrap break-all font-sans text-sm">{note.text}</div>
                                 </div>
                             ))}
                             {notes?.length === 0 && <p className="text-xs text-center mt-20 text-base-content/60">No notes yet.</p>}
@@ -3681,7 +3726,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                         <h3 className="text-lg font-semibold">Actions</h3>
 
                         <div className="flex mt-2 gap-2 justify-center">
-                            <div className="flex-1 max-w-[81px] border border-white">
+                            <div className="flex-1 min-w-[81px] border border-white">
                                 <QR value={`tel:${formatBDNumber(selectedLead?.phone)}`} />
                             </div>
                             <div className="space-y-2 flex-2">
@@ -3693,14 +3738,28 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                     Linphone
                                 </a>
 
-                                <a
-                                    href={`https://wa.me/${formatForWhatsApp(selectedLead?.phone)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex gap-2 py-3! w-full bg-[#34DA51] border border-[#34DA51] btn"
-                                >
-                                    <Image alt="wsp" src={"/logo/whatsapp.png"} className="w-auto h-5" width={1000} height={1000} /> Call on Whatsapp
-                                </a>
+                                <div className="flex w-full  gap-2">
+                                    <a
+                                        href={`https://wa.me/${formatForWhatsApp(selectedLead?.phone)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex gap-2 py-3! flex-1 bg-[#34DA51] border border-[#34DA51] btn"
+                                    >
+                                        <Image alt="wsp" src={"/logo/whatsapp.png"} className="w-auto h-5" width={1000} height={1000} /> Whatsapp
+                                    </a>
+
+                                    {selectedLead?.fblink && (
+                                        <a
+                                            href={selectedLead?.fblink || "#"}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex gap-2 py-3! flex-1 bg-[#0084FF] border border-[#0084FF] btn"
+                                        >
+                                            <Image alt="wsp" src={"/logo/messenger.png"} className="w-auto h-5" width={1000} height={1000} />{" "}
+                                            Messenger
+                                        </a>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -3717,7 +3776,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                                 <button
                                                     onClick={() => {
                                                         setModelStatus(s);
-                                                        setError("")
+                                                        setError("");
                                                         document.activeElement.blur();
                                                     }}
                                                     className={`capitalize ${user?.role == "user" && s == "Refunded" && "hidden"}`}

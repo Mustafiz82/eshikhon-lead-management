@@ -12,12 +12,14 @@ export const statusColors = {
 
     // 💜 Action Required (Purple) - Needs Active Follow-up
     "Call later": "badge-primary",
+    "Contacted via Messenger": "badge-primary",
 
     // 🌸 Alternative (Pink) - Valid student, just not yours
     "Enrolled in Other Institute": "badge-secondary",
 
     // ⚠️ Caution/Paused (Yellow) - Needs attention or retry
     "Call Not Received": "badge-warning",
+    "Call Declined": "badge-warning",
     "On hold": "badge-warning",
 
     // ℹ️ Waiting (Blue) - Standard neutral wait

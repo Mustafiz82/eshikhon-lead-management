@@ -105,8 +105,9 @@ const isValidLeadRow = (row) => {
     const hasName = row.name && String(row.name).trim() !== "";
     const hasEmail = row.email && String(row.email).trim() !== "";
     const hasCourse = row.interstedCourse && String(row.interstedCourse).trim() !== "";
+   const hasFbUrl = row.fblink && String(row.fblink).trim() !== ""
 
-    return hasPhone || hasName || hasEmail || hasCourse;
+    return hasPhone || hasName || hasEmail || hasCourse || hasFbUrl;
 };
 
 const Page = () => {
@@ -216,6 +217,7 @@ const Page = () => {
                 email,
                 address,
                 phone,
+                fblink,
                 interstedCourse,
                 interstedCourseType,
                 interstedSeminar,
@@ -242,6 +244,7 @@ const Page = () => {
                 email: email || "",
                 address: address || "",
                 phone: phone || "",
+                fblink: fblink || "",
                 // 🔹 NEW: Construct initial courses array from CSV row
                 courses: interstedCourse
                     ? [
@@ -275,6 +278,9 @@ const Page = () => {
             };
         });
 
+
+        // console.log(questionWiseData)
+
         console.log(questionWiseData);
 
         const leadsWithOrders = questionWiseData.filter((lead) => lead.orderNumber);
@@ -299,7 +305,9 @@ const Page = () => {
                     const userEmail = encodeURIComponent(user?.email || "");
 
                     // Call API one at a time
-                    const res = await axiosPublic.get(`/leads/order/${lead.orderNumber}?searchInput=${searchInput}&phone=${user?.phone}&leadId=${lead._id}}`);
+                    const res = await axiosPublic.get(
+                        `/leads/order/${lead.orderNumber}?searchInput=${searchInput}&phone=${user?.phone}&leadId=${lead._id}}`,
+                    );
                     const orderData = res?.data;
 
                     if (orderData) {
@@ -314,12 +322,12 @@ const Page = () => {
                             lead.leadStatus = matchedPhone ? "Enrolled" : "Enrolled with Other Number";
                         }
 
-                      
-                     
-                        const completionDate = orderData.orderCompletionDate ? new Date(orderData.orderCompletionDate) : new Date(orderData.ordercreationDate);
+                        const completionDate = orderData.orderCompletionDate
+                            ? new Date(orderData.orderCompletionDate)
+                            : new Date(orderData.ordercreationDate);
 
                         // Map all courses from orderData.courses array
-                        if (Array.isArray(orderData.courses) && orderData.courses.length > 0) { 
+                        if (Array.isArray(orderData.courses) && orderData.courses.length > 0) {
                             lead.courses = orderData.courses.map((courseItem) => {
                                 const matchedCourse = findBestCourse(courseItem.courseName, rawCourses);
                                 const finalCourseName = matchedCourse?.name || courseItem.courseName || courseItem.cleanedName;
@@ -347,7 +355,6 @@ const Page = () => {
                             lead.enrolledAt = orderData.orderCompletionDate ? new Date(orderData.orderCompletionDate) : null;
                         }
                     }
-
                 } catch (error) {
                     console.error(`Failed to fetch order #${lead.orderNumber}:`, error);
                 }
@@ -400,7 +407,7 @@ const Page = () => {
         if (["entry by", "entryby", "created by"].includes(normalized)) return "entryBy";
         if (["lead status", "status"].includes(normalized)) return "leadStatus";
         if (["intersted seminar", "interested seminar", "seminar", "seminar type"].includes(normalized)) return "interstedSeminar";
-
+        if (["fb url", "fburl", "facebook url", "facebook", "fb profile"].includes(normalized)) return "fblink";
         if (["first call date", "1st call date", "first contact date", "first contact", "1st contact"].includes(normalized)) return "firstContacted";
         if (["last call date", "last contact date", "last contact"].includes(normalized)) return "lastContacted";
         if (["followup date", "follow up date", "followup", "next followup"].includes(normalized)) return "followUpDate";
