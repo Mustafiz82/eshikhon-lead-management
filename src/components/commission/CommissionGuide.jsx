@@ -34,7 +34,7 @@ const CommissionGuide = () => {
             return { base: 0, bonus: 0, total: 0, rate: 0 };
         }
 
-        const salesInK = numSales / 1000;
+        const salesInK = Math.floor(numSales / 1000) ;
         const matchedSlab = commissionSlabs.find(
             (s) => salesInK >= s.min && salesInK <= s.max
         ) || commissionSlabs[commissionSlabs.length - 1];

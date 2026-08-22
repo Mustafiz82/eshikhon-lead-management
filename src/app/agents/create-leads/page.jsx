@@ -121,9 +121,9 @@ export default function ManageCoursePage() {
         if (!user?.email) return toast.error("User Not found");
         const form = e.target;
 
-        if (!form.lead_phone.value.trim()) {
-            return setFormSubmitError("Phone Number is Required");
-        }
+        // if (!form.lead_phone.value.trim()) {
+        //     return setFormSubmitError("Phone Number is Required");
+        // }
         if (!selectedCourses || selectedCourses.length === 0) {
             return setFormSubmitError("Please select at least one course");
         }
