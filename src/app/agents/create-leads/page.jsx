@@ -154,7 +154,7 @@ export default function ManageCoursePage() {
             assignStatus: true,
         };
 
-        const endpoint = editCourse ? `/leads/${editCourse._id}` : "/leads/single-lead";
+        const endpoint = editCourse ? `/leads/single-lead` : "/leads/single-lead";
 
         await handleSave(payload, form, endpoint);
 

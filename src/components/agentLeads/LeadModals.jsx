@@ -2975,6 +2975,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
                 const normalizedOrderPhone = formatForWhatsApp(customerPhone);
                 const normalizedLeadPhone = formatForWhatsApp(selectedLead?.phone);
+                const normalizedLeadEmail = formatForWhatsApp(selectedLead?.email);
                 const normalizedOrderStatus = orderStatus?.trim().toLowerCase();
 
                 // 3. If the order status is anything but completed (e.g. failed, on-hold, pending)
@@ -2990,7 +2991,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                 // 4. If the order is completed, verify phone matching
                 if (normalizedOrderStatus === "completed") {
                     // Case A: Phone number mismatch
-                    if (normalizedOrderPhone !== normalizedLeadPhone) {
+                    if ((normalizedOrderPhone !== normalizedLeadPhone) && (normalizedOrderPhone !== normalizedLeadEmail)) {
                         if (!isEnrolledWithOther) {
                             setSaving(false);
                             return setError("Phone number mismatch. You can only set the lead status to 'Enrolled with Other Number'.");

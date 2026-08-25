@@ -24,7 +24,8 @@ export const statusOptions = [
     "Refunded",
     "Enrolled",
     "Enrolled with Other Number",
-    "Will Register",
+    "Will Register Soon",
+    "Will Register Later",
     "On hold",
     "Already Enrolled",
     "Not Ready - PC/Basic",
@@ -35,7 +36,7 @@ export const statusOptions = [
     "Call Not Received",
     "Number Off or Busy",
     "Wrong Number",
-    "Contacted via Messenger"
+    "Contacted via Messenger",
 ];
 
 const AgentAllLeads = () => {
@@ -143,7 +144,7 @@ const AgentAllLeads = () => {
     const { data: courseOption } = useFetch(`/leads/intersted-course?agentEmail=${user?.email}`);
 
     const assignedDateOptions = ["All", "DateRange"];
-    const followedOptions = ["All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year" , "DateRange"];
+    const followedOptions = ["All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year", "DateRange"];
     const upcOptions = ["None", "All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"];
     const missedFUOption = ["All", "Last 3 Days", "Last 7 Days", "Last 15 Days", "Last 30 Days"];
     const totalPages = Math.ceil(leadsCount?.count / leadsPerPage) || 1;
@@ -154,7 +155,7 @@ const AgentAllLeads = () => {
     const leadCountStart = totalLeads > 0 ? (currentPage - 1) * leadsPerPage + 1 : 0;
     const leadCountEnd = Math.min(currentPage * leadsPerPage, totalLeads);
 
-    const handleSearch = (term) => {    
+    const handleSearch = (term) => {
         setSearchQuery(term);
         setCurrentPage(1);
     };

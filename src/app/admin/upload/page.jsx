@@ -318,7 +318,7 @@ const Page = () => {
                         if (orderStatusClean !== "completed") {
                             lead.leadStatus = "On hold";
                         } else {
-                            const matchedPhone = formatForWhatsApp(orderData.customerPhone) === formatForWhatsApp(lead.phone);
+                            const matchedPhone =( formatForWhatsApp(orderData.customerPhone) === formatForWhatsApp(lead.phone)) || (formatForWhatsApp(orderData.customerPhone) === formatForWhatsApp(lead.email));
                             lead.leadStatus = matchedPhone ? "Enrolled" : "Enrolled with Other Number";
                         }
 
