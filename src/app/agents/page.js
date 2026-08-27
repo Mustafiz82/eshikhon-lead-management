@@ -84,7 +84,7 @@ const Page = () => {
       <div className="p-6">
           <AgentsLeadsStatusPanel state={state} setState={setState} selectedFilter={selectedFilter} />
 
-      <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-5">
         <Leaderboard
           title="Most Performing Agents (by Admit count)"
           data={leaderboard?.byAdmitCount || []}
@@ -96,7 +96,7 @@ const Page = () => {
         <Leaderboard
           title="Most Performing Agents (by Sales count)"
           data={leaderboard?.bySales || []}
-          valueKey="totalPaidFromEnrolled"
+          valueKey="totalSales"
           metricLabel="Sales (৳)"
           loading={loading}
         />
@@ -108,14 +108,14 @@ const Page = () => {
           metricLabel="Conversion (%)"
           loading={loading}
         />
-
+{/* 
         <Leaderboard
           title="Target Completion by Agent"
           data={leaderboard?.byTargetFilled || []}
           valueKey="targetFilled"
           metricLabel=" Target (%)"
           loading={loading}
-        />
+        /> */}
 
       </div>
 

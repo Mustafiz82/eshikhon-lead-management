@@ -93,7 +93,7 @@ const page = () => {
         <LeadsGrowthChart />
         <CallCountTable />
         {/* <SeminarPieChart/> */}
-        <div className="mt-20 grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="mt-20 grid grid-cols-1 lg:grid-cols-3 gap-5">
           <Leaderboard
             title="Most Performing Agents (by Admit count)"
             data={leaderboard?.byAdmitCount || []}
@@ -105,7 +105,7 @@ const page = () => {
           <Leaderboard
             title="Most Performing Agents (by Sales count)"
             data={leaderboard?.bySales || []}
-            valueKey="totalPaidFromEnrolled"
+            valueKey="totalSales"
             metricLabel="Sales (৳)"
             loading={loading}
           />
@@ -118,13 +118,13 @@ const page = () => {
             loading={loading}
           />
 
-          <Leaderboard
+          {/* <Leaderboard
             title="Target Completion by Agent"
             data={leaderboard?.byTargetFilled || []}
             valueKey="targetFilled"
             metricLabel="Target"
             loading={loading}
-          />
+          /> */}
         </div>
 
         {/* Top selling Course */}
