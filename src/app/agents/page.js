@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import AgentsLeadsStatusPanel from "@/components/agentLeads/AgentsLeadsStatusPanel";
 import CourseSellingSummary from "@/components/Dashboard/CourseSellingSummary";
 import TopSellingCourse from "@/components/Dashboard/TopSellingCourse";
@@ -11,104 +11,103 @@ import DateRangeComponent from "@/utils/DateRange";
 import { useContext, useEffect, useState } from "react";
 
 const Page = () => {
-  const { user } = useContext(AuthContext)
-  const currentMonth = new Date().getMonth() + 1;
-  const [selectedFilter, setSelectedFilter] = useState(String(currentMonth));
+    const { user } = useContext(AuthContext);
+    const currentMonth = new Date().getMonth() + 1;
+    const [selectedFilter, setSelectedFilter] = useState(String(currentMonth));
 
-  const now = new Date();
-  // const [state, setState] = useState([
-  //   {
-  //     startDate: new Date(now.getFullYear(), now.getMonth(), 1),
-  //     endDate: new Date(now.getFullYear(), now.getMonth() + 1, 0),
-  //     key: "selection",
-  //   },
-  // ]);
+    const now = new Date();
+    // const [state, setState] = useState([
+    //   {
+    //     startDate: new Date(now.getFullYear(), now.getMonth(), 1),
+    //     endDate: new Date(now.getFullYear(), now.getMonth() + 1, 0),
+    //     key: "selection",
+    //   },
+    // ]);
 
-  const { dateRange:state, setDateRange:setState } = useContext(DateRangeContext)
+    const { dateRange: state, setDateRange: setState } = useContext(DateRangeContext);
 
-  console.log(state )
+    
+    const start = new Date(state[0].startDate);
+    start.setHours(0, 0, 0, 0);
 
+    const end = new Date(state[0].endDate);
+    end.setHours(23, 59, 59, 999);
 
-  const { data: leaderboard, loading, refetch } = useFetch(
-    `/dashboard/leaderboards?month=${selectedFilter}&year=2025&startDate=${state[0].startDate}&endDate=${state[0].endDate}`
-  );
+    console.log(state);
 
-  
-
-  // if (loading) return <p className="text-white">Loading...</p>;
-
-
-
-  const options = [
-    { value: "all", label: "All Time" },
-    { value: "1", label: "January" },
-    { value: "2", label: "February" },
-    { value: "3", label: "March" },
-    { value: "4", label: "April" },
-    { value: "5", label: "May" },
-    { value: "6", label: "June" },
-    { value: "7", label: "July" },
-    { value: "8", label: "August" },
-    { value: "9", label: "September" },
-    { value: "10", label: "October" },
-    { value: "11", label: "November" },
-    { value: "12", label: "December" },
-  ];
-
-  return (
-    <div className=" min-h-screen">
-      <div className="flex py-4 p-6 justify-between sticky top-0 bg-slate-900 ">
-        <h2 className="text-white text-xl font-semibold capitalize">{user.name} Dashboard</h2>
-        <div className="flex gap-2 items-center">
-          <p className="whitespace-nowrap hidden lg:block text-gray-300">View Statistics for:</p>
+    const {
+        data: leaderboard,
+        loading,
+        refetch,
+    } = useFetch(
+        `/dashboard/leaderboards?month=${selectedFilter}&year=2025&startDate=${start.toISOString()}&endDate=${end.toISOString()}`,
+    );
 
 
+    // if (loading) return <p className="text-white">Loading...</p>;
 
-          {/* <CustomSelect
+    const options = [
+        { value: "all", label: "All Time" },
+        { value: "1", label: "January" },
+        { value: "2", label: "February" },
+        { value: "3", label: "March" },
+        { value: "4", label: "April" },
+        { value: "5", label: "May" },
+        { value: "6", label: "June" },
+        { value: "7", label: "July" },
+        { value: "8", label: "August" },
+        { value: "9", label: "September" },
+        { value: "10", label: "October" },
+        { value: "11", label: "November" },
+        { value: "12", label: "December" },
+    ];
+
+    return (
+        <div className=" min-h-screen">
+            <div className="flex py-4 p-6 justify-between sticky top-0 bg-slate-900 ">
+                <h2 className="text-white text-xl font-semibold capitalize">{user.name} Dashboard</h2>
+                <div className="flex gap-2 items-center">
+                    <p className="whitespace-nowrap hidden lg:block text-gray-300">View Statistics for:</p>
+
+                    {/* <CustomSelect
             selected={selectedFilter}
             setSelected={setSelectedFilter}
             options={options}
 
           /> */}
 
+                    <DateRangeComponent state={state} setState={setState} />
+                </div>
+            </div>
 
+            <div className="p-6">
+                <AgentsLeadsStatusPanel state={state} setState={setState} selectedFilter={selectedFilter} />
 
-          <DateRangeComponent  state={state} setState={setState} />
+                <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-5">
+                    <Leaderboard
+                        title="Most Performing Agents (by Admit count)"
+                        data={leaderboard?.byAdmitCount || []}
+                        valueKey="enrolledCount"
+                        metricLabel="Admits"
+                        loading={loading}
+                    />
 
+                    <Leaderboard
+                        title="Most Performing Agents (by Sales count)"
+                        data={leaderboard?.bySales || []}
+                        valueKey="totalSales"
+                        metricLabel="Sales (৳)"
+                        loading={loading}
+                    />
 
-
-
-        </div>
-      </div>
-
-      <div className="p-6">
-          <AgentsLeadsStatusPanel state={state} setState={setState} selectedFilter={selectedFilter} />
-
-      <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <Leaderboard
-          title="Most Performing Agents (by Admit count)"
-          data={leaderboard?.byAdmitCount || []}
-          valueKey="enrolledCount"
-          metricLabel="Admits"
-          loading={loading}
-        />
-
-        <Leaderboard
-          title="Most Performing Agents (by Sales count)"
-          data={leaderboard?.bySales || []}
-          valueKey="totalSales"
-          metricLabel="Sales (৳)"
-          loading={loading}
-        />
-
-        <Leaderboard
-          title="Agents With Highest Lead Conversion Rate"
-          data={leaderboard?.byConversion || []}
-          valueKey="conversionRate"
-          metricLabel="Conversion (%)"
-          loading={loading}
-        />
-{/* 
+                    <Leaderboard
+                        title="Agents With Highest Lead Conversion Rate"
+                        data={leaderboard?.byConversion || []}
+                        valueKey="conversionRate"
+                        metricLabel="Conversion (%)"
+                        loading={loading}
+                    />
+                    {/* 
         <Leaderboard
           title="Target Completion by Agent"
           data={leaderboard?.byTargetFilled || []}
@@ -116,26 +115,17 @@ const Page = () => {
           metricLabel=" Target (%)"
           loading={loading}
         /> */}
+                </div>
 
-      </div>
+                {/* Top Selling Course */}
 
-
-
-
-
-
-      {/* Top Selling Course */}
-
-
-      <div className="">
-
-      {/* <TopSellingCourse/> */}
-      <CourseSellingSummary state={state}/>
-
-      </div>
-      </div>
-    </div>
-  );
+                <div className="">
+                    {/* <TopSellingCourse/> */}
+                    <CourseSellingSummary state={state} />
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export default Page;
