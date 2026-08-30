@@ -2991,7 +2991,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                 // 4. If the order is completed, verify phone matching
                 if (normalizedOrderStatus === "completed") {
                     // Case A: Phone number mismatch
-                    if ((normalizedOrderPhone !== normalizedLeadPhone) && (normalizedOrderPhone !== normalizedLeadEmail)) {
+                    if (normalizedOrderPhone !== normalizedLeadPhone && normalizedOrderPhone !== normalizedLeadEmail) {
                         if (!isEnrolledWithOther) {
                             setSaving(false);
                             return setError("Phone number mismatch. You can only set the lead status to 'Enrolled with Other Number'.");
@@ -3009,8 +3009,19 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         }
         // Construct updated courses payload
         const updatedCoursesPayload = selectedCourses.map((item) => {
+            // const existingCourse = selectedLead?.courses?.find((c) => c.courseName === item.courseName);
+            // let courseHistory = existingCourse?.history ? [...existingCourse.history] : [...(item.history || [])];
+
             const existingCourse = selectedLead?.courses?.find((c) => c.courseName === item.courseName);
-            let courseHistory = existingCourse?.history ? [...existingCourse.history] : [...(item.history || [])];
+
+            // If item has history (from WooCommerce / order search), use it.
+            // Otherwise, keep existing course history if it had payments.
+            let courseHistory = [];
+            if (item.history && item.history.length > 0) {
+                courseHistory = [...item.history];
+            } else if (existingCourse?.history && existingCourse.history.length > 0) {
+                courseHistory = [...existingCourse.history];
+            }
 
             let finalPaid = Number(item.totalPaid || 0);
             if (Number(item.newPayment) > 0) {
