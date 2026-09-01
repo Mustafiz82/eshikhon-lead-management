@@ -8,7 +8,7 @@ const useSaveData = (refetch) => {
     const [editCourse, setEditCourse] = useState(null)
 
     const handleSave = async (payload , form , path) => {
-        console.log("called" , payload)
+        console.log("called form ahndle" , payload)
 
         setLoading(true);
         setError("");
@@ -38,7 +38,7 @@ const useSaveData = (refetch) => {
         }
     };
 
-    return { setEditCourse, handleSave , loading , error , editCourse }
+    return { setEditCourse, handleSave , loading , error , setError , editCourse }
 }
 
 export default useSaveData

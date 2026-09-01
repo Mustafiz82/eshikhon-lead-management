@@ -33,10 +33,11 @@
 
         const { data: courses } = useFetch("/course");
         const { data: leads, loading, error, refetch } = useFetch(`/leads?createdBy=${user?.email}`);
-        const { setEditCourse, editCourse, handleSave, loading: isSubmitting, error: submitError } = useSaveData(refetch);
+        const { setEditCourse, editCourse, handleSave, loading: isSubmitting, error: submitError , setError} = useSaveData(refetch);
 
         // Prefill data when editing a lead
         useEffect(() => {
+              setFormSubmitError("");
             if (editCourse) {
                 if (Array.isArray(editCourse.courses) && editCourse.courses.length > 0) {
                     setSelectedCourses(
@@ -118,6 +119,9 @@
 
         const handleSubmit = async (e) => {
             e.preventDefault();
+            setFormSubmitError("");
+            setError("")
+            console.log("clicked") 
             if (!user?.email) return toast.error("User Not found");
             const form = e.target;
 
@@ -134,6 +138,7 @@
                 return acc;
             }, {});
 
+            
             // Payload sending each course with its own unique courseType
             const payload = {
                 name: form.lead_name.value.trim(),
@@ -153,10 +158,11 @@
                 assignDate: Date.now(),
                 assignStatus: true,
             };
-
+            
             const endpoint = editCourse ? `/leads/single-lead` : "/leads/single-lead";
-
+            
             await handleSave(payload, form, endpoint);
+            console.log("clicked") 
 
             // Reset state
             setSelectedCourses([]);
@@ -253,7 +259,7 @@
                                     />
                                     <input
                                         name="lead_email"
-                                        type="email"
+                                        type="text"
                                         placeholder="Email"
                                         defaultValue={editCourse?.email || ""}
                                         className="input focus:outline-0 focus:border-blue-600 bg-gray-900 input-bordered w-full text-white"
@@ -415,7 +421,7 @@
                                 <div className="mt-auto text-red-500 text-sm">{submitError || formSubmitError}</div>
 
                                 <div className="pt-4 flex gap-2">
-                                    <button type="submit" className="btn bg-blue-600 btn-primary w-full text-white" disabled={isSubmitting}>
+                                    <button type="submit" className="btn bg-blue-600 btn-primary w-full text-white" >
                                         {isSubmitting ? (editCourse ? "Updating..." : "Creating...") : editCourse ? "Update Lead" : "Create Lead"}
                                     </button>
                                 </div>

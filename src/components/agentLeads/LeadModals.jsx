@@ -188,28 +188,6 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         }
     };
 
-    const handleCourseFinancialChange = (courseName, field, val) => {
-        setSelectedCourses((prev) =>
-            prev.map((c) => {
-                if (c.courseName !== courseName) return c;
-                const numVal = Number(val) || 0;
-                if (field === "newPayment") {
-                    const orig = Number(c.originalPrice || 0);
-                    const disc = Number(c.leadDiscount || 0);
-                    const prevPaid = Number(c.totalPaid || 0);
-                    const newTotalPaid = prevPaid + numVal;
-                    const calcDue = Math.max(0, orig - disc - newTotalPaid);
-                    return {
-                        ...c,
-                        newPayment: numVal,
-                        totalDue: calcDue,
-                    };
-                }
-                return { ...c, [field]: val };
-            }),
-        );
-    };
-
     const handleMultiSelectChange = (selectedNames) => {
         const updated = selectedNames.map((name) => {
             const existing = selectedCourses.find((c) => c.courseName === name);
@@ -247,6 +225,24 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         if (!selectedCourses || selectedCourses.length === 0) {
             setSaving(false);
             return setError("Please select at least one course");
+        }
+
+        for (const c of selectedCourses) {
+            const orig = Number(c.originalPrice || 0);
+            const disc = Number(c.leadDiscount || 0);
+            const prevPaid = Number(c.totalPaid || 0);
+            const newPay = Number(c.newPayment || 0);
+            const maxPayable = Math.max(0, orig - disc - prevPaid);
+
+            if (newPay < 0) {
+                setSaving(false);
+                return setError(`Payment amount for "${c.courseName}" cannot be negative.`);
+            }
+
+            if (newPay > maxPayable) {
+                setSaving(false);
+                return setError(`Overpayment error: ৳${newPay} entered for "${c.courseName}", but remaining due is only ৳${maxPayable}.`);
+            }
         }
 
         // 🔹 CHECK 1: Prevent changing "Enrolled with Other Number" -> "Enrolled"
@@ -516,22 +512,48 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     }, []);
 
     const handlePaymentInputChange = (courseName, val) => {
-        setSelectedCourses((prev) => prev.map((c) => (c.courseName === courseName ? { ...c, newPayment: val } : c)));
-    };
+        const targetCourse = selectedCourses.find((c) => c.courseName === courseName);
+        const numVal = Number(val) || 0;
 
-    // ADD THIS HANDLER FUNCTION:
-    const handlePaymentDateChange = (courseName, dateVal) => {
-        setSelectedCourses((prev) => prev.map((c) => (c.courseName === courseName ? { ...c, newPaymentDate: dateVal } : c)));
+        if (targetCourse) {
+            const maxPayable = Math.max(
+                0,
+                Number(targetCourse.originalPrice || 0) - Number(targetCourse.leadDiscount || 0) - Number(targetCourse.totalPaid || 0),
+            );
+
+            if (numVal < 0) {
+                setError(`Payment amount cannot be negative for ${courseName}.`);
+            } else if (numVal > maxPayable) {
+                setError(`Cannot add ৳${numVal} for "${courseName}". Maximum payable due is ৳${maxPayable}.`);
+            } else {
+                setError(""); // Clear error if input is valid
+            }
+        }
+
+        setSelectedCourses((prev) => prev.map((c) => (c.courseName === courseName ? { ...c, newPayment: val } : c)));
     };
 
     const applyCoursePayment = (courseName) => {
         setSelectedCourses((prev) =>
             prev.map((c) => {
                 if (c.courseName !== courseName) return c;
-                const numVal = Number(c.newPayment) || 0;
+
                 const orig = Number(c.originalPrice || 0);
                 const disc = Number(c.leadDiscount || 0);
                 const prevPaid = Number(c.totalPaid || 0);
+                const maxPayable = Math.max(0, orig - disc - prevPaid);
+
+                let numVal = Number(c.newPayment) || 0;
+
+                // Prevent overpayment
+                if (numVal > maxPayable) {
+                    setError(`Payment cannot exceed maximum due of ৳${maxPayable} for ${c.courseName}.`);
+                    return c;
+                } else if (numVal < 0) {
+                    setError(`Payment cannot be negative.`);
+                    return c;
+                }
+
                 const calcDue = Math.max(0, orig - disc - (prevPaid + numVal));
                 return {
                     ...c,
@@ -540,6 +562,28 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             }),
         );
     };
+
+    // ADD THIS HANDLER FUNCTION:
+    const handlePaymentDateChange = (courseName, dateVal) => {
+        setSelectedCourses((prev) => prev.map((c) => (c.courseName === courseName ? { ...c, newPaymentDate: dateVal } : c)));
+    };
+
+    // const applyCoursePayment = (courseName) => {
+    //     setSelectedCourses((prev) =>
+    //         prev.map((c) => {
+    //             if (c.courseName !== courseName) return c;
+    //             const numVal = Number(c.newPayment) || 0;
+    //             const orig = Number(c.originalPrice || 0);
+    //             const disc = Number(c.leadDiscount || 0);
+    //             const prevPaid = Number(c.totalPaid || 0);
+    //             const calcDue = Math.max(0, orig - disc - (prevPaid + numVal));
+    //             return {
+    //                 ...c,
+    //                 totalDue: calcDue,
+    //             };
+    //         }),
+    //     );
+    // };
 
     const isDisabled = user?.role === "user" && selectedLead?.leadStatus === "Enrolled";
 
