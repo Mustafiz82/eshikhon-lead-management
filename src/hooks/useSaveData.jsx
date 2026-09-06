@@ -2,30 +2,29 @@ import axiosPublic from "@/api/axios";
 import { useState } from "react";
 
 const useSaveData = (refetch) => {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [editCourse, setEditCourse] = useState(null);
 
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState(null)
-    const [editCourse, setEditCourse] = useState(null)
-
-    const handleSave = async (payload , form , path) => {
-        console.log("called form ahndle" , payload)
+    const handleSave = async (payload, form, path) => {
+        console.log("called form ahndle", payload);
 
         setLoading(true);
         setError("");
+        let res;
 
         try {
             if (editCourse) {
                 const id = editCourse._id || editCourse.id;
-                await axiosPublic.put(`${path}/${id}`, payload);
+                res = await axiosPublic.put(`${path}/${id}`, payload);
             } else {
-                await axiosPublic.post(`${path}`, payload);
+                res = await axiosPublic.post(`${path}`, payload);
             }
 
-            await refetch()
+            await refetch();
             form.reset();
             setEditCourse(null);
         } catch (err) {
-        
             const msg = err?.response?.data?.error || err.message;
 
             if (typeof msg === "string" && msg.startsWith("E11000")) {
@@ -36,9 +35,11 @@ const useSaveData = (refetch) => {
         } finally {
             setLoading(false);
         }
+
+        return res
     };
 
-    return { setEditCourse, handleSave , loading , error , setError , editCourse }
-}
+    return { setEditCourse, handleSave, loading, error, setError, editCourse   };
+};
 
-export default useSaveData
+export default useSaveData;

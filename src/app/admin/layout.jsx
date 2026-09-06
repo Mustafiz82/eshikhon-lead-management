@@ -1,6 +1,6 @@
 "use client"
 import { RiDashboardFill } from "react-icons/ri";
-import { FaChalkboardTeacher, FaFileCsv, FaUserTie } from "react-icons/fa";
+import { FaChalkboardTeacher, FaFileCsv, FaUserPlus, FaUserTie } from "react-icons/fa";
 import { MdDiscount, MdSupportAgent } from "react-icons/md";
 import { FaUserGroup } from "react-icons/fa6";
 import Link from "next/link";
@@ -20,7 +20,7 @@ export default function Layout({ children }) {
     const menuItems = [
         { href: "/admin", icon: <RiDashboardFill className="text-xl" />, label: "Dashboard" },
         { href: "/admin/all-leads", icon: <FaUserTie className="text-xl" />, label: "All Leads" },
-        { href: "/admin/upload", icon: <FaFileCsv className="text-xl" />, label: "Upload CSV" },
+        { href: "/admin/upload", icon: <FaUserPlus className="text-xl" />, label: "Create Lead" },
         { href: "/admin/agents", icon: <MdSupportAgent className="text-xl" />, label: "Agent Overview" },
         { href: "/admin/manage-users", icon: <FaUserGroup className="text-xl" />, label: "Manage User" },
         { href: "/admin/manage-cources", icon: <FaChalkboardTeacher className="text-xl" />, label: "Manage Cources" },
