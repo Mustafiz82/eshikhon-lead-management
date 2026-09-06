@@ -110,7 +110,7 @@ const isValidLeadRow = (row) => {
     const hasCourse = row.interstedCourse && String(row.interstedCourse).trim() !== "";
     const hasFbUrl = row.fblink && String(row.fblink).trim() !== "";
 
-     return Boolean(hasPhone || hasFbUrl);
+    return Boolean(hasPhone || hasFbUrl);
 };
 
 const Page = () => {
@@ -142,7 +142,13 @@ const Page = () => {
     const handleFile = async (file) => {
         if (!file) return;
         if (!user.email) return showToast("User not found", "error");
-        if (file.type !== "text/csv") return showToast("Only CSV files are allowed", "warning");
+
+        const isCSV = file.type === "text/csv" || file.name.endsWith(".csv");
+        const isJSON = file.type === "application/json" || file.name.endsWith(".json");
+
+        if (!isCSV && !isJSON) {
+            return showToast("Only CSV and JSON backup files are allowed", "warning");
+        }
 
         const fileName = formatFilename(file.name);
         setStatus(fileName, STATUS.PENDING);
@@ -152,19 +158,74 @@ const Page = () => {
         // 2) Parse CSV
         setStatus(fileName, STATUS.PARSING);
 
-        Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true,
-            transformHeader: uploadMode == "lead" ? transfromHeaderLead : transfromHeaderAttendence,
-            complete: (results) =>
-                uploadMode == "lead" ? handleCompleteLeadCSVUpload(results, fileName) : handleCompleteAttendenceCSVUpload(results, fileName),
+        if (isCSV) {
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                transformHeader: uploadMode == "lead" ? transfromHeaderLead : transfromHeaderAttendence,
+                complete: (results) =>
+                    uploadMode == "lead" ? handleCompleteLeadCSVUpload(results, fileName) : handleCompleteAttendenceCSVUpload(results, fileName),
 
-            error: function (err) {
-                setStatus(fileName, STATUS.ERROR);
-                showToast("Error parsing CSV", "error");
-                console.error(err);
-            },
-        });
+                error: function (err) {
+                    setStatus(fileName, STATUS.ERROR);
+                    showToast("Error parsing CSV", "error");
+                    console.error(err);
+                },
+            });
+        } else {
+            console.log(file);
+            setStatus(fileName, STATUS.PARSING, "Reading backup file...");
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+
+                    // Handles both { leads: [...] } and raw array [...]
+                    const leadsToRestore = Array.isArray(parsed) ? parsed : parsed.leads;
+
+                    if (!Array.isArray(leadsToRestore) || leadsToRestore.length === 0) {
+                        setStatus(fileName, STATUS.ERROR);
+                        return showToast("Invalid backup file: no leads found", "error");
+                    }
+
+                    setStatus(fileName, STATUS.SAVING, `Restoring ${leadsToRestore.length} leads...`);
+                    console.log(leadsToRestore);
+
+                    // 1. Send leads to backend restore endpoint
+                    const res = await axiosPublic.post("/leads", leadsToRestore);
+
+                    const insertedLeads = res.data.insertedLeads?.map((lead) => lead._id) || [];
+
+                    // 2. Format duplicate leads: extract phone, course names, and reason
+                    const duplicateLeads =
+                        res.data.notInsertedLeads?.map((item) => ({
+                            phone: item.phone,
+                            course: item.data?.courses?.map((c) => c.courseName) || [], // extracts ["Ethical Hacking", ...]
+                            reason: item.reason,
+                        })) || [];
+
+                    // 2. Add to file upload history table
+                    await axiosPublic.post("/file", {
+                        fileName,
+                        type: "lead",
+                        insertedLeads: insertedLeads,
+                        duplicateLeads: duplicateLeads,
+                    });
+
+                    // 3. Mark complete & refresh
+                    setStatus(fileName, STATUS.COMPLETED, "");
+                    refetch();
+                    showToast(res.data?.message || `Successfully restored ${leadsToRestore.length} leads!`, "success");
+                } catch (err) {
+                    console.error("Backup restore failed:", err);
+                    setStatus(fileName, STATUS.ERROR);
+                    showToast(err.response?.data?.message || "Failed to restore backup", "error");
+                }
+            };
+
+            reader.readAsText(file);
+        }
     };
 
     const handleDrop = (e) => {
@@ -176,8 +237,18 @@ const Page = () => {
     };
 
     const handlePaste = (e) => {
-        const file = e.clipboardData.files[0];
-        if (file && file.type === "text/csv") handleFile(file);
+        const file = e.clipboardData?.files?.[0];
+        if (!file) return;
+
+        const fileName = file.name?.toLowerCase() || "";
+        const isCSV = file.type === "text/csv" || fileName.endsWith(".csv");
+        const isJSON = file.type === "application/json" || fileName.endsWith(".json");
+
+        if (isCSV || isJSON) {
+            handleFile(file);
+        } else {
+            showToast("Pasted file must be a .csv or .json file", "warning");
+        }
     };
 
     useEffect(() => {
@@ -622,7 +693,13 @@ const Page = () => {
                                     <p className="text-sm text-gray-500 mt-1">Max file size: 5MB</p>
                                 </>
                             )}
-                            <input type="file" accept=".csv" className="hidden" ref={fileInputRef} onChange={(e) => handleFile(e.target.files[0])} />
+                            <input
+                                type="file"
+                                accept=".csv,.json"
+                                className="hidden"
+                                ref={fileInputRef}
+                                onChange={(e) => handleFile(e.target.files[0])}
+                            />
                         </div>
 
                         {/* Upload History */}
@@ -839,68 +916,61 @@ const Page = () => {
                 </form>
             </div>
 
-
-
             {selectedDuplicateLeads && (
-    <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-        <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl">
-            
-            {/* Modal Header */}
-            <div className="flex justify-between items-center p-4 border-b border-gray-800">
-                <div>
-                    <h3 className="text-lg font-semibold text-white">Duplicate / Failed Leads</h3>
-                    <p className="text-xs text-gray-400 truncate max-w-lg mt-0.5">
-                        {selectedDuplicateLeads.fileName}
-                    </p>
+                <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
+                    <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-3xl max-h-[85vh] flex flex-col shadow-2xl">
+                        {/* Modal Header */}
+                        <div className="flex justify-between items-center p-4 border-b border-gray-800">
+                            <div>
+                                <h3 className="text-lg font-semibold text-white">Duplicate / Failed Leads</h3>
+                                <p className="text-xs text-gray-400 truncate max-w-lg mt-0.5">{selectedDuplicateLeads.fileName}</p>
+                            </div>
+                            <button
+                                onClick={() => setSelectedDuplicateLeads(null)}
+                                className="btn btn-sm btn-ghost btn-circle text-gray-400 hover:text-white"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        {/* Modal Table Body */}
+                        <div className="overflow-y-auto p-4 pt-0 flex-1">
+                            <table className="w-full text-left text-sm text-gray-300">
+                                <thead className="bg-gray-800 text-xs text-gray-400 sticky top-0 uppercase">
+                                    <tr>
+                                        <th className="py-2.5 px-3">#</th>
+                                        <th className="py-2.5 px-3">Phone</th>
+                                        <th className="py-2.5 px-3">Course(s)</th>
+                                        <th className="py-2.5 px-3">Failed Reason</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-800">
+                                    {selectedDuplicateLeads.leads.map((item, index) => (
+                                        <tr key={item._id || index} className="hover:bg-gray-800/40">
+                                            <td className="py-2.5 px-3 text-gray-500 text-xs">{index + 1}</td>
+                                            <td className="py-2.5 px-3 font-mono text-white font-medium">{item.phone || "N/A"}</td>
+                                            <td className="py-2.5 px-3 text-gray-200">
+                                                {Array.isArray(item.course) ? item.course.join(", ") : item.course || "—"}
+                                            </td>
+                                            <td className="py-2.5 px-3 text-red-400 text-xs font-medium">{item.reason || "—"}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="p-3 border-t border-gray-800 flex justify-end">
+                            <button
+                                onClick={() => setSelectedDuplicateLeads(null)}
+                                className="btn btn-sm bg-gray-800 hover:bg-gray-700 text-white border-0"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <button
-                    onClick={() => setSelectedDuplicateLeads(null)}
-                    className="btn btn-sm btn-ghost btn-circle text-gray-400 hover:text-white"
-                >
-                    ✕
-                </button>
-            </div>
-
-            {/* Modal Table Body */}
-            <div className="overflow-y-auto p-4 pt-0 flex-1">
-                <table className="w-full text-left text-sm text-gray-300">
-                    <thead className="bg-gray-800 text-xs text-gray-400 sticky top-0 uppercase">
-                        <tr>
-                            <th className="py-2.5 px-3">#</th>
-                            <th className="py-2.5 px-3">Phone</th>
-                            <th className="py-2.5 px-3">Course(s)</th>
-                            <th className="py-2.5 px-3">Failed Reason</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-800">
-                        {selectedDuplicateLeads.leads.map((item, index) => (
-                            <tr key={item._id || index} className="hover:bg-gray-800/40">
-                                <td className="py-2.5 px-3 text-gray-500 text-xs">{index + 1}</td>
-                                <td className="py-2.5 px-3 font-mono text-white font-medium">{item.phone || "N/A"}</td>
-                                <td className="py-2.5 px-3 text-gray-200">
-                                    {Array.isArray(item.course) ? item.course.join(", ") : item.course || "—"}
-                                </td>
-                                <td className="py-2.5 px-3 text-red-400 text-xs font-medium">
-                                    {item.reason || "—"}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="p-3 border-t border-gray-800 flex justify-end">
-                <button
-                    onClick={() => setSelectedDuplicateLeads(null)}
-                    className="btn btn-sm bg-gray-800 hover:bg-gray-700 text-white border-0"
-                >
-                    Close
-                </button>
-            </div>
-        </div>
-    </div>
-)}
+            )}
         </div>
     );
 };

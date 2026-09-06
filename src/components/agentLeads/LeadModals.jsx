@@ -222,6 +222,13 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         setError("");
         console.log(modelStatus);
 
+
+        if(selectedLead.assignTo !== user?.email && user?.role !== "admin") {
+            setSaving(false)
+            return setError("Access denied: You do not have permission to edit this because it is assigned to another agent")
+        }
+
+        
         if (!selectedCourses || selectedCourses.length === 0) {
             setSaving(false);
             return setError("Please select at least one course");
@@ -748,8 +755,12 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                 <div className="text-white/50">Entry By</div>
                                 <div className="font-medium">{selectedLead.entryBy || "N/A"}</div>
                                 <div className="text-white/50">Created By</div>
-                                <div className="font-medium truncate max-w-[160px]" title={selectedLead.createdBy}>
+                                <div className="font-medium truncate max-w-[190px]" title={selectedLead.createdBy}>
                                     {selectedLead.createdBy || "N/A"}
+                                </div>
+                                <div className="text-white/50">Assign To</div>
+                                <div className="font-medium truncate max-w-[190px]" title={selectedLead.assignTo}>
+                                    {selectedLead.assignTo || "Not Assigned"}
                                 </div>
 
                                 <div className="text-white/50 flex items-center">Call Count</div>
@@ -1137,7 +1148,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                         <h3 className="text-lg font-semibold">Actions</h3>
 
                         <div className="flex mt-2 gap-2 justify-center">
-                            <div className="flex-1 min-w-[81px] border border-white">
+                            <div className="flex-1 max-w-[81px] border border-white">
                                 <QR value={`tel:${formatBDNumber(selectedLead?.phone)}`} />
                             </div>
                             <div className="space-y-2 flex-2">

@@ -1,6 +1,3 @@
-
-
-
 "use client";
 import axiosPublic from "@/api/axios";
 import Dropdown from "@/components/agentLeads/Dropdown";
@@ -24,54 +21,50 @@ import DetailsModal from "@/components/allLeads/DetailsModal";
 import LeadModals from "@/components/agentLeads/LeadModals";
 import { statusOptions } from "@/shared/AgentAllLeads";
 import { AuthContext } from "@/context/AuthContext";
-import { FaFileExport } from "react-icons/fa";
-import { handleLeadExport } from "@/utils/exportLeads";
-
+import { FaChevronDown, FaDatabase, FaFileCsv, FaFileExport, FaSpinner } from "react-icons/fa";
+import { handleLeadExport, handleSystemBackupExport } from "@/utils/exportLeads";
 
 const Page = () => {
     // 🔹 Filters
-    const [statusFilter, setStatusFilter] = useState("All");       // filter leads by assign status
-    const [categoryFilter, setCategoryFilter] = useState("All");   // filter leads by category
+    const [statusFilter, setStatusFilter] = useState("All"); // filter leads by assign status
+    const [categoryFilter, setCategoryFilter] = useState("All"); // filter leads by category
     const [sortMethod, setSortMethod] = useState("Default");
     const [lockSTatus, setLockStatus] = useState("All");
-    const [selectedSource, setSelectedSource] = useState("All")
-    const [selectedAgent, setSelectedAgent] = useState("All")
+    const [selectedSource, setSelectedSource] = useState("All");
+    const [selectedAgent, setSelectedAgent] = useState("All");
 
     // 🔹 Search
-    const [searchText, setSearchText] = useState("");              // text typed in search modal input
-    const [searchQuery, setSearchQuery] = useState("")// applied search keyword for filtering
+    const [searchText, setSearchText] = useState(""); // text typed in search modal input
+    const [searchQuery, setSearchQuery] = useState(""); // applied search keyword for filtering
 
     // 🔹 Selection
-    const [selectedIds, setSelectedIds] = useState(new Set());     // selected lead IDs
+    const [selectedIds, setSelectedIds] = useState(new Set()); // selected lead IDs
     const [lastSelectedIndex, setLastSelectedIndex] = useState(null); // last row index for shift+select
     const [customSelectCount, setCustomSelectCount] = useState(""); // quick select custom number
     const [selectedStatus, setSelectedStatus] = useState("All"); // filter by lead status
     // 🔹 Pagination
-    const [currentPage, setCurrentPage] = useState(1);             // current page number
-    const [leadsPerPage, setLeadsPerPage] = useState(50);          // leads shown per page
+    const [currentPage, setCurrentPage] = useState(1); // current page number
+    const [leadsPerPage, setLeadsPerPage] = useState(50); // leads shown per page
 
     // 🔹 Modals
     const [isSearchModalOpen, setIsSearchModalOpen] = useState(false); // search modal open/close
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false); // assign modal open/close
 
-
     //editLeadsDrawer
     const [showDrawer, setShowDrawer] = useState(false);
     const [editLead, setEditLead] = useState(null);
 
-
-
-
-
     const [selectedLead, setSelectedLead] = useState(null);
-    const { loogeduser } = useContext(AuthContext)
+    const { loogeduser } = useContext(AuthContext);
 
     const minDate = new Date(2025, 0, 1);
     const maxDate = new Date(2030, 11, 31);
     maxDate.setHours(23, 59, 59, 999);
 
+    const [exporting, setExporting] = useState(false);
+
     const params = new URLSearchParams({
-        status: (statusFilter == "All") ? "All" : (statusFilter == "Assigned") ? true : false,
+        status: statusFilter == "All" ? "All" : statusFilter == "Assigned" ? true : false,
         course: categoryFilter,
         search: searchQuery.trim(),
         sort: sortMethod,
@@ -82,43 +75,29 @@ const Page = () => {
         leadSource: selectedSource,
         assignTo: selectedAgent,
         leadStatus: selectedStatus,
-    }).toString()
+    }).toString();
 
-
-    const { data: leads, loading, error, refetch } = useFetch(`/leads?${params}`)
+    const { data: leads, loading, error, refetch } = useFetch(`/leads?${params}`);
     const { data: rawCourses } = useFetch("/course");
     const { data: courseOption } = useFetch("/leads/intersted-course");
-    const { data: leadSource } = useFetch("/leads/source")
-    const { data: user } = useFetch("/user")
-    const { user: authUser } = useContext(AuthContext)
-
-
+    const { data: leadSource } = useFetch("/leads/source");
+    const { data: user } = useFetch("/user");
+    const { user: authUser } = useContext(AuthContext);
 
     // Remove duplicates
 
+    console.log(courseOption);
 
-    console.log(courseOption)
-
-
-    const course = Array.from(
-        new Map(courseOption?.map((item) => [item.name, item])).values()
-    );
+    const course = Array.from(new Map(courseOption?.map((item) => [item.name, item])).values());
 
     // const userEmails = user.filter(item => item.role !== "admin").map(item => item.email)
-    const userNameAndEmail = user.filter(item => item.role !== "admin").map(item => item.name ? `${item.name} | ${item.email}` : item.email)
+    const userNameAndEmail = user.filter((item) => item.role !== "admin").map((item) => (item.name ? `${item.name} | ${item.email}` : item.email));
 
+    console.log(course);
 
-
-
-
-    console.log(course)
-
-    const { data: leadsCount, refetch: paginateRefetch } = useFetch(`/leads/count?${params}`)
-
-
+    const { data: leadsCount, refetch: paginateRefetch } = useFetch(`/leads/count?${params}`);
 
     const handleQuickSelect = (count) => {
-
         const newSet = new Set();
         for (let i = 0; i < Math.min(count, leads.length); i++) {
             newSet.add(leads[i]._id);
@@ -128,7 +107,6 @@ const Page = () => {
     };
 
     const handleCheckboxChange = (index, id, checked, shiftKey) => {
-
         setSelectedIds((prev) => {
             const newSet = new Set(prev);
 
@@ -149,17 +127,11 @@ const Page = () => {
         });
     };
 
-
-    const totalPages = Math.ceil((leadsCount?.count / leadsPerPage)) || 1
+    const totalPages = Math.ceil(leadsCount?.count / leadsPerPage) || 1;
 
     const goToPage = (page) => {
         if (page >= 1 && page <= totalPages) setCurrentPage(page);
     };
-
-
-
-
-
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -175,10 +147,10 @@ const Page = () => {
                 if (isSearchModalOpen) {
                     setIsSearchModalOpen(false);
                     setSearchText("");
-                } if (isAssignModalOpen) {
-                    setIsAssignModalOpen(false)
                 }
-                else {
+                if (isAssignModalOpen) {
+                    setIsAssignModalOpen(false);
+                } else {
                     setSearchQuery("");
                 }
                 return;
@@ -188,10 +160,7 @@ const Page = () => {
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") {
                 const tag = e.target.tagName;
 
-                const isTypingField =
-                    tag === "INPUT" ||
-                    tag === "TEXTAREA" ||
-                    e.target.isContentEditable;
+                const isTypingField = tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable;
 
                 if (isTypingField) return;
 
@@ -216,77 +185,57 @@ const Page = () => {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [isSearchModalOpen, selectedIds, lastSelectedIndex]);
 
-
     useEffect(() => {
         const timeOut = setTimeout(() => {
-            setSearchQuery(searchText)
+            setSearchQuery(searchText);
         }, 400);
 
-        return () => clearTimeout(timeOut)
-    }, [searchText])
+        return () => clearTimeout(timeOut);
+    }, [searchText]);
 
     useEffect(() => {
-
         // refetch()
         // paginateRefetch()
 
         if (searchQuery) {
-            setCurrentPage(1)
+            setCurrentPage(1);
         }
-    }, [statusFilter, searchQuery, categoryFilter, sortMethod, currentPage, leadsPerPage, lockSTatus])
-
+    }, [statusFilter, searchQuery, categoryFilter, sortMethod, currentPage, leadsPerPage, lockSTatus]);
 
     const handleDeleteLeads = async () => {
-
         let ids = [...selectedIds];
 
-        console.log(ids)
+        console.log(ids);
 
         if (!(ids?.length > 0)) {
-            return showAlert(
-                "No leads selected",
-                "Please select at least one lead To Delete",
-                "warning"
-            );
+            return showAlert("No leads selected", "Please select at least one lead To Delete", "warning");
         }
-        const result = await showConfirm(
-            "Are you sure?",
-            "This action will permanently delete selected leads.",
-            "Yes, delete it!"
-        );
+        const result = await showConfirm("Are you sure?", "This action will permanently delete selected leads.", "Yes, delete it!");
 
         if (result.isConfirmed) {
-
             try {
-                const res = await axiosPublic.delete("/leads", { data: { ids } })
-                console.log(res.data)
-                ids = []
-                setSelectedIds(new Set())
-                refetch()
-                paginateRefetch()
+                const res = await axiosPublic.delete("/leads", { data: { ids } });
+                console.log(res.data);
+                ids = [];
+                setSelectedIds(new Set());
+                refetch();
+                paginateRefetch();
             } catch (error) {
-                console.log(error)
-
+                console.log(error);
             }
 
             console.log(ids);
         }
-
-    }
-
-
-
+    };
 
     const findLockStatus = () => {
         const ids = [...selectedIds];
 
-        const filteredLeads = leads.filter(lead =>
-            ids.includes(lead._id.toString())
-        );
+        const filteredLeads = leads.filter((lead) => ids.includes(lead._id.toString()));
 
         if (filteredLeads.length === 0) return false;
         // Check if ALL filtered leads have isLocked = true
-        const allLocked = filteredLeads.every(lead => lead.isLocked === true);
+        const allLocked = filteredLeads.every((lead) => lead.isLocked === true);
 
         console.log("All Locked:", allLocked);
         return allLocked;
@@ -294,77 +243,58 @@ const Page = () => {
 
     const showLockStatus = findLockStatus();
 
-
-
-
     const findAssignStatus = () => {
         const ids = [...selectedIds];
-        const filteredLeads = leads.filter(lead => ids.includes(lead._id.toString()));
+        const filteredLeads = leads.filter((lead) => ids.includes(lead._id.toString()));
 
         if (filteredLeads.length === 0) return false;
 
         // check if ALL are assigned
-        const allAssigned = filteredLeads.every(lead => lead.assignStatus === true);
+        const allAssigned = filteredLeads.every((lead) => lead.assignStatus === true);
         return allAssigned;
     };
 
     const showAssignStatus = findAssignStatus(); // true = all assigned
 
-
-
-
     const handleLockLeads = async () => {
-
         const ids = [...selectedIds];
 
         if (!(ids?.length > 0)) {
-            return showAlert(
-                "No leads selected",
-                `Please select at least one lead To ${showLockStatus ? "Unlock" : "lock"}`,
-                "warning"
-            );
+            return showAlert("No leads selected", `Please select at least one lead To ${showLockStatus ? "Unlock" : "lock"}`, "warning");
         }
         const result = await showConfirm(
             "Are you sure?",
             `This action will ${showLockStatus ? "unlock" : "lock"} the selected leads, ${showLockStatus ? "allowing" : "preventing"} agents from making changes.`,
-            `Yes,  ${showLockStatus ? "Unlock" : "lock"} it!`
+            `Yes,  ${showLockStatus ? "Unlock" : "lock"} it!`,
         );
 
         if (result.isConfirmed) {
-
-
-            console.log(ids)
+            console.log(ids);
 
             const payload = {
                 ids: ids,
-                update: { isLocked: !showLockStatus }
-            }
+                update: { isLocked: !showLockStatus },
+            };
 
             try {
-                const res = await axiosPublic.patch("/leads", payload)
-                console.log(res.data)
-                refetch()
-                paginateRefetch()
-                setSelectedIds(new Set())
+                const res = await axiosPublic.patch("/leads", payload);
+                console.log(res.data);
+                refetch();
+                paginateRefetch();
+                setSelectedIds(new Set());
             } catch (error) {
-                console.log(error)
-
+                console.log(error);
             }
 
             console.log(ids);
         }
-    }
-
+    };
 
     const handleAssignToggle = async () => {
         const ids = [...selectedIds];
 
         if (!(ids?.length > 0)) {
-            return showAlert(
-                "No leads selected",
-                `Please select at least one lead to ${showAssignStatus ? "unassign" : "assign"}.`,
-                "warning"
-            );
+            return showAlert("No leads selected", `Please select at least one lead to ${showAssignStatus ? "unassign" : "assign"}.`, "warning");
         }
 
         // If not assigned, open modal instead of assigning directly
@@ -374,11 +304,7 @@ const Page = () => {
         }
 
         // If already assigned → Unassign directly
-        const result = await showConfirm(
-            "Are you sure?",
-            "This action will unassign the selected leads.",
-            "Yes, unassign them!"
-        );
+        const result = await showConfirm("Are you sure?", "This action will unassign the selected leads.", "Yes, unassign them!");
 
         if (result.isConfirmed) {
             try {
@@ -397,47 +323,45 @@ const Page = () => {
         }
     };
 
-
-
     useEffect(() => {
-        findLockStatus()
-    }, [selectedIds])
+        findLockStatus();
+    }, [selectedIds]);
 
     useEffect(() => {
         findAssignStatus();
     }, [selectedIds]);
 
-
-
     // 1) Export selected leads only
-    const handleExportSelected = () => {
+    const handleExportSelected = (type) => {
+        console.log(selectedIds);
         const ids = Array.from(selectedIds);
 
         if (!ids.length) {
-            return showAlert(
-                "No leads selected",
-                "Select at least one lead to export.",
-                "warning"
-            );
+            return showAlert("No leads selected", "Select at least one lead to export.", "warning");
         }
 
         // only export the leads that are currently loaded AND selected
         const selectedLeads = leads.filter((l) => ids.includes(l._id));
+        console.log(selectedLeads);
 
         if (!selectedLeads.length) {
             return showAlert(
                 "Selected leads not found",
                 "The selected leads are not in the current loaded list. (Try selecting from this page.)",
-                "warning"
+                "warning",
             );
         }
 
-        handleLeadExport(course, selectedLeads);
+        if (type == "csv") {
+            handleLeadExport(selectedLeads);
+        } else {
+            handleSystemBackupExport(selectedLeads, "selected_leads_backup");
+        }
     };
 
-
     // 2) Export all-time leads (fetch from backend)
-    const handleExportAllTime = async () => {
+    const handleExportAllTime = async (type) => {
+        setExporting(true);
         try {
             // You should ideally create a backend endpoint like: GET /leads/export
             // But if you don't have it, this is a workable approach:
@@ -465,25 +389,25 @@ const Page = () => {
                 return showAlert("No leads found", "There are no leads to export.", "info");
             }
 
-            handleLeadExport(course, allLeads);
+            if (type == "csv") {
+                await handleLeadExport(allLeads);
+            } else {
+                await handleSystemBackupExport(allLeads, "selected_leads_backup");
+            }
+
+            setExporting(false)
+            
         } catch (err) {
+            setExporting(false)
             console.log(err);
             showAlert("Export failed", err?.message || "Something went wrong.", "error");
         }
     };
 
-
-
-
-
-
-
-    console.log(showLockStatus)
+    console.log(showLockStatus);
 
     return (
         <div className="p-6  min-h-[calc(100vh-100px)] lg:h-screen overflow-hidden ">
-
-
             {/* Filters */}
             <div className="flex  flex-wrap justify-between items-center gap-4 mb-4">
                 {/* Status Filter */}
@@ -491,10 +415,9 @@ const Page = () => {
                     {["All", "Assigned", "Not Assigned"].map((status) => (
                         <button
                             key={status}
-                            className={`btn flex-1 lg:flex-auto  btn-sm ${statusFilter === status
-                                ? "btn-primary bg-blue-600 text-white"
-                                : "btn-outline"
-                                }`}
+                            className={`btn flex-1 lg:flex-auto  btn-sm ${
+                                statusFilter === status ? "btn-primary bg-blue-600 text-white" : "btn-outline"
+                            }`}
                             onClick={() => {
                                 setStatusFilter(status);
                                 setCurrentPage(1);
@@ -511,7 +434,6 @@ const Page = () => {
                         label="Assigned Agent"
                         options={["All", ...userNameAndEmail]}
                         setCurrentPage={setCurrentPage}
-
                     />
 
                     <Dropdown
@@ -521,33 +443,21 @@ const Page = () => {
                         label="Status"
                         options={statusOptions}
                         setCurrentPage={setCurrentPage}
-
                     />
                 </div>
 
-
-
-
                 <div className="flex fixed lg:static top-7 right-[25%] items-center gap-2">
-                    <button
-                        onClick={() => setIsSearchModalOpen(true)}
-                        className="flex items-center gap-2"
-                    >
+                    <button onClick={() => setIsSearchModalOpen(true)} className="flex items-center gap-2">
                         <IoSearchOutline className="text-lg" />
                         <span className="hidden text-sm text-white/70 md:inline">Ctrl + K</span>
                     </button>
 
                     {searchText && (
-                        <button
-                            className="btn btn-xs btn-outline"
-                            onClick={() => setSearchText("")}
-                        >
+                        <button className="btn btn-xs btn-outline" onClick={() => setSearchText("")}>
                             Clear
                         </button>
                     )}
                 </div>
-
-
 
                 <div className="flex  w-full lg:w-auto gap-2">
                     <Dropdown
@@ -557,7 +467,6 @@ const Page = () => {
                         label="source"
                         options={["All", ...leadSource]}
                         setCurrentPage={setCurrentPage}
-
                     />
                     <Dropdown
                         dropdownPosition="dropdown-start"
@@ -574,10 +483,12 @@ const Page = () => {
                         selectedState={categoryFilter}
                         setSelectedState={setCategoryFilter}
                         label="Select Course"
-                        options={["All", ...courseOption
-                            .slice() // clone to avoid mutating original
-                            .sort((a, b) => a?.localeCompare(b)) // ✅ sort alphabetically
-                            .map(item => item)
+                        options={[
+                            "All",
+                            ...courseOption
+                                .slice() // clone to avoid mutating original
+                                .sort((a, b) => a?.localeCompare(b)) // ✅ sort alphabetically
+                                .map((item) => item),
                         ]}
                         setCurrentPage={setCurrentPage}
                     />
@@ -586,166 +497,212 @@ const Page = () => {
                         selectedState={sortMethod}
                         setSelectedState={setSortMethod}
                         label="Sort By"
-                        options={["Default", "Ascending", "Descending" , "Last Modified"]}
+                        options={["Default", "Ascending", "Descending", "Last Modified"]}
                         setCurrentPage={setCurrentPage}
                         defaultOptions={"Default"}
                     />
-
-
                 </div>
             </div>
 
-
-            {
-                loading ? <div className="w-full flex gap-3 justify-center items-center h-96"><span className="loading loading-spinner text-blue-600"></span> Loading...  </div> : ""
-
-            }
+            {loading ? (
+                <div className="w-full flex gap-3 justify-center items-center h-96">
+                    <span className="loading loading-spinner text-blue-600"></span> Loading...{" "}
+                </div>
+            ) : (
+                ""
+            )}
 
             {/* Table */}
-            {!loading && <>
+            {!loading && (
+                <>
+                    <LeadTable
+                        currentPage={currentPage}
+                        leads={leads}
+                        handleCheckboxChange={handleCheckboxChange}
+                        leadsPerPage={leadsPerPage}
+                        selectedIds={selectedIds}
+                        setSelectedIds={setSelectedIds}
+                        setSelectedLead={setSelectedLead}
+                        seletedLead={selectedLead}
+                        onEdit={(lead) => {
+                            setEditLead(lead);
+                            setShowDrawer(true);
+                        }}
+                        user={user}
+                    />
 
-                        <LeadTable
-                    currentPage={currentPage}
-                    leads={leads}
-                    handleCheckboxChange={handleCheckboxChange}
-                    leadsPerPage={leadsPerPage}
-                    selectedIds={selectedIds}
-                    setSelectedIds={setSelectedIds}
-                    setSelectedLead={setSelectedLead}
-                    seletedLead={selectedLead}
-                    onEdit={(lead) => {
-                        setEditLead(lead);
-                        setShowDrawer(true);
-                    }}
-                    user={user}
+                    {/* Footer Controls */}
+                    <div className="mt-4 flex flex-col lg:flex-row   justify-between items-center gap-4 border-t border-base-content/10 pt-4">
+                        {/* Assignment Tools */}
+                        <div className="flex flex-1   w-full  justify-between  items-center gap-2">
+                            <span className="text-sm hidden md:block text-nowrap">
+                                Selected: <b>{selectedIds.size}</b>
+                            </span>
+                            <div className="flex w-full md:w-auto lg:w-full items-center gap-2 ">
+                                <span className="text-sm text-nowrap">Quick Select:</span>
+                                {[10, 50, 100].map((count) => (
+                                    <button
+                                        key={count}
+                                        className={`btn btn-xs ${selectedIds.size === count ? "btn-primary bg-blue-600" : "btn-outline"}`}
+                                        onClick={() => handleQuickSelect(count)}
+                                    >
+                                        {count}
+                                    </button>
+                                ))}
 
-                />
-
-                {/* Footer Controls */}
-                <div className="mt-4 flex flex-col lg:flex-row   justify-between items-center gap-4 border-t border-base-content/10 pt-4">
-                    {/* Assignment Tools */}
-                    <div className="flex flex-1   w-full  justify-between  items-center gap-2">
-                        <span className="text-sm hidden md:block text-nowrap">
-                            Selected: <b>{selectedIds.size}</b>
-                        </span>
-                        <div className="flex w-full md:w-auto lg:w-full items-center gap-2 ">
-                            <span className="text-sm text-nowrap">Quick Select:</span>
-                            {[10, 50, 100].map((count) => (
-                                <button
-                                    key={count}
-                                    className={`btn btn-xs ${selectedIds.size === count ? "btn-primary bg-blue-600" : "btn-outline"
-                                        }`}
-                                    onClick={() => handleQuickSelect(count)}
+                                {/* Custom Input */}
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        const count = parseInt(customSelectCount);
+                                        if (!isNaN(count) && count > 0) handleQuickSelect(count);
+                                    }}
+                                    className="flex items-center gap-1"
                                 >
-                                    {count}
-                                </button>
-                            ))}
-
-                            {/* Custom Input */}
-                            <form
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    const count = parseInt(customSelectCount);
-                                    if (!isNaN(count) && count > 0) handleQuickSelect(count);
-                                }}
-                                className="flex items-center gap-1"
-                            >
-                                <input
-                                    type="number"
-                                    min="1"
-                                    className="input input-xs focus:outline-none border-white pl-2 rounded-none! input-bordered w-16"
-                                    value={customSelectCount}
-                                    onChange={(e) => setCustomSelectCount(e.target.value)}
-                                    placeholder="Custom"
-                                />
-
-                            </form>
-                            {/* <button
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        className="input input-xs focus:outline-none border-white pl-2 rounded-none! input-bordered w-16"
+                                        value={customSelectCount}
+                                        onChange={(e) => setCustomSelectCount(e.target.value)}
+                                        placeholder="Custom"
+                                    />
+                                </form>
+                                {/* <button
                                 className="btn bg-blue-600 btn-sm btn-primary"
                                 onClick={() => setIsAssignModalOpen(true)}
                             >
                                 Assign to
                             </button> */}
-                            <button
-                                className="btn flex bg-blue-600 btn-sm btn-success border-blue-600 text-white"
-                                onClick={handleAssignToggle}
-                            >
-                                {showAssignStatus ? "Unassign" : "Assign"}
-                            </button>
+                                <button className="btn flex bg-blue-600 btn-sm btn-success border-blue-600 text-white" onClick={handleAssignToggle}>
+                                    {showAssignStatus ? "Unassign" : "Assign"}
+                                </button>
 
-                            {
+                                {}
 
-                            }
-
-                            {authUser?.role == "admin" && <button
-                                className="btn flex gap-1 bg-red-500 btn-sm btn-error text-white"
-                                onClick={handleDeleteLeads}
-                            >
-                                <MdDelete />
-                                Delete
-                            </button>}
-                            <button
-                                className="btn flex bg-[#a855f7]  btn-sm btn-primary border-[#a855f7] text-white"
-                                onClick={handleLockLeads}
-                            >
-                                {showLockStatus ? <BiSolidLockOpen /> : <BiSolidLockAlt />}  {showLockStatus ? "Unlock" : "lock"}
-
-                            </button>
+                                {authUser?.role == "admin" && (
+                                    <button className="btn flex gap-1 bg-red-500 btn-sm btn-error text-white" onClick={handleDeleteLeads}>
+                                        <MdDelete />
+                                        Delete
+                                    </button>
+                                )}
+                                <button className="btn flex bg-[#a855f7]  btn-sm btn-primary border-[#a855f7] text-white" onClick={handleLockLeads}>
+                                    {showLockStatus ? <BiSolidLockOpen /> : <BiSolidLockAlt />} {showLockStatus ? "Unlock" : "lock"}
+                                </button>
+                            </div>
                         </div>
 
+                        {/* Pagination */}
+                        <div className="flex  md:justify-between md:w-full items-center gap-4 flex-wrap">
+                            {/* Items Per Page Selector */}
+                            <div className="flex justify-between lg:ml-auto lg:justify-start w-full md:w-auto items-center gap-2">
+                                <p className="text-sm  text-nowrap">Per page:</p>
+                                <select
+                                    className="select px-1 w-14 select-sm focus:outline-0"
+                                    value={leadsPerPage}
+                                    onChange={(e) => {
+                                        setLeadsPerPage(parseInt(e.target.value));
+                                        setCurrentPage(1);
+                                    }}
+                                >
+                                    {[10, 25, 50, 100, 200, 500, 1000].map((n) => (
+                                        <option key={n} value={n}>
+                                            {n}
+                                        </option>
+                                    ))}
+                                </select>
+                                <span className="text-sm lg:hidden text-nowrap">
+                                    Selected: <b>{selectedIds.size}</b>
+                                </span>
+                            </div>
 
+                            {/* Pagination Buttons */}
+                            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={goToPage} />
 
-                    </div>
+                            <div className="dropdown dropdown-top dropdown-end">
+                                <div
+                                    tabIndex={0}
+                                    role="button"
+                                    className="btn btn-primary btn-sm bg-blue-600 hover:bg-blue-700 flex items-center gap-1.5"
+                                >
+                                     <FaFileExport />   Export selected <FaChevronDown className="text-xs ml-0.5 opacity-80" />
+                                </div>
+                                <ul
+                                    tabIndex={0}
+                                    className="dropdown-content z-50 menu p-2 shadow-2xl bg-slate-900 border border-slate-700 rounded-lg w-56 mb-2 text-slate-100"
+                                >
+                                    <li className="menu-title text-slate-400 text-xs px-2 py-1">Selected ({selectedIds.size})</li>
+                                    <li>
+                                        <button
+                                            onClick={() => handleExportSelected("csv")}
+                                            className="flex items-center gap-2 py-2 hover:bg-slate-800 rounded"
+                                        >
+                                            <FaFileCsv className="text-emerald-400 text-base" />
+                                            <div>
+                                                <p className="font-semibold text-xs leading-none">Call Sheet (.csv)</p>
+                                                <p className="text-[10px] text-slate-400">Formatted for Google Sheets</p>
+                                            </div>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
+                                            onClick={() => handleExportSelected("json")}
+                                            className="flex items-center gap-2 py-2 hover:bg-slate-800 rounded"
+                                        >
+                                            <FaDatabase className="text-amber-400 text-base" />
+                                            <div>
+                                                <p className="font-semibold text-xs leading-none">System Backup (.json)</p>
+                                                <p className="text-[10px] text-slate-400">Full lossless raw data</p>
+                                            </div>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
 
-                    {/* Pagination */}
-                    <div className="flex  md:justify-between md:w-full items-center gap-4 flex-wrap">
-                        {/* Items Per Page Selector */}
-                        <div className="flex justify-between lg:ml-auto lg:justify-start w-full md:w-auto items-center gap-2">
-                            <p className="text-sm  text-nowrap">Per page:</p>
-                            <select
-                                className="select px-1 w-14 select-sm focus:outline-0"
-                                value={leadsPerPage}
-                                onChange={(e) => {
-                                    setLeadsPerPage(parseInt(e.target.value));
-                                    setCurrentPage(1);
-                                }}
-                            >
-                                {[10, 25, 50, 100, 200, 500, 1000].map((n) => (
-                                    <option key={n} value={n}>
-                                        {n}
-                                    </option>
-                                ))}
-                            </select>
-                            <span className="text-sm lg:hidden text-nowrap">
-                                Selected: <b>{selectedIds.size}</b>
-                            </span>
+                            {/* 2. Export All-Time Dropdown */}
+                            <div className="dropdown dropdown-top dropdown-end">
+                                <div
+                                    tabIndex={0}
+                                    role="button"
+                                    className="btn btn-outline btn-sm border-blue-600 text-blue-500 hover:bg-blue-600 hover:text-white flex items-center gap-1.5"
+                                >
+                                   {exporting ? <FaSpinner className="animate-spin"/> :  <FaFileExport /> } { exporting ? "Exporting..." : "Export all-time"} <FaChevronDown className="text-xs ml-0.5 opacity-80" />
+                                </div>
+                                <ul
+                                    tabIndex={0}
+                                    className="dropdown-content z-50 menu p-2 shadow-2xl bg-slate-900 border border-slate-700 rounded-lg w-56 mb-2 text-slate-100"
+                                >
+                                    <li className="menu-title text-slate-400 text-xs px-2 py-1">All-Time Database</li>
+                                    <li>
+                                        <button
+                                            onClick={() => handleExportAllTime("csv")}
+                                            className="flex items-center gap-2 py-2 hover:bg-slate-800 rounded"
+                                        >
+                                            <FaFileCsv className="text-emerald-400 text-base" />
+                                            <div>
+                                                <p className="font-semibold text-xs leading-none">Call Sheet (.csv)</p>
+                                                <p className="text-[10px] text-slate-400">Formatted for Google Sheets</p>
+                                            </div>
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button
+                                            onClick={() => handleExportAllTime("json")}
+                                            className="flex items-center gap-2 py-2 hover:bg-slate-800 rounded"
+                                        >
+                                            <FaDatabase className="text-amber-400 text-base" />
+                                            <div>
+                                                <p className="font-semibold text-xs leading-none">System Backup (.json)</p>
+                                                <p className="text-[10px] text-slate-400">Full lossless raw data</p>
+                                            </div>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-
-                        {/* Pagination Buttons */}
-                        <Pagination
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            onPageChange={goToPage}
-                        />
-
-                        <button onClick={handleExportSelected} className="btn btn-primary btn-sm bg-blue-600 "> <FaFileExport />  Export selected</button>
-
-
-                        <button
-                            onClick={handleExportAllTime}
-                            className="btn btn-outline btn-sm border-blue-600 text-blue-600"
-                        >
-                            <FaFileExport /> Export all-time
-                        </button>
-
                     </div>
-
-                </div>
-            </>}
-
-
-
-
+                </>
+            )}
 
             <SearchModal
                 isOpen={isSearchModalOpen}
@@ -755,7 +712,6 @@ const Page = () => {
                 setSearchQuery={setSearchQuery}
                 results={leads}
                 setCurrentPage={setCurrentPage}
-
             />
 
             <AssignModal
@@ -768,8 +724,6 @@ const Page = () => {
                 setIsAssignModalOpen={setIsAssignModalOpen}
             />
 
-
-
             {/* 🟦 Lead Edit Drawer */}
             <EditDrawer
                 showDrawer={showDrawer}
@@ -778,9 +732,7 @@ const Page = () => {
                 course={course}
                 setEditLead={setEditLead}
                 refetch={refetch}
-
             />
-
 
             <LeadModals
                 selectedLead={selectedLead}
@@ -788,10 +740,7 @@ const Page = () => {
                 statusOptions={statusOptions}
                 refetch={refetch}
                 course={rawCourses}
-
-
             />
-
         </div>
     );
 };
@@ -799,5 +748,3 @@ const Page = () => {
 export default Page;
 
 // 650 line
-
-
