@@ -68,14 +68,6 @@ const Page = () => {
                 <h2 className="text-white text-xl font-semibold capitalize">{user.name} Dashboard</h2>
                 <div className="flex gap-2 items-center">
                     <p className="whitespace-nowrap hidden lg:block text-gray-300">View Statistics for:</p>
-
-                    {/* <CustomSelect
-            selected={selectedFilter}
-            setSelected={setSelectedFilter}
-            options={options}
-
-          /> */}
-
                     <DateRangeComponent state={state} setState={setState} />
                 </div>
             </div>
