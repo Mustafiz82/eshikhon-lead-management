@@ -21,8 +21,11 @@ import DetailsModal from "@/components/allLeads/DetailsModal";
 import LeadModals from "@/components/agentLeads/LeadModals";
 import { statusOptions } from "@/shared/AgentAllLeads";
 import { AuthContext } from "@/context/AuthContext";
-import { FaChevronDown, FaDatabase, FaFileCsv, FaFileExport, FaSpinner } from "react-icons/fa";
+import { FaArrowDown, FaChevronDown, FaDatabase, FaFileCsv, FaFileExport, FaSpinner } from "react-icons/fa";
 import { handleLeadExport, handleSystemBackupExport } from "@/utils/exportLeads";
+import { FaArrowDownZA } from "react-icons/fa6";
+import { BsArrowDown } from "react-icons/bs";
+import { IoIosArrowDown } from "react-icons/io";
 
 const Page = () => {
     // 🔹 Filters
@@ -32,6 +35,20 @@ const Page = () => {
     const [lockSTatus, setLockStatus] = useState("All");
     const [selectedSource, setSelectedSource] = useState("All");
     const [selectedAgent, setSelectedAgent] = useState("All");
+
+    const [selectedCreatedDate, setSelectedCreatedDate] = useState("All");
+    const [selectedAssingedDate, setSelectedAssignedDate] = useState("All");
+    const [selectedPaymentMode, setSelectedPaymentMode] = useState("All");
+    const [selectedCourseType, setSelectedCourseType] = useState("All");
+    const [followUpActive, setFollowUpActive] = useState(false);
+    const [selectedFollowedDate, setSelectedFollowedpDate] = useState("All");
+
+    const [upcomingPaymentsDate, setUpcomingPaymentsDate] = useState("None");
+    const [missedFUActive, setMissedFUActive] = useState(false);
+    const [missedUPActive, setMissedUPActive] = useState(false);
+    const [selectedMissedFollowedDate, setSelectedMissedFolllowUpDate] = useState("All");
+
+    const [isRow2Hidden, setIsRow2Hidden] = useState(true);
 
     // 🔹 Search
     const [searchText, setSearchText] = useState(""); // text typed in search modal input
@@ -46,6 +63,45 @@ const Page = () => {
     const [currentPage, setCurrentPage] = useState(1); // current page number
     const [leadsPerPage, setLeadsPerPage] = useState(50); // leads shown per page
 
+    const minDate = new Date(2025, 0, 1);
+    const maxDate = new Date(2030, 11, 31);
+    maxDate.setHours(23, 59, 59, 999);
+
+    const [createdDateRange, setCreatedDateRange] = useState([
+        {
+            startDate: minDate,
+            endDate: maxDate,
+            key: "selection",
+        },
+    ]);
+    const [assignDateRange, setAssignDateRange] = useState([
+        {
+            startDate: minDate,
+            endDate: maxDate,
+            key: "selection",
+        },
+    ]);
+
+    const [paymentDateRange, setPaymentDateRange] = useState([
+        {
+            startDate: minDate,
+            endDate: maxDate,
+            key: "selection",
+        },
+    ]);
+
+    const [followUpDateRange, setFollowUpDateRange] = useState([
+        {
+            startDate: minDate,
+            endDate: maxDate,
+            key: "selection",
+        },
+    ]);
+
+    const assignedDateOptions = ["All", "DateRange"];
+    const followedOptions = ["All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year", "DateRange"];
+    const upcOptions = ["None", "All", "Today", "Next 3 Days", "Next 7 Days", "Next 30 Days", "This Year"];
+
     // 🔹 Modals
     const [isSearchModalOpen, setIsSearchModalOpen] = useState(false); // search modal open/close
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false); // assign modal open/close
@@ -57,9 +113,9 @@ const Page = () => {
     const [selectedLead, setSelectedLead] = useState(null);
     const { loogeduser } = useContext(AuthContext);
 
-    const minDate = new Date(2025, 0, 1);
-    const maxDate = new Date(2030, 11, 31);
-    maxDate.setHours(23, 59, 59, 999);
+    // const minDate = new Date(2025, 0, 1);
+    // const maxDate = new Date(2030, 11, 31);
+    // maxDate.setHours(23, 59, 59, 999);
 
     const [exporting, setExporting] = useState(false);
 
@@ -75,6 +131,21 @@ const Page = () => {
         leadSource: selectedSource,
         assignTo: selectedAgent,
         leadStatus: selectedStatus,
+        upcomingPaymentsDate: upcomingPaymentsDate,//
+        courseType: selectedCourseType,
+        assignDate: selectedAssingedDate,
+        paymentMode: selectedPaymentMode,
+        assignStartDate: assignDateRange[0].startDate,
+        assignEndDate: assignDateRange[0].endDate,
+        paymentStartDate: paymentDateRange[0].startDate,
+        paymentEndDate: paymentDateRange[0].endDate,
+        followupStartDate: followUpDateRange[0].startDate,
+        followupEndDate: followUpDateRange[0].endDate,
+        showOnlyFollowups: followUpActive,
+        followUpDate: selectedFollowedDate,
+        showOnlyMissedFollowUps: missedFUActive,
+        showOnlyMissedPayments: missedUPActive,
+        missedFollowUpDate: selectedMissedFollowedDate,
     }).toString();
 
     const { data: leads, loading, error, refetch } = useFetch(`/leads?${params}`);
@@ -395,10 +466,9 @@ const Page = () => {
                 await handleSystemBackupExport(allLeads, "selected_leads_backup");
             }
 
-            setExporting(false)
-            
+            setExporting(false);
         } catch (err) {
-            setExporting(false)
+            setExporting(false);
             console.log(err);
             showAlert("Export failed", err?.message || "Something went wrong.", "error");
         }
@@ -416,7 +486,7 @@ const Page = () => {
                         <button
                             key={status}
                             className={`btn flex-1 lg:flex-auto  btn-sm ${
-                                statusFilter === status ? "btn-primary bg-blue-600 text-white" : "btn-outline"
+                                statusFilter === status ? "btn-primary bg-blue-600 text-white" : "btn-outline bg-gray-800  border-white/10"
                             }`}
                             onClick={() => {
                                 setStatusFilter(status);
@@ -453,7 +523,7 @@ const Page = () => {
                     </button>
 
                     {searchText && (
-                        <button className="btn btn-xs btn-outline" onClick={() => setSearchText("")}>
+                        <button className="btn btn-xs btn-outline border-white/20" onClick={() => setSearchText("")}>
                             Clear
                         </button>
                     )}
@@ -467,6 +537,7 @@ const Page = () => {
                         label="source"
                         options={["All", ...leadSource]}
                         setCurrentPage={setCurrentPage}
+                        showSearch
                     />
                     <Dropdown
                         dropdownPosition="dropdown-start"
@@ -493,6 +564,15 @@ const Page = () => {
                         setCurrentPage={setCurrentPage}
                     />
                     <Dropdown
+                        dropdownPosition="dropdown-center"
+                        selectedState={selectedCourseType}
+                        showSearch
+                        setSelectedState={setSelectedCourseType}
+                        label="Type"
+                        options={["All", "Online", "Offline", "Video Course", "Download Course", "Free Course", "Both", "Not Specified"]}
+                        setCurrentPage={setCurrentPage}
+                    />
+                    <Dropdown
                         dropdownPosition="dropdown-end"
                         selectedState={sortMethod}
                         setSelectedState={setSortMethod}
@@ -501,8 +581,128 @@ const Page = () => {
                         setCurrentPage={setCurrentPage}
                         defaultOptions={"Default"}
                     />
+
+                    <button
+                        onClick={() => setIsRow2Hidden(!isRow2Hidden)}
+                        className={`flex bg-gray-800  btn btn-sm ${!isRow2Hidden && "!bg-blue-600"}`}
+                    >
+                        More <IoIosArrowDown className={`duration-300 ${!isRow2Hidden && "rotate-180"}`} />
+                    </button>
                 </div>
             </div>
+
+            {/* row 2 */}
+            {!isRow2Hidden && (
+                <div className="mb-3 flex [&>*]:flex-1 gap-2">
+                    <div>
+                        <Dropdown
+                            dropdownPosition="dropdown-start"
+                            datePositon="left-0"
+                            selectedState={selectedCreatedDate}
+                            setSelectedState={setSelectedCreatedDate}
+                            label="Created Date"
+                            options={assignedDateOptions}
+                            setCurrentPage={setCurrentPage}
+                            showDatePicker
+                            dateRange={createdDateRange}
+                            setDateRange={setCreatedDateRange}
+                            minDate={minDate}
+                            maxDate={maxDate}
+                        />
+                    </div>
+                    <Dropdown
+                        dropdownPosition=""
+                        datePositon="left-0"
+                        selectedState={selectedAssingedDate}
+                        setSelectedState={setSelectedAssignedDate}
+                        label="Assigned Date"
+                        options={assignedDateOptions}
+                        setCurrentPage={setCurrentPage}
+                        showDatePicker
+                        dateRange={assignDateRange}
+                        setDateRange={setAssignDateRange}
+                        minDate={minDate}
+                        maxDate={maxDate}
+                    />
+
+                    <Dropdown
+                        dropdownPosition=""
+                        datePositon="-left-1/2"
+                        selectedState={selectedPaymentMode}
+                        setSelectedState={setSelectedPaymentMode}
+                        label="Payments Date"
+                        options={assignedDateOptions}
+                        setCurrentPage={setCurrentPage}
+                        showDatePicker
+                        dateRange={paymentDateRange}
+                        setDateRange={setPaymentDateRange}
+                        minDate={minDate}
+                        maxDate={maxDate}
+                    />
+
+                    {/* Follow Ups Toggle */}
+                    <button
+                        className={`btn btn-sm   text-[10px] 3xl:text-[12px] ${followUpActive ? "btn-primary bg-blue-600" : "bg-gray-800 btn-outline border-white/10"}`}
+                        onClick={() => {
+                            setFollowUpActive(!followUpActive);
+                            setMissedFUActive(false);
+                            setSelectedFollowedpDate("All");
+                            setCurrentPage(1);
+                        }}
+                    >
+                        Follow Ups
+                    </button>
+
+                    {/* Filter by Followed Date */}
+                    {followUpActive && !missedFUActive && (
+                        <Dropdown
+                            dropdownPosition="dropdown-end"
+                            selectedState={selectedFollowedDate}
+                            setSelectedState={setSelectedFollowedpDate}
+                            label="Followed Date"
+                            options={followedOptions}
+                            setCurrentPage={setCurrentPage}
+                            dateRange={followUpDateRange}
+                            setDateRange={setFollowUpDateRange}
+                            minDate={minDate}
+                            maxDate={maxDate}
+                        />
+                    )}
+
+                    {/* Missed Follow Ups Toggle */}
+                    <button
+                        className={`btn text-[10px] 3xl:text-[12px] btn-sm ${missedFUActive ? "btn-primary bg-blue-600" : "btn-outline bg-gray-800 border-white/10"}`}
+                        onClick={() => {
+                            setMissedFUActive(!missedFUActive);
+                            setSelectedMissedFolllowUpDate("All");
+                            setFollowUpActive(false);
+                            setCurrentPage(1);
+                        }}
+                    >
+                        Missed FU
+                    </button>
+
+                    <Dropdown
+                        dropdownPosition="dropdown-end"
+                        selectedState={upcomingPaymentsDate}
+                        setSelectedState={setUpcomingPaymentsDate}
+                        label="UPC Payments"
+                        options={upcOptions}
+                        defaultOptions={"None"}
+                        setCurrentPage={setCurrentPage}
+                    />
+
+                    <button
+                        className={`btn text-[10px] 3xl:text-[12px] btn-sm ${missedUPActive ? "btn-primary bg-blue-600" : "btn-outline bg-gray-800 border-white/10"}`}
+                        onClick={() => {
+                            setMissedUPActive(!missedUPActive);
+                            setCurrentPage(1);
+                        }}
+                    >
+                        Missed UP
+                    </button>
+                </div>
+            )}
 
             {loading ? (
                 <div className="w-full flex gap-3 justify-center items-center h-96">
@@ -516,6 +716,7 @@ const Page = () => {
             {!loading && (
                 <>
                     <LeadTable
+                        isRow2Hidden={isRow2Hidden}
                         currentPage={currentPage}
                         leads={leads}
                         handleCheckboxChange={handleCheckboxChange}
@@ -625,7 +826,7 @@ const Page = () => {
                                     role="button"
                                     className="btn btn-primary btn-sm bg-blue-600 hover:bg-blue-700 flex items-center gap-1.5"
                                 >
-                                     <FaFileExport />   Export selected <FaChevronDown className="text-xs ml-0.5 opacity-80" />
+                                    <FaFileExport /> Export selected <FaChevronDown className="text-xs ml-0.5 opacity-80" />
                                 </div>
                                 <ul
                                     tabIndex={0}
@@ -666,7 +867,8 @@ const Page = () => {
                                     role="button"
                                     className="btn btn-outline btn-sm border-blue-600 text-blue-500 hover:bg-blue-600 hover:text-white flex items-center gap-1.5"
                                 >
-                                   {exporting ? <FaSpinner className="animate-spin"/> :  <FaFileExport /> } { exporting ? "Exporting..." : "Export all-time"} <FaChevronDown className="text-xs ml-0.5 opacity-80" />
+                                    {exporting ? <FaSpinner className="animate-spin" /> : <FaFileExport />}{" "}
+                                    {exporting ? "Exporting..." : "Export all-time"} <FaChevronDown className="text-xs ml-0.5 opacity-80" />
                                 </div>
                                 <ul
                                     tabIndex={0}

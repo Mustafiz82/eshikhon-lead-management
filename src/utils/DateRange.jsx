@@ -4,7 +4,7 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { FaChevronDown } from "react-icons/fa6";
 
-export default function DateRangeComponent({state, setState}) {
+export default function DateRangeComponent({state, setState , datePositon}) {
     const [showDateRange, setShowDateRange] = useState(false);
 
 
@@ -84,8 +84,8 @@ export default function DateRangeComponent({state, setState}) {
             {showDateRange && (
                 <div
                     ref={dateRangeRef}
-                    className="absolute top-full right-0  z-9999!  mt-3 
-                    shadow-lg rounded-lg overflow-hidden"
+                    className={`absolute top-full ${datePositon}  z-9999!  mt-3 
+                    shadow-lg rounded-lg overflow-hidden`}
                 >
                     <DateRangePicker
                         ranges={state}

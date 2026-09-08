@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 
 const Dropdown = ({
     dropdownPosition = "",
+    datePositon = "right-0",
     selectedState = "All",
     setSelectedState = () => { },
     label = "",
@@ -70,9 +71,9 @@ const Dropdown = ({
             <div className={`dropdown text-xs bg-gray-800 flex-1 lg:flex-auto ${dropdownPosition}`}>
                 <button
                     type="button"
-                    className={`btn btn-sm text-[10px] 3xl:text-[12px] w-full capitalize ${selectedState !== (defaultOptions || "All")
+                    className={`btn btn-sm text-[10px] 3xl:text-[12px] w-full text-nowrap capitalize ${selectedState !== (defaultOptions || "All")
                         ? "btn-blue-600 bg-blue-600 text-white"
-                        : "btn-outline"
+                        : "btn-outline border-white/10"
                         }`}
                 >
                     {label} ({selectedState})
@@ -133,7 +134,7 @@ const Dropdown = ({
                                     />
                                 </li> */}
 
-                                <DateRangeComponent state={dateRange} setState={setDateRange} />
+                                <DateRangeComponent datePositon={datePositon} state={dateRange} setState={setDateRange} />
                             </div>
                         )}
                     </div>

@@ -4,7 +4,7 @@ import { BiSolidLockAlt } from "react-icons/bi";
 import { FaEdit } from "react-icons/fa";
 import { statusColors } from "../agentLeads/LeadTable";
 
-const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPage, handleCheckboxChange, setSelectedLead, user, onEdit }) => {
+const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPage, handleCheckboxChange, setSelectedLead, user, onEdit  , isRow2Hidden}) => {
     console.log(user);
 
     const getUserName = (email) => {
@@ -15,7 +15,7 @@ const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPa
     };
 
     return (
-        <div className="rounded-sm  h-[calc(100vh-390px)] lg:h-[calc(100vh-160px)] overflow-scroll  border border-base-content/10 bg-base-200/10 shadow overflow-x-auto">
+        <div className={`rounded-sm ${isRow2Hidden ? "h-[calc(100vh-390px)] lg:h-[calc(100vh-160px)]" : "h-[calc(100vh-390px)] lg:h-[calc(100vh-204px)]"}  h-[calc(100vh-390px)] lg:h-[calc(100vh-160px)] overflow-scroll  border border-base-content/10 bg-base-200/10 shadow overflow-x-auto`}>
             {leads?.length == 0 ? (
                 <div className=" flex gap-2 text-center my-20 justify-center text-sm text-white/70">
                     <p>No Leads Found.</p>
@@ -27,7 +27,7 @@ const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPa
                 <table className="table  min-w-[1500px] lg:min-w-auto table-xs 3xl:table-sm  table-pin-rows lg:table-pin-cols table-zebra w-full">
                     <thead className="text-base-content/70  text-sm uppercase tracking-wide bg-base-300">
                         <tr>
-                            <th className="sticky pl-4 top-0 bg-base-300 z-10 px-2">
+                            <th className="sticky pl-4 top-0  z-10 px-2">
                                 <div className="flex  items-start gap-1">
                                     <input
                                         type="checkbox"
@@ -45,16 +45,16 @@ const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPa
                                 </div>
                             </th>
 
-                            <th className="sticky top-0 bg-base-300 z-10"></th>
-                            <th className="sticky top-0 bg-base-300 pl-5! z-10">Date</th>
-                            <th className="sticky top-0 bg-base-300 z-10">Name</th>
-                            <th className="sticky top-0 bg-base-300 z-10">Email</th>
-                            <th className="sticky top-0 bg-base-300 z-10">Number</th>
-                            {/* <th className="sticky top-0 bg-base-300 z-10">Address</th> */}
-                            <th className="sticky top-0 bg-base-300 z-10">Internsted Course </th>
-                            <th className="sticky top-0 bg-base-300 z-10">Assign To</th>
-                            <th className="sticky top-0 bg-base-300 z-10">Lead Status</th>
-                            <th className="sticky top-0 bg-base-300 z-10">Order No.</th>
+                            <th className="sticky top-0  z-10"></th>
+                            <th className="sticky top-0  pl-5! z-10">Date</th>
+                            <th className="sticky top-0  z-10">Name</th>
+                            <th className="sticky top-0  z-10">Email</th>
+                            <th className="sticky top-0  z-10">Number</th>
+                            {/* <th className="sticky top-0  z-10">Address</th> */}
+                            <th className="sticky top-0  z-10">Internsted Course </th>
+                            <th className="sticky top-0  z-10">Assign To</th>
+                            <th className="sticky top-0  z-10">Lead Status</th>
+                            <th className="sticky top-0  z-10">Order No.</th>
                         </tr>
                     </thead>
 
