@@ -70,6 +70,9 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
     const [email, setEmail] = useState(selectedLead?.email || "");
     const [isEmailEditing, setIsEmailEditing] = useState(false);
 
+    const [phone, setPhone] = useState(selectedLead?.phone || "");
+    const [isPhoneEditing, setIsPhoneEditing] = useState(false);
+
     const [selectedCourses, setSelectedCourses] = useState([]);
 
     const [notes, setNotes] = useState(selectedLead?.note || []);
@@ -222,13 +225,11 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
         setError("");
         console.log(modelStatus);
 
-
-        if(selectedLead.assignTo !== user?.email && user?.role !== "admin") {
-            setSaving(false)
-            return setError("Access denied: You do not have permission to edit this because it is assigned to another agent")
+        if (selectedLead.assignTo !== user?.email && user?.role !== "admin") {
+            setSaving(false);
+            return setError("Access denied: You do not have permission to edit this because it is assigned to another agent");
         }
 
-        
         if (!selectedCourses || selectedCourses.length === 0) {
             setSaving(false);
             return setError("Please select at least one course");
@@ -376,6 +377,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
             leadSource: leadSource,
             fblink: messengerLink,
             email: email,
+            phone: phone,
             originalPrice: overallOriginalPrice,
             paidAmount: overallTotalPaid,
             totalPaid: overallTotalPaid,
@@ -459,6 +461,9 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
             setEmail(selectedLead.email || "");
             setIsEmailEditing(false);
+
+            setPhone(selectedLead.phone || "");
+            setIsPhoneEditing(false);
         }
     }, [selectedLead]);
 
@@ -601,6 +606,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
     const initialFirstContact = selectedLead?.firstContacted ? selectedLead.firstContacted.split("T")[0] : "";
     const initialLastContact = selectedLead?.lastContacted ? selectedLead.lastContacted.split("T")[0] : "";
+    const initialPhone = selectedLead?.phone || "";
 
     // 🔹 Trigger native browser calendar directly
     const openDatePicker = (inputRef) => {
@@ -709,8 +715,55 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                         </div>
                                     )}
                                 </div>
-                                <div className="text-white/50">Phone</div>
-                                <div className="font-medium">{selectedLead.phone || "N/A"}</div>
+                              <div className="text-white/50 flex items-center">Phone</div>
+<div className="flex w-full items-center justify-between font-medium">
+    {isPhoneEditing ? (
+        <div className="flex items-center gap-1 w-full">
+            <input
+                type="text"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="input input-xs bg-gray-900 border border-gray-600 text-white rounded w-full focus:outline-none focus:border-blue-500 text-xs py-1 px-1.5"
+                placeholder="Enter phone number..."
+            />
+            <button
+                type="button"
+                onClick={() => setIsPhoneEditing(false)}
+                className="btn btn-xs btn-ghost text-green-400 font-bold"
+                title="Confirm phone changes"
+            >
+                ✓
+            </button>
+        </div>
+    ) : (
+        <div className="flex w-full items-center justify-between font-medium">
+            <div className="flex items-center gap-1">
+                <span title={phone} className="truncate max-w-[140px]">
+                    {phone || "N/A"}
+                </span>
+                {phone !== initialPhone && (
+                    <span
+                        title="Unsaved"
+                        className="text-yellow-500 border-2 border-yellow-500 rounded-full p-0.5 font-semibold text-[10px]"
+                    >
+                        <FaInfo />
+                    </span>
+                )}
+            </div>
+
+            {/* Edit button visible ONLY if initially missing/empty */}
+            {!initialPhone && (
+                <div
+                    className="cursor-pointer text-blue-400 hover:text-white ml-2"
+                    onClick={() => setIsPhoneEditing(true)}
+                    title="Add Phone"
+                >
+                    <FaEdit />
+                </div>
+            )}
+        </div>
+    )}
+</div>
                                 <div className="text-white/50 flex items-center">Messenger</div>
                                 <div className="flex w-full items-center justify-between font-medium">
                                     {isMessengerEditing ? (
