@@ -84,7 +84,7 @@ const page = () => {
 
                 /> */}
 
-          <DateRangeComponent state={state} setState={setState} />
+          <DateRangeComponent datePositon={"right-0"} state={state} setState={setState} />
         </div>
       </div>
 
