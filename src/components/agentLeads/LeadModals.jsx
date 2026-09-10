@@ -999,7 +999,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                     {/* Hidden Date Input */}
                                     <input
                                         ref={lastContactedRef}
-                                        type="date"
+                                        type="datetime-local"
                                         className="sr-only"
                                         value={lastContactedDate}
                                         onChange={(e) => setLastContactedDate(e.target.value)}

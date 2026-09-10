@@ -90,7 +90,7 @@ const page = () => {
                     /> */}
 
                     <DateRange
-
+datePositon={"right-0"}
                         state={state}
                         setState={setState}
                     />
