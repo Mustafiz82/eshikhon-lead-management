@@ -1,18 +1,15 @@
-"use client"
+"use client";
 import useFetch from "@/hooks/useFetch";
 import CustomSelect from "@/utils/CustomSelect";
 import React, { useEffect, useState } from "react";
 
 const CallCountTable = () => {
-
-
     const currentMonth = new Date().getMonth() + 1;
     const [selectedFilter, setSelectedFilter] = useState(String(currentMonth));
     const [selectedYear, setSelectedYear] = useState(String(new Date().getFullYear()));
-    const { data: callCount } = useFetch(`/dashboard/getDailyCallCount?month=${selectedFilter}&year=${selectedYear}`)
+    const { data: callCount } = useFetch(`/dashboard/getDailyCallCount?month=${selectedFilter}&year=${selectedYear}`);
     const daysCount = callCount?.[0]?.calls?.length || 30;
-    const days = Array.from({ length: daysCount }, (_, i) => i + 1)
-
+    const days = Array.from({ length: daysCount }, (_, i) => i + 1);
 
     const months = [
         { value: "1", label: "January" },
@@ -29,7 +26,6 @@ const CallCountTable = () => {
         { value: "12", label: "December" },
     ];
 
-
     const year = [
         { value: "2020", label: "2020" },
         { value: "2021", label: "2021" },
@@ -41,30 +37,27 @@ const CallCountTable = () => {
         { value: "2027", label: "2027" },
         { value: "2028", label: "2028" },
         { value: "2029", label: "2029" },
-        { value: "2030", label: "2030" }
-    ]
-
+        { value: "2030", label: "2030" },
+    ];
 
     return (
         <div className="mt-24 ">
-
-            <div className="flex justify-between mt-10 mb-6 items-center gap-5">
-                <h2 className=" lg:text-xl font-semibold ">Daily Connected Call Count per Agent</h2>
+            <div className="flex justify-between mt-10 mb-3 items-center gap-5">
+                <div>
+                    <h2 className=" lg:text-xl font-semibold ">Daily Connected Call Count per Agent</h2>
+                    <p className="text-xs text-amber-400/90 mt-2 flex items-center gap-1.5">
+                        <span>⚠️</span>
+                        <span>
+                            <strong>Note:</strong> Full call history tracking active from September 10. Prior records reflect only the single
+                            last-contacted date.
+                        </span>
+                    </p>
+                </div>
                 <div className="flex gap-2 items-center">
                     <p className="whitespace-nowrap text-gray-300 hidden lg:block">View Call Count for:</p>
 
-                    <CustomSelect
-                        selected={selectedFilter}
-                        setSelected={setSelectedFilter}
-                        options={months}
-
-                    />
-                    <CustomSelect
-                        selected={selectedYear}
-                        setSelected={setSelectedYear}
-                        options={year}
-
-                    />
+                    <CustomSelect selected={selectedFilter} setSelected={setSelectedFilter} options={months} />
+                    <CustomSelect selected={selectedYear} setSelected={setSelectedYear} options={year} />
                 </div>
             </div>
             <div className="w-full overflow-x-auto z-[-1]">
@@ -81,11 +74,11 @@ const CallCountTable = () => {
                     </thead>
                     <tbody>
                         {callCount?.map((agent, idx) => (
-                            <tr className="" key={idx} >
+                            <tr className="" key={idx}>
                                 <td className="border border-gray-300 px-3 bg-slate-800 py-2 font-semibold ">{agent.name}</td>
                                 {agent.calls.map((count, i) => (
                                     <td key={i} className="border hover:bg-blue-600/60 border-gray-300 px-3 py-2 text-center">
-                                       <span className={ count == 0 &&  `text-white/60`} > {count}</span>
+                                        <span className={count == 0 && `text-white/60`}> {count}</span>
                                     </td>
                                 ))}
                             </tr>
