@@ -1115,7 +1115,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
 
                                                 <div className="flex justify-between text-xs text-gray-400 pt-2.5 border-t border-gray-700/60">
                                                     <span>
-                                                        Price: <strong className="text-white">৳{c.originalPrice || 0}</strong>
+                                                        Price: <strong className="text-white">৳{c.originalPrice - c.leadDiscount || 0}</strong>
                                                     </span>
                                                     <span>
                                                         Paid:{" "}
