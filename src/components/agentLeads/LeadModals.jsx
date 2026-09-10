@@ -164,18 +164,49 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                     newPayment: 0,
                                 };
                             } else {
-                                const due = Math.max(0, origPrice - disc);
-                                return {
-                                    courseName,
-                                    courseType: getCourseTypeString(type),
-                                    originalPrice: origPrice,
-                                    leadDiscount: disc,
-                                    discountUnit: "flat",
-                                    totalPaid: 0,
-                                    totalDue: due,
-                                    history: [],
-                                    newPayment: 0,
-                                };
+                                // 1. Check if the entered order number matches the already saved order number
+                                const isSameOrder = Boolean(selectedLead?.orderNumber) && Number(orderNumber) === Number(selectedLead.orderNumber);
+
+                                if (isSameOrder) {
+                                    // --- CASE 1: SAME ORDER NUMBER (Preserve & Recalculate) ---
+                                    const existing =
+                                        selectedCourses.find((c) => c.courseName === courseName) ||
+                                        selectedLead?.courses?.find((c) => c.courseName === courseName);
+
+                                    const existingHistory = existing?.history || [];
+
+                                    // Sum the history array to get the accurate total paid
+                                    const paidFromHistory = existingHistory.reduce((sum, item) => sum + Number(item.paidAmount || 0), 0);
+
+                                    const due = Math.max(0, origPrice - disc - paidFromHistory);
+
+                                    return {
+                                        courseName,
+                                        courseType: getCourseTypeString(type),
+                                        originalPrice: origPrice,
+                                        leadDiscount: disc,
+                                        discountUnit: "flat",
+                                        totalPaid: paidFromHistory, // Calculated directly from history
+                                        totalDue: due, // Calculated remaining due
+                                        history: existingHistory, // Preserved intact
+                                        newPayment: 0,
+                                    };
+                                } else {
+                                    // --- CASE 2: DIFFERENT ORDER NUMBER (Mistake, wipe history) ---
+                                    const due = Math.max(0, origPrice - disc);
+
+                                    return {
+                                        courseName,
+                                        courseType: getCourseTypeString(type),
+                                        originalPrice: origPrice,
+                                        leadDiscount: disc,
+                                        discountUnit: "flat",
+                                        totalPaid: 0, // Fresh start
+                                        totalDue: due, // Full price due
+                                        history: [], // History wiped
+                                        newPayment: 0,
+                                    };
+                                }
                             }
                         });
 
@@ -715,55 +746,55 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                                         </div>
                                     )}
                                 </div>
-                              <div className="text-white/50 flex items-center">Phone</div>
-<div className="flex w-full items-center justify-between font-medium">
-    {isPhoneEditing ? (
-        <div className="flex items-center gap-1 w-full">
-            <input
-                type="text"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="input input-xs bg-gray-900 border border-gray-600 text-white rounded w-full focus:outline-none focus:border-blue-500 text-xs py-1 px-1.5"
-                placeholder="Enter phone number..."
-            />
-            <button
-                type="button"
-                onClick={() => setIsPhoneEditing(false)}
-                className="btn btn-xs btn-ghost text-green-400 font-bold"
-                title="Confirm phone changes"
-            >
-                ✓
-            </button>
-        </div>
-    ) : (
-        <div className="flex w-full items-center justify-between font-medium">
-            <div className="flex items-center gap-1">
-                <span title={phone} className="truncate max-w-[140px]">
-                    {phone || "N/A"}
-                </span>
-                {phone !== initialPhone && (
-                    <span
-                        title="Unsaved"
-                        className="text-yellow-500 border-2 border-yellow-500 rounded-full p-0.5 font-semibold text-[10px]"
-                    >
-                        <FaInfo />
-                    </span>
-                )}
-            </div>
+                                <div className="text-white/50 flex items-center">Phone</div>
+                                <div className="flex w-full items-center justify-between font-medium">
+                                    {isPhoneEditing ? (
+                                        <div className="flex items-center gap-1 w-full">
+                                            <input
+                                                type="text"
+                                                value={phone}
+                                                onChange={(e) => setPhone(e.target.value)}
+                                                className="input input-xs bg-gray-900 border border-gray-600 text-white rounded w-full focus:outline-none focus:border-blue-500 text-xs py-1 px-1.5"
+                                                placeholder="Enter phone number..."
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsPhoneEditing(false)}
+                                                className="btn btn-xs btn-ghost text-green-400 font-bold"
+                                                title="Confirm phone changes"
+                                            >
+                                                ✓
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="flex w-full items-center justify-between font-medium">
+                                            <div className="flex items-center gap-1">
+                                                <span title={phone} className="truncate max-w-[140px]">
+                                                    {phone || "N/A"}
+                                                </span>
+                                                {phone !== initialPhone && (
+                                                    <span
+                                                        title="Unsaved"
+                                                        className="text-yellow-500 border-2 border-yellow-500 rounded-full p-0.5 font-semibold text-[10px]"
+                                                    >
+                                                        <FaInfo />
+                                                    </span>
+                                                )}
+                                            </div>
 
-            {/* Edit button visible ONLY if initially missing/empty */}
-            {!initialPhone && (
-                <div
-                    className="cursor-pointer text-blue-400 hover:text-white ml-2"
-                    onClick={() => setIsPhoneEditing(true)}
-                    title="Add Phone"
-                >
-                    <FaEdit />
-                </div>
-            )}
-        </div>
-    )}
-</div>
+                                            {/* Edit button visible ONLY if initially missing/empty */}
+                                            {!initialPhone && (
+                                                <div
+                                                    className="cursor-pointer text-blue-400 hover:text-white ml-2"
+                                                    onClick={() => setIsPhoneEditing(true)}
+                                                    title="Add Phone"
+                                                >
+                                                    <FaEdit />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
                                 <div className="text-white/50 flex items-center">Messenger</div>
                                 <div className="flex w-full items-center justify-between font-medium">
                                     {isMessengerEditing ? (
@@ -1174,7 +1205,7 @@ const LeadModals = ({ selectedLead, setSelectedLead, statusOptions, refetch, cou
                             {/* Payment History */}
                             <div>
                                 <h2 className="text-lg font-semibold">Payment History</h2>
-                                <div className="max-h-36 overflow-y-auto pr-2 space-y-1 mt-1">
+                                <div className=" pr-2 space-y-1 mt-1">
                                     {allCourseHistory.length > 0 ? (
                                         allCourseHistory.map((item, index) => (
                                             <div

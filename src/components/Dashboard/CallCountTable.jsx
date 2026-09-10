@@ -8,8 +8,8 @@ const CallCountTable = () => {
 
     const currentMonth = new Date().getMonth() + 1;
     const [selectedFilter, setSelectedFilter] = useState(String(currentMonth));
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-    const { data: callCount } = useFetch(`/dashboard/getDailyCallCount?month=${selectedFilter}&year=${new Date().getFullYear()}`)
+    const [selectedYear, setSelectedYear] = useState(String(new Date().getFullYear()));
+    const { data: callCount } = useFetch(`/dashboard/getDailyCallCount?month=${selectedFilter}&year=${selectedYear}`)
     const daysCount = callCount?.[0]?.calls?.length || 30;
     const days = Array.from({ length: daysCount }, (_, i) => i + 1)
 
@@ -59,12 +59,12 @@ const CallCountTable = () => {
                         options={months}
 
                     />
-                    {/* <CustomSelect
-                        selected={selectedFilter}
-                        setSelected={setSelectedFilter}
-                        options={months}
+                    <CustomSelect
+                        selected={selectedYear}
+                        setSelected={setSelectedYear}
+                        options={year}
 
-                    /> */}
+                    />
                 </div>
             </div>
             <div className="w-full overflow-x-auto z-[-1]">
