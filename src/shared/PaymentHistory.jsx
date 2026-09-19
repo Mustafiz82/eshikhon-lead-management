@@ -1,11 +1,8 @@
-import React from 'react';
-import { FaHistory } from 'react-icons/fa';
+import React from "react";
+import { FaHistory } from "react-icons/fa";
 
 const PaymentHistory = ({ historyData, historyLoading }) => {
-
     // monthKey: "2025-11" => "Nov 2025"
-
-
 
     // --- helpers ---
     const formatDate = (d) => {
@@ -37,7 +34,6 @@ const PaymentHistory = ({ historyData, historyLoading }) => {
         }
     };
     return (
-
         <div>
             <div className="flex items-center gap-2 mb-4">
                 <div className="p-2 bg-purple-600/20 rounded-lg text-purple-500">
@@ -80,8 +76,17 @@ const PaymentHistory = ({ historyData, historyLoading }) => {
                                         <td className="p-4 font-medium text-white">{monthKeyToLabel(p.monthKey)}</td>
                                         <td className="p-4 text-blue-400">{p.agentName || "-"}</td>
                                         <td className="p-4 text-slate-400">{p.agentEmail}</td>
-                                        <td className="p-4 text-right font-bold text-green-400">
+                                        {/* <td className="p-4 text-right font-bold text-green-400">
                                             {Number(p.amount ?? 0).toFixed(2)} ৳
+                                        </td> */}
+                                        <td className="p-4 text-right font-bold">
+                                            <span className={Number(p.amount) < 0 ? "text-amber-400" : "text-green-400"}>
+                                                {Number(p.amount) > 0 ? "+" : ""}
+                                                {Number(p.amount ?? 0).toFixed(2)} ৳
+                                            </span>
+                                            {p.method === "adjustment" && (
+                                                <span className="block text-[10px] text-indigo-400 font-normal">Adjustment</span>
+                                            )}
                                         </td>
                                         <td className="p-4 text-center">
                                             <span className="px-2 py-1 rounded-full bg-green-500/20 text-green-500 text-xs font-bold border border-green-500/30">
@@ -96,7 +101,6 @@ const PaymentHistory = ({ historyData, historyLoading }) => {
                 </div>
             </div>
         </div>
-
     );
 };
 
