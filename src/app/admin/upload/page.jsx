@@ -276,6 +276,8 @@ const Page = () => {
 
         console.log(rows);
 
+    
+
         // return
 
         if (missing.length > 0) {
@@ -341,6 +343,7 @@ const Page = () => {
                 entryBy: entryBy || "",
                 note: parseNote(note),
                 leadStatus: leadStatus || "Pending",
+                leadSource,
                 orderNumber: parseOrderNumber(orderNumber),
                 interstedSeminar: normalizeSeminarType(interstedSeminar),
                 firstContacted: parseCustomDate(firstContacted),
@@ -351,10 +354,7 @@ const Page = () => {
                 assignDate: parsedAssignDate,
             };
         });
-
-        // console.log(questionWiseData)
-
-        console.log(questionWiseData);
+       
 
         const leadsWithOrders = questionWiseData.filter((lead) => lead.orderNumber);
         console.log(leadsWithOrders);
