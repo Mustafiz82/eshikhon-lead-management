@@ -4,18 +4,38 @@ import { BiSolidLockAlt } from "react-icons/bi";
 import { FaEdit } from "react-icons/fa";
 import { statusColors } from "../agentLeads/LeadTable";
 
-const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPage, handleCheckboxChange, setSelectedLead, user, onEdit  , isRow2Hidden}) => {
-    console.log(user);
+const LeadTable = ({
+    selectedIds,
+    setSelectedIds,
+    leads,
+    currentPage,
+    leadsPerPage,
+    handleCheckboxChange,
+    setSelectedLead,
+    user,
+    onEdit,
+    isRow2Hidden,
+}) => {
+    // console.log(user);
 
     const getUserName = (email) => {
         const filteredUser = user.find((item) => item.email == email);
 
-        console.log(filteredUser);
+        // console.log(filteredUser);
         return filteredUser?.name;
     };
 
+    const getTotalSales = (lead) => {
+        const allCourseHistory = (lead?.courses || []).flatMap((c) => c?.history || []);
+
+        return allCourseHistory.reduce((acc, cv) => acc + Number(cv?.paidAmount || 0), 0);
+    };
+
+
     return (
-        <div className={`rounded-sm ${isRow2Hidden ? "h-[calc(100vh-390px)] lg:h-[calc(100vh-160px)]" : "h-[calc(100vh-390px)] lg:h-[calc(100vh-204px)]"}  h-[calc(100vh-390px)] lg:h-[calc(100vh-160px)] overflow-scroll  border border-base-content/10 bg-base-200/10 shadow overflow-x-auto`}>
+        <div
+            className={`rounded-sm ${isRow2Hidden ? "h-[calc(100vh-390px)] lg:h-[calc(100vh-160px)]" : "h-[calc(100vh-390px)] lg:h-[calc(100vh-204px)]"}  h-[calc(100vh-390px)] lg:h-[calc(100vh-160px)] overflow-scroll  border border-base-content/10 bg-base-200/10 shadow overflow-x-auto`}
+        >
             {leads?.length == 0 ? (
                 <div className=" flex gap-2 text-center my-20 justify-center text-sm text-white/70">
                     <p>No Leads Found.</p>
@@ -48,13 +68,14 @@ const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPa
                             <th className="sticky top-0  z-10"></th>
                             <th className="sticky top-0  pl-5! z-10">Date</th>
                             <th className="sticky top-0  z-10">Name</th>
-                            <th className="sticky top-0  z-10">Email</th>
+                            {/* <th className="sticky top-0  z-10">Email</th> */}
                             <th className="sticky top-0  z-10">Number</th>
                             {/* <th className="sticky top-0  z-10">Address</th> */}
                             <th className="sticky top-0  z-10">Internsted Course </th>
                             <th className="sticky top-0  z-10">Assign To</th>
                             <th className="sticky top-0  z-10">Lead Status</th>
                             <th className="sticky top-0  z-10">Order No.</th>
+                            <th className="sticky top-0  z-10">Total Sales</th>
                         </tr>
                     </thead>
 
@@ -103,9 +124,9 @@ const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPa
                                     <td title={lead.name} className="max-w-[200px] line-clamp-1 whitespace-nowrap overflow-hidden text-ellipsis">
                                         {lead.name}
                                     </td>
-                                    <td title={lead.email} className="max-w-[200px] line whitespace-nowrap overflow-hidden text-ellipsis">
+                                    {/* <td title={lead.email} className="max-w-[200px] line whitespace-nowrap overflow-hidden text-ellipsis">
                                         {lead.email}
-                                    </td>
+                                    </td> */}
                                     <td title={lead.phone} className="max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis">
                                         {" "}
                                         <span className="text-nowrap">{lead.phone}</span>
@@ -114,7 +135,12 @@ const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPa
                                         {lead.address}
                                     </td> */}
                                     <td>
-                                        <span className="badge badge-neutral badge-sm">{lead?.courses?.length > 0 ? (lead?.courses?.[0]?.courseName) + ` ${lead?.courses?.length > 1 ? ` + ${lead?.courses?.length - 1}` : " "}` : "" }</span>
+                                        <span className="badge badge-neutral badge-sm">
+                                            {lead?.courses?.length > 0
+                                                ? lead?.courses?.[0]?.courseName +
+                                                  ` ${lead?.courses?.length > 1 ? ` + ${lead?.courses?.length - 1}` : " "}`
+                                                : ""}
+                                        </span>
                                     </td>
                                     <td>
                                         <span
@@ -131,6 +157,7 @@ const LeadTable = ({ selectedIds, setSelectedIds, leads, currentPage, leadsPerPa
                                         </span>
                                     </td>
                                     <td>{lead?.orderNumber ?? lead.orderNumber}</td>
+                                    <td>{ getTotalSales(lead) == 0 ? "" : getTotalSales(lead) }</td>
                                 </tr>
                             );
                         })}
