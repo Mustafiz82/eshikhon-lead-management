@@ -87,7 +87,7 @@ export default function ManageDiscountPage() {
 
 
 
-    const appliedCount = (row) =>
+    const applb iedCount = (row) =>
         Array.isArray(row.appliesTo) ? row.appliesTo.length : 0;
 
     const actionsCell = (row) => (
